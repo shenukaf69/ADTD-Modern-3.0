@@ -1,17 +1,21 @@
 name: Release
 
-# Push a version tag (for example v3.0.2), or run this workflow from the Actions tab with a tag
-# name, to build the MSI and the offline package and publish them as a GitHub Release.
-# When run by hand, the tag is created on the commit being released if it doesn't exist yet.
-# The release notes come from CHANGELOG.md.
+# Publishes a GitHub Release with the MSI and the offline package:
+# - automatically, when a new version reaches main (the ModuleVersion in src/ADTD.psd1 changes)
+#   and there is no release for it yet; the tag v<version> is created on that commit
+# - when a v* tag is pushed
+# - or by hand from the Actions tab (Release > Run workflow), with a tag name
+# The release notes come from that version's section in CHANGELOG.md.
 on:
   push:
+    branches: [main]
+    paths: ['src/ADTD.psd1', '.github/workflows/release.yml']
     tags: ['v*']
   workflow_dispatch:
     inputs:
       tag:
         description: Tag to release, for example v3.0.2 (created if it doesn't exist)
-        required: true
+        required: false
 
 permissions:
   contents: write
@@ -22,18 +26,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'push' && github.ref || github.sha }}
+          ref: ${{ github.sha }}
+      - name: Work out the version and skip if it is already released
+        id: ver
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $v = (Import-PowerShellDataFile ./src/ADTD.psd1).ModuleVersion
+          $tag = if ('${{ inputs.tag }}') { '${{ inputs.tag }}' } elseif ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { "v$v" }
+          gh release view $tag --repo ${{ github.repository }} *> $null
+          $skip = ($LASTEXITCODE -eq 0)
+          if ($skip) { Write-Host "Release $tag already exists; nothing to do." }
+          "tag=$tag" | Out-File $env:GITHUB_OUTPUT -Append
+          "skip=$($skip.ToString().ToLower())" | Out-File $env:GITHUB_OUTPUT -Append
+          exit 0
       - name: Install wixl
+        if: steps.ver.outputs.skip != 'true'
         run: sudo apt-get update && sudo apt-get install -y wixl
       - name: Test
+        if: steps.ver.outputs.skip != 'true'
         shell: pwsh
         run: ./tests/Test-ADTD.ps1
       - name: Build MSI and offline package
+        if: steps.ver.outputs.skip != 'true'
         shell: pwsh
         run: |
           ./setup/build-msi.ps1
           ./setup/build-offline-package.ps1
       - name: Release notes from CHANGELOG.md
+        if: steps.ver.outputs.skip != 'true'
         shell: pwsh
         run: |
           $v = (Import-PowerShellDataFile ./src/ADTD.psd1).ModuleVersion
@@ -54,9 +76,10 @@ jobs:
           Set-Content -Path release-notes.md -Value $notes -Encoding UTF8
           "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Publish release
+        if: steps.ver.outputs.skip != 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.tag || github.ref_name }}
+          tag_name: ${{ steps.ver.outputs.tag }}
           target_commitish: ${{ github.sha }}
           name: ADTD Modern ${{ env.VERSION }}
           body_path: release-notes.md
