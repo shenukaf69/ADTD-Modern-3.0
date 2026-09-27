@@ -4,6 +4,8 @@
 
 ## The window
 
+![ADTD Modern window](images/app-window.png)
+
 Open **Start → ADTD Modern** (or the desktop shortcut). The window has a header with **Prerequisites** and **About**, then four numbered steps:
 
 1. **Connect to Active Directory**
