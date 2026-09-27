@@ -59,6 +59,8 @@ Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
 
 ADTD Modern is a Windows app (`ADTD.exe`) with its own icon on the taskbar, Start menu and desktop. The window walks you through four steps:
 
+![ADTD Modern window](docs/images/app-window.png)
+
 | Step | What you do |
 |---|---|
 | **1 Connect to Active Directory** | Leave the domain empty for your own domain, or type a domain or DC. **Sign in as** your Windows account or **a different account** (user name and password right in the window, used for this run only). **Test connection** confirms which DC answered |
