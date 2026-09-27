@@ -73,6 +73,8 @@ Run **Start → ADTD Modern - Prerequisites**, or:
 powershell -ExecutionPolicy Bypass -File .\setup\Install-Prerequisites.ps1
 ```
 
+![Prerequisites check](images/prerequisites.png)
+
 It shows a status table:
 - Windows version and PowerShell versions
 - Domain membership, and LDAP / global catalog reachability to a DC
