@@ -4,7 +4,9 @@
 
 *Designed and developed by **Shenuka Fernando***
 
-**Active Directory Topology Diagrammer, rebuilt for Windows Server 2016–2025, with a security assessment and a Microsoft Entra ID hybrid upgrade plan.**
+**A free Active Directory diagram tool and security assessment: the modern replacement for Microsoft's Active Directory Topology Diagrammer (ADTD), rebuilt for Windows Server 2016–2025, with a Microsoft Entra ID (Azure AD) hybrid upgrade plan.**
+
+Use it to document your AD forest (sites, replication, domains, trusts, OUs, GPOs, DFS-R and Exchange) as draw.io or Visio diagrams, run an Active Directory security health check, and plan a move to hybrid identity with Entra Connect. It is a read-only PowerShell tool with a Windows app and an MSI installer.
 
 ADTD Modern reads your Active Directory, draws it in **draw.io**, and writes an **assessment report**. It works with draw.io desktop or draw.io on the web, both free. Visio is optional.
 
