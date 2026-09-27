@@ -307,12 +307,15 @@ function Show-AdtdAbout {
             'draw.io is a trademark of JGraph Ltd. Microsoft, Active Directory, Microsoft Entra, Exchange, Visio and Windows are trademarks of the Microsoft group of companies.'
         ) -join "`r`n")
     $legal.Margin = New-Object System.Windows.Forms.Padding(0, 0, 0, (Get-AdtdPx 12))
+    $legal.TabStop = $false   # otherwise it gets focus, selects everything and opens scrolled to the end
     $body.Controls.Add($legal)
 
     $ok = New-AdtdButton 'Close' -Primary -Width 100
     $ok.DialogResult = 'OK'; $ok.Anchor = 'Right'
     $body.Controls.Add($ok)
     $f.AcceptButton = $ok; $f.CancelButton = $ok
+    $f.ActiveControl = $ok
+    $f.Add_Shown({ $legal.SelectionStart = 0; $legal.SelectionLength = 0; $legal.ScrollToCaret() })
     if (-not $Owner) { $f.StartPosition = 'CenterScreen' }
     [void]$f.ShowDialog($Owner)
     $f.Dispose()
@@ -442,9 +445,13 @@ function Show-ADTD {
     $header.Controls.Add($hl)
 
     # ---- body: two columns of cards ---------------------------------------------------------------
+    # The cards sit in a scrolling panel, so nothing is hidden when the window or screen is small.
+    $scroll = New-Object System.Windows.Forms.Panel
+    $scroll.Dock = 'Fill'; $scroll.AutoScroll = $true
     $body = New-AdtdTable 2 -Fill
-    $body.AutoSize = $false; $body.AutoScroll = $true
-    $body.Padding = New-Object System.Windows.Forms.Padding((Get-AdtdPx 16), (Get-AdtdPx 14), (Get-AdtdPx 16), 0)
+    $body.Dock = 'Top'
+    $body.Padding = New-Object System.Windows.Forms.Padding((Get-AdtdPx 16), (Get-AdtdPx 14), (Get-AdtdPx 16), (Get-AdtdPx 4))
+    $scroll.Controls.Add($body)
     $left = New-AdtdTable; $left.Margin = New-Object System.Windows.Forms.Padding(0, 0, (Get-AdtdPx 6), 0)
     $right = New-AdtdTable; $right.Margin = New-Object System.Windows.Forms.Padding((Get-AdtdPx 6), 0, 0, 0)
     $body.Controls.Add($left, 0, 0); $body.Controls.Add($right, 1, 0)
@@ -606,8 +613,8 @@ function Show-ADTD {
     $st3.Text = "  by $script:AdtdAuthor"; $st3.ForeColor = $T.Muted
     [void]$status.Items.AddRange(@($st1, $st2, $st3))
 
-    $form.Controls.Add($body); $form.Controls.Add($bar); $form.Controls.Add($status); $form.Controls.Add($header)
-    $body.BringToFront()
+    $form.Controls.Add($scroll); $form.Controls.Add($bar); $form.Controls.Add($status); $form.Controls.Add($header)
+    $scroll.BringToFront()
     $form.AcceptButton = $run
 
     # ---- behaviour ---------------------------------------------------------------------------------
