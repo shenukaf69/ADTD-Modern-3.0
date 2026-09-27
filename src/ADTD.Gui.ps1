@@ -582,11 +582,20 @@ function Show-ADTD {
     $c4, $b4 = New-AdtdCard '4' 'Activity' ''
     $log = New-Object System.Windows.Forms.TextBox
     $log.Multiline = $true; $log.ScrollBars = 'Vertical'; $log.ReadOnly = $true; $log.BorderStyle = 'None'
-    $log.BackColor = $T.Card; $log.Font = New-Object System.Drawing.Font('Consolas', 9)
-    $log.Anchor = 'Left,Right'; $log.Height = Get-AdtdPx 170
+    $log.BackColor = $T.Back; $log.Font = New-Object System.Drawing.Font('Consolas', 9)
+    $log.Dock = 'Fill'; $log.MinimumSize = New-Object System.Drawing.Size(0, (Get-AdtdPx 150))
     $log.Text = "Ready. Choose the options, then click 'Draw my Active Directory'."
     $b4.Controls.Add($log)
     $right.Controls.Add($c4)
+    # Activity takes the rest of the right column, and the log fills the card.
+    foreach ($t in $right, $c4) {
+        $t.RowStyles.Clear()
+        for ($i = 0; $i -lt $t.Controls.Count; $i++) {
+            $style = if ($i -eq $t.Controls.Count - 1) { New-Object System.Windows.Forms.RowStyle('Percent', 100) } else { New-Object System.Windows.Forms.RowStyle('AutoSize') }
+            [void]$t.RowStyles.Add($style)
+        }
+    }
+    [void]$b4.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent', 100)))
 
     # ---- action bar and status bar ----------------------------------------------------------------
     $bar = New-Object System.Windows.Forms.Panel
