@@ -1,14 +1,16 @@
 name: Release
 
-# Push a version tag (for example v3.0.2) to build the MSI and the offline package
-# and publish them as a GitHub Release. The release notes come from CHANGELOG.md.
+# Push a version tag (for example v3.0.2), or run this workflow from the Actions tab with a tag
+# name, to build the MSI and the offline package and publish them as a GitHub Release.
+# When run by hand, the tag is created on the commit being released if it doesn't exist yet.
+# The release notes come from CHANGELOG.md.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing tag to release, for example v3.0.2
+        description: Tag to release, for example v3.0.2 (created if it doesn't exist)
         required: true
 
 permissions:
@@ -20,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag || github.ref }}
+          ref: ${{ github.event_name == 'push' && github.ref || github.sha }}
       - name: Install wixl
         run: sudo apt-get update && sudo apt-get install -y wixl
       - name: Test
@@ -55,6 +57,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           name: ADTD Modern ${{ env.VERSION }}
           body_path: release-notes.md
           files: |
