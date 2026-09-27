@@ -18,7 +18,7 @@
     <Media Id="1" Cabinet="adtd.cab" EmbedCab="yes" />
 
     <Upgrade Id="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
-      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.2" IncludeMinimum="yes" IncludeMaximum="no" Property="PREVIOUSFOUND" />
+      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.2" IncludeMinimum="yes" IncludeMaximum="yes" Property="PREVIOUSFOUND" />
       <UpgradeVersion Minimum="3.0.2" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
     </Upgrade>
     <Condition Message="A newer version of ADTD Modern is already installed.">NOT NEWERFOUND</Condition>
