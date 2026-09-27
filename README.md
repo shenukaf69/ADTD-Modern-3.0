@@ -40,7 +40,7 @@ Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**
 
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
-1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.2.msi`](dist/ADTD_Modern_Setup_3.0.2.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+1. **Install.** Download `ADTD_Modern_Setup_3.0.2.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** (or **Prerequisites** in the app). It checks the computer, then asks what to install:
 
    ![Prerequisites check](docs/images/prerequisites.png)
