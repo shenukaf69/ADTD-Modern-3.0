@@ -1,0 +1,20 @@
+ADTD Modern - Active Directory Topology Diagrammer
+
+Designed and developed by Shenuka Fernando (https://github.com/shenukaf69).
+Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+
+This is an independent personal project by Shenuka Fernando. It is not an
+official Microsoft product and is not endorsed or supported by Microsoft. It was
+inspired by Microsoft's Active Directory Topology Diagrammer (2011) and contains
+no code from it.
+
+No part of this software may be copied, modified, distributed or used
+commercially without the written permission of the copyright holder.
+
+Third-party components keep their own licences:
+- mxGraph 4.2.2 (c) JGraph Ltd, Apache License 2.0 (src/lib/mxgraph-LICENSE.txt),
+  used as the offline diagram viewer in HTML reports.
+
+draw.io is a trademark of JGraph Ltd. Microsoft, Active Directory, Microsoft
+Entra, Exchange, Visio, Windows and Windows Server are trademarks of the
+Microsoft group of companies.

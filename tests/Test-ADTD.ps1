@@ -378,5 +378,33 @@ Write-Host 'Re-draw from JSON'
 $r2 = Invoke-ADTD -InputFile $r.Files.Json -All -Format DrawIo, Html -OutputFolder (Join-Path $OutputFolder 'redraw')
 Check ((Get-Item $r2.Files.DrawIo).Length -gt 10000 -and $r2.Findings -eq $r.Findings) 'redraw from saved inventory'
 
+Write-Host 'App and installer'
+$srcDir = Join-Path $PSScriptRoot '..\src'
+$exeBytes = [System.IO.File]::ReadAllBytes((Join-Path $srcDir 'ADTD.exe'))
+$pe = [BitConverter]::ToInt32($exeBytes, 0x3c)
+Check ($exeBytes[0] -eq 0x4D -and $exeBytes[1] -eq 0x5A -and [BitConverter]::ToUInt16($exeBytes, $pe + 24 + 68) -eq 2) 'ADTD.exe is a Windows GUI app (no console window)'
+Check ([System.Text.Encoding]::Unicode.GetString($exeBytes) -match 'Shenuka Fernando') 'ADTD.exe carries the author in its version info'
+$ico = [System.IO.File]::ReadAllBytes((Join-Path $srcDir 'ADTD.ico'))
+Check ([BitConverter]::ToUInt16($ico, 2) -eq 1 -and [BitConverter]::ToUInt16($ico, 4) -ge 6) 'app icon has all sizes'
+$wxs = [xml](Get-Content -Raw (Join-Path $PSScriptRoot '..\setup\ADTD.wxs'))
+$wxsFiles = @($wxs.GetElementsByTagName('File') | ForEach-Object { Split-Path $_.Source -Leaf })
+$needed = @(Get-ChildItem $srcDir -File | Where-Object { $_.Extension -in '.ps1', '.psm1', '.psd1', '.exe', '.ico', '.png' } | ForEach-Object Name)
+Check (-not ($needed | Where-Object { $_ -notin $wxsFiles })) "MSI includes every app file ($($needed.Count))"
+Check (@($wxs.GetElementsByTagName('Shortcut') | Where-Object { $_.Name -eq 'ADTD Modern' }).Target -eq '[INSTALLDIR]ADTD.exe') 'Start menu shortcut opens ADTD.exe'
+Check ($wxs.OuterXml -match 'ARPPRODUCTICON' -and $wxs.OuterXml -match '--welcome') 'MSI sets the Apps icon and opens the welcome screen'
+$showCmd = Get-Command Show-ADTD
+Check ($showCmd.Parameters.ContainsKey('Welcome') -and $showCmd.Parameters.ContainsKey('HostPath') -and (Get-Command Test-AdtdConnection -ErrorAction SilentlyContinue)) 'window, welcome and connection test commands'
+$info = & $mod { Get-AdtdInstallInfo }
+Check ($info.Folder -and $info.Exe -like '*ADTD.exe' -and $info.Kind -like 'Not installed*') 'install location is detected'
+Check ((& $mod { $script:AdtdAuthor }) -eq 'Shenuka Fernando' -and (Get-Content -Raw (Join-Path $srcDir 'ADTD.Gui.ps1')) -match 'Designed and developed by') 'About shows the author'
+$setFile = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD\settings.json'
+$setBackup = if (Test-Path $setFile) { Get-Content -Raw $setFile } else { $null }
+try {
+    [void](Set-AdtdSettings -WelcomeShown '9.9.9')
+    [void](Set-AdtdSettings -DrawIoViewer Web)
+    $st = Get-AdtdSettings
+    Check ($st.WelcomeShown -eq '9.9.9' -and $st.DrawIoViewer -eq 'Web') 'settings remember the welcome screen and viewer'
+} finally { if ($null -ne $setBackup) { Set-Content -Path $setFile -Value $setBackup -NoNewline } else { Remove-Item $setFile -ErrorAction SilentlyContinue } }
+
 Write-Host ''
 if ($fail) { Write-Host "$fail check(s) failed" -ForegroundColor Red; exit 1 } else { Write-Host 'All checks passed' -ForegroundColor Green }

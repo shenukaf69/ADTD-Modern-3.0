@@ -12,7 +12,9 @@ New-AdtdDiagram (ADTD.Render.ps1)             page model: nodes, containers, edg
   ├─ Export-AdtdDrawIo                        .drawio
   └─ Export-AdtdVisio                         .vsdx via Visio COM (optional)
 Export-AdtdHtmlReport / -Tabs, Export-AdtdMarkdown, Export-AdtdCsv (ADTD.Report.ps1)
-Invoke-ADTD / Show-ADTD (ADTD.psm1)           command and window
+Invoke-ADTD (ADTD.psm1)                       command
+Show-ADTD, About, welcome (ADTD.Gui.ps1)      window (Windows Forms)
+ADTD.exe (launcher/ADTD.cs)                   app launcher: hosts PowerShell so the window has its own icon
 ```
 
 - **All directory reads** go through `Invoke-AdtdLdapSearch` and `Get-AdtdRootDse`. The tests replace these two functions with an in-memory directory.
@@ -76,17 +78,32 @@ This uses `wixl` (msitools) on Linux or WSL, or WiX Toolset 3.x (`candle` and `l
 - `setup/ADTD.wxs`: Product `Version`, `UpgradeVersion` and the registry value
 - `src/ADTD.psd1`: `ModuleVersion`
 - `src/ADTD.psm1`: `$script:AdtdVersion`
+- `launcher/ADTD.cs`: the `Assembly*Version` attributes (then rebuild `ADTD.exe`)
 - the MSI file name in `build-msi.ps1` and the docs
 
 Keep the `UpgradeCode` the same so newer MSIs replace older ones.
+
+## Building ADTD.exe
+
+`src/ADTD.exe` is a small launcher (`launcher/ADTD.cs`). It hosts Windows PowerShell 5.1 inside its own process and calls `Show-ADTD`, so Windows shows the ADTD Modern icon on the taskbar and the app can be pinned. It is DPI aware and shows no console. It's checked in so the repository runs as is; rebuild it after changing `ADTD.cs` or `ADTD.ico`:
+
+```powershell
+# Windows (.NET Framework 4 compiler, built in)
+cd launcher
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /target:winexe /win32icon:..\src\ADTD.ico /r:System.Windows.Forms.dll /out:..\src\ADTD.exe ADTD.cs
+# Linux (mono)
+mcs -sdk:4.5 -target:winexe -win32icon:../src/ADTD.ico -r:System.Windows.Forms.dll -out:../src/ADTD.exe ADTD.cs
+```
+
+Also update the version attributes at the top of `ADTD.cs` for a release.
 
 ## Signing
 
 ```powershell
 $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
-Get-ChildItem .\src, .\setup -Include *.ps1, *.psm1, *.psd1 -Recurse | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.digicert.com
+Get-ChildItem .\src, .\setup -Include *.ps1, *.psm1, *.psd1, *.exe -Recurse | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.digicert.com
 pwsh ./setup/build-msi.ps1
-signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.1.msi
+signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.2.msi
 ```
 
 ## Previewing drawings without draw.io
