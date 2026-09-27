@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.0.2 (2026-09-27)
+
+- **ADTD Modern is now an app with its own icon.** `ADTD.exe` opens the window, so the taskbar, Start menu, desktop shortcut and Settings → Apps show the ADTD Modern icon instead of PowerShell's, and you can pin it to the taskbar. It is DPI aware, so text stays sharp on high-resolution screens. Source: `launcher/ADTD.cs`.
+- **Redesigned window**: a header banner with the app icon, and four numbered cards (Connect, Choose what to draw, Save the results, Activity) in two columns. There's a **Draw my Active Directory** button, a progress bar, a status bar that shows the signed-in account, format tooltips, **Select all / Recommended / Clear**, and **Open output folder**.
+- **Clearer sign-in**: "Use other credentials" is replaced by **Sign in as: My Windows account / A different account**, with user name and password fields in the window. The password is used for that run only. A **Test connection** button shows which DC answered and with which account. New command: `Test-AdtdConnection`.
+- **About**: version, author (Shenuka Fernando) and project links, **install location** with **Open folder**, add or remove the **desktop shortcut**, **pin to taskbar**, and copyright and third-party notices.
+- **After install, a welcome screen** shows where ADTD Modern is installed and offers a desktop shortcut, a taskbar pin and "Open ADTD Modern now". Windows 10 (1809+) and 11 only let people pin apps by hand, so if pinning isn't possible it shows the two clicks it takes.
+- MSI:
+  - installs `ADTD.exe` and the icon, and the Start menu shortcut opens `ADTD.exe`
+  - Settings → Apps shows the icon, publisher, install location and project links
+  - opens the welcome screen after an interactive install (silent installs skip it)
+- `Install-ADTD.ps1`: installs `ADTD.exe`, and has new `-DesktopShortcut` and `-NoWelcome` switches. `-Uninstall` also removes the desktop shortcut.
+- Added a `COPYRIGHT` file. Tests: 135 checks.
+
 ## 3.0.1 (2026-09-27)
 
 - **Works without internet access.** The HTML reports have a built-in diagram viewer (mxGraph 4.2.2, Apache-2.0, bundled in `src/lib`), so diagrams display offline. `-DrawIoWebViewer` switches back to draw.io's online viewer.

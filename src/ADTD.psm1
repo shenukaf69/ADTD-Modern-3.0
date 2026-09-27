@@ -1,7 +1,7 @@
 # ADTD Modern - Active Directory Topology Diagrammer for current Windows Server releases.
 # A read-only replacement for Microsoft's ADTD 2011 (ADTD.Net_Setup.msi).
 
-$script:AdtdVersion = '3.0.1'
+$script:AdtdVersion = '3.0.2'
 $script:AllDrawings = @('Summary', 'Sites', 'Replication', 'Domains', 'Hybrid', 'AppPartitions', 'OUs', 'Dfsr', 'Exchange')
 
 . (Join-Path $PSScriptRoot 'ADTD.Versions.ps1')
@@ -11,6 +11,7 @@ $script:AllDrawings = @('Summary', 'Sites', 'Replication', 'Domains', 'Hybrid', 
 . (Join-Path $PSScriptRoot 'ADTD.Assessment.ps1')
 . (Join-Path $PSScriptRoot 'ADTD.Render.ps1')
 . (Join-Path $PSScriptRoot 'ADTD.Report.ps1')
+. (Join-Path $PSScriptRoot 'ADTD.Gui.ps1')
 
 function Invoke-ADTD {
     <#
@@ -146,142 +147,4 @@ function Invoke-ADTD {
     }
 }
 
-function Show-ADTD {
-    <# Windows Forms front end, similar to the original ADTD window. #>
-    [CmdletBinding()]
-    param()
-    Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-    [System.Windows.Forms.Application]::EnableVisualStyles()
-
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = "ADTD Modern $script:AdtdVersion - Active Directory Topology Diagrammer"
-    $form.Size = New-Object System.Drawing.Size(700, 680)
-    $form.StartPosition = 'CenterScreen'
-    $form.Font = New-Object System.Drawing.Font('Segoe UI', 9)
-    $form.MinimumSize = New-Object System.Drawing.Size(620, 560)
-
-    $y = 14
-    $lbl = New-Object System.Windows.Forms.Label
-    $lbl.Text = 'Domain controller or domain (leave empty for the domain you are logged on to):'
-    $lbl.Location = New-Object System.Drawing.Point(14, $y); $lbl.AutoSize = $true
-    $form.Controls.Add($lbl); $y += 22
-    $server = New-Object System.Windows.Forms.TextBox
-    $server.Location = New-Object System.Drawing.Point(14, $y); $server.Width = 440; $server.Anchor = 'Top,Left,Right'
-    $form.Controls.Add($server)
-    $useCred = New-Object System.Windows.Forms.CheckBox
-    $useCred.Text = 'Use other credentials'; $useCred.Location = New-Object System.Drawing.Point(470, ($y + 1)); $useCred.AutoSize = $true; $useCred.Anchor = 'Top,Right'
-    $form.Controls.Add($useCred); $y += 36
-
-    $grp = New-Object System.Windows.Forms.GroupBox
-    $grp.Text = 'Draw'; $grp.Location = New-Object System.Drawing.Point(14, $y); $grp.Size = New-Object System.Drawing.Size(656, 124); $grp.Anchor = 'Top,Left,Right'
-    $form.Controls.Add($grp)
-    $boxes = [ordered]@{}
-    $labels = [ordered]@{ Summary = 'Summary and findings'; Sites = 'Sites, subnets and site links'; Replication = 'Replication connections'; Domains = 'Domains, trusts and FSMO roles'; Hybrid = 'Hybrid Entra ID topology + roadmap'
-        AppPartitions = 'Application partitions'; OUs = 'OUs and GPO links'; Dfsr = 'DFS Replication groups'; Exchange = 'Exchange organization'; Security = 'Security and hybrid assessment' }
-    $i = 0
-    foreach ($k in $labels.Keys) {
-        $cb = New-Object System.Windows.Forms.CheckBox
-        $cb.Text = $labels[$k]; $cb.AutoSize = $true
-        $cb.Location = New-Object System.Drawing.Point((12 + [math]::Floor($i / 5) * 320), (22 + ($i % 5) * 19))
-        $cb.Checked = $k -in 'Summary', 'Sites', 'Replication', 'Domains', 'Hybrid', 'Security'
-        $grp.Controls.Add($cb); $boxes[$k] = $cb; $i++
-    }
-    $y += 134
-
-    $grp2 = New-Object System.Windows.Forms.GroupBox
-    $grp2.Text = 'Save as'; $grp2.Location = New-Object System.Drawing.Point(14, $y); $grp2.Size = New-Object System.Drawing.Size(656, 50); $grp2.Anchor = 'Top,Left,Right'
-    $form.Controls.Add($grp2)
-    $fmt = [ordered]@{}
-    $i = 0
-    foreach ($k in @(@('DrawIo', 'draw.io', $true), @('Html', 'HTML report', $true), @('HtmlTabs', 'Tabbed HTML', $false), @('Markdown', 'Markdown', $false), @('Csv', 'CSV', $false), @('Json', 'JSON', $true), @('Visio', 'Visio', $false))) {
-        $cb = New-Object System.Windows.Forms.CheckBox
-        $cb.Text = $k[1]; $cb.AutoSize = $true; $cb.Checked = $k[2]
-        $cb.Location = New-Object System.Drawing.Point((12 + $i * 92), 20)
-        $grp2.Controls.Add($cb); $fmt[$k[0]] = $cb; $i++
-    }
-    $y += 60
-    $lblV = New-Object System.Windows.Forms.Label
-    $lblV.Text = 'Open drawings in:'; $lblV.Location = New-Object System.Drawing.Point(14, ($y + 3)); $lblV.AutoSize = $true
-    $form.Controls.Add($lblV)
-    $viewer = New-Object System.Windows.Forms.ComboBox
-    $viewer.DropDownStyle = 'DropDownList'; [void]$viewer.Items.AddRange(@('Auto (desktop if installed, else web)', 'draw.io desktop', 'draw.io on the web'))
-    $viewer.SelectedIndex = @{ Auto = 0; Desktop = 1; Web = 2 }[[string](Get-AdtdSettings).DrawIoViewer]
-    if ($viewer.SelectedIndex -lt 0) { $viewer.SelectedIndex = 0 }
-    $viewer.Location = New-Object System.Drawing.Point(130, $y); $viewer.Width = 300
-    $form.Controls.Add($viewer)
-    $pre = New-Object System.Windows.Forms.Button
-    $pre.Text = 'Prerequisites...'; $pre.Location = New-Object System.Drawing.Point(446, ($y - 1)); $pre.Width = 130
-    $pre.Add_Click({
-            $script = @((Join-Path $PSScriptRoot 'Install-Prerequisites.ps1'), (Join-Path $PSScriptRoot '..\setup\Install-Prerequisites.ps1')) | Where-Object { Test-Path $_ } | Select-Object -First 1
-            if ($script) { Start-Process powershell.exe -ArgumentList "-NoExit -NoProfile -ExecutionPolicy Bypass -File `"$script`"" }
-            else { [System.Windows.Forms.MessageBox]::Show('Install-Prerequisites.ps1 was not found next to ADTD.', 'ADTD Modern') | Out-Null }
-        })
-    $form.Controls.Add($pre)
-    $y += 34
-
-    $lbl2 = New-Object System.Windows.Forms.Label
-    $lbl2.Text = 'Output folder:'; $lbl2.Location = New-Object System.Drawing.Point(14, ($y + 3)); $lbl2.AutoSize = $true
-    $form.Controls.Add($lbl2)
-    $folder = New-Object System.Windows.Forms.TextBox
-    $folder.Text = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'ADTD'
-    $folder.Location = New-Object System.Drawing.Point(110, $y); $folder.Width = 460; $folder.Anchor = 'Top,Left,Right'
-    $form.Controls.Add($folder)
-    $browse = New-Object System.Windows.Forms.Button
-    $browse.Text = 'Browse...'; $browse.Location = New-Object System.Drawing.Point(580, ($y - 1)); $browse.Width = 90; $browse.Anchor = 'Top,Right'
-    $browse.Add_Click({
-            $d = New-Object System.Windows.Forms.FolderBrowserDialog
-            $d.SelectedPath = $folder.Text
-            if ($d.ShowDialog() -eq 'OK') { $folder.Text = $d.SelectedPath }
-        })
-    $form.Controls.Add($browse); $y += 36
-
-    $log = New-Object System.Windows.Forms.TextBox
-    $log.Multiline = $true; $log.ScrollBars = 'Vertical'; $log.ReadOnly = $true
-    $log.Font = New-Object System.Drawing.Font('Consolas', 9)
-    $log.Location = New-Object System.Drawing.Point(14, $y); $log.Size = New-Object System.Drawing.Size(656, (580 - $y)); $log.Anchor = 'Top,Bottom,Left,Right'
-    $form.Controls.Add($log)
-
-    $offCb = New-Object System.Windows.Forms.CheckBox
-    $offCb.Text = 'No internet on this computer (offline mode)'; $offCb.AutoSize = $true
-    $offCb.Location = New-Object System.Drawing.Point(230, 598); $offCb.Anchor = 'Bottom,Left'
-    $form.Controls.Add($offCb)
-    $openCb = New-Object System.Windows.Forms.CheckBox
-    $openCb.Text = 'Open the results when done'; $openCb.Checked = $true; $openCb.AutoSize = $true
-    $openCb.Location = New-Object System.Drawing.Point(14, 598); $openCb.Anchor = 'Bottom,Left'
-    $form.Controls.Add($openCb)
-    $run = New-Object System.Windows.Forms.Button
-    $run.Text = 'Draw'; $run.Width = 110; $run.Height = 30; $run.Location = New-Object System.Drawing.Point(560, 592); $run.Anchor = 'Bottom,Right'
-    $form.Controls.Add($run); $form.AcceptButton = $run
-
-    $script:AdtdLogSink = { param($line) $log.AppendText($line + [Environment]::NewLine); [System.Windows.Forms.Application]::DoEvents() }
-    $run.Add_Click({
-            $run.Enabled = $false; $log.Clear()
-            $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
-            try {
-                $sel = @($boxes.Keys | Where-Object { $_ -ne 'Security' -and $boxes[$_].Checked })
-                $fmts = @($fmt.Keys | Where-Object { $fmt[$_].Checked })
-                if (-not $sel.Count -or -not $fmts.Count) { throw 'Pick at least one drawing and one output format.' }
-                $p = @{ Drawings = $sel; Format = $fmts; OutputFolder = $folder.Text; Open = $openCb.Checked
-                    SkipSecurityScan = -not $boxes.Security.Checked; DrawIoViewer = @('Auto', 'Desktop', 'Web')[$viewer.SelectedIndex]; Offline = $offCb.Checked }
-                [void](Set-AdtdSettings -DrawIoViewer $p.DrawIoViewer)
-                if ($server.Text.Trim()) { $p.Server = $server.Text.Trim() }
-                if ($useCred.Checked) {
-                    $c = Get-Credential -Message 'Account that can read Active Directory'
-                    if (-not $c) { throw 'No credentials entered.' }
-                    $p.Credential = $c
-                }
-                $r = Invoke-ADTD @p
-                & $script:AdtdLogSink "Done: $($r.DomainControllers) domain controllers in $($r.Sites) sites, $($r.Findings) findings ($($r.High) high)."
-            } catch {
-                & $script:AdtdLogSink "ERROR: $($_.Exception.Message)"
-                [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'ADTD Modern', 'OK', 'Error') | Out-Null
-            } finally {
-                $form.Cursor = [System.Windows.Forms.Cursors]::Default
-                $run.Enabled = $true
-            }
-        })
-    [void]$form.ShowDialog()
-    $script:AdtdLogSink = $null
-}
-
-Export-ModuleMember -Function Invoke-ADTD, Show-ADTD, Get-AdtdInventory, Get-AdtdFindings, Get-AdtdTopologyPlan, Get-AdtdGapAnalysis, New-AdtdDiagram, Export-AdtdDrawIo, Export-AdtdVisio, Export-AdtdHtmlReport, Export-AdtdMarkdown, Export-AdtdCsv, Get-AdtdDrawIoWebUrl, Open-AdtdDrawing, Get-AdtdSettings, Set-AdtdSettings
+Export-ModuleMember -Function Invoke-ADTD, Show-ADTD, Get-AdtdInventory, Get-AdtdFindings, Get-AdtdTopologyPlan, Get-AdtdGapAnalysis, New-AdtdDiagram, Export-AdtdDrawIo, Export-AdtdVisio, Export-AdtdHtmlReport, Export-AdtdMarkdown, Export-AdtdCsv, Get-AdtdDrawIoWebUrl, Open-AdtdDrawing, Get-AdtdSettings, Set-AdtdSettings, Test-AdtdConnection

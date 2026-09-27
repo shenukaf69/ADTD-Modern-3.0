@@ -4,26 +4,33 @@
 
 ## The window
 
-**Start → ADTD Modern**:
+Open **Start → ADTD Modern** (or the desktop shortcut). The window has a header with **Prerequisites** and **About**, then four numbered steps:
 
-1. **Domain controller or domain**: leave it empty for the forest you are logged on to. Tick **Use other credentials** for another account.
-2. **Draw**: pick the pages. **Security and hybrid assessment** turns the security scan on or off.
-3. **Save as**: pick the output formats:
-   - draw.io
-   - HTML report
-   - Tabbed HTML
-   - Markdown
-   - CSV
-   - JSON
-   - Visio (optional)
-4. **Open drawings in**: choose one of:
-   - Auto (desktop if installed, otherwise web)
-   - draw.io desktop
-   - draw.io on the web
+1. **Connect to Active Directory**
+   - **Domain or domain controller**: leave it empty to use the domain your computer is in, or type a domain (`contoso.com`) or a DC (`dc01.contoso.com`).
+   - **Sign in as**:
+     - **My Windows account** (default): the account you are logged on with.
+     - **A different account**: for another domain or forest, or a computer that isn't domain-joined. Type the **User name** (`CONTOSO\jane` or `jane@contoso.com`) and **Password** right in the window. The password is used for this run only and never saved.
+   - **Test connection** checks that ADTD can reach a DC and read the domain with that account, and shows which DC answered.
+2. **Choose what to draw**: tick the pages. **Security and hybrid assessment** turns the security scan on or off. **Select all**, **Recommended** and **Clear** set the ticks quickly.
+3. **Save the results**: pick the formats (hover over one to see what it contains): draw.io drawing, HTML report, Tabbed HTML, Markdown, CSV, JSON and Visio (optional). Then:
+   - **Save to**: the output folder (default `Documents\ADTD`).
+   - **Open in**: Auto (draw.io desktop if installed, else web), draw.io desktop, or draw.io on the web. ADTD remembers your choice.
+   - **Open the results when done**, and **No internet on this computer (offline mode)**.
+4. **Activity**: progress while ADTD reads and draws.
 
-   ADTD remembers your choice.
-5. **Prerequisites...**: opens the prerequisites installer.
-6. Click **Draw**. Progress appears in the log box. With **Open the results when done** ticked, the reports and the drawing open automatically.
+Click **Draw my Active Directory**. A progress bar and the status bar show what ADTD is doing. **Open output folder** opens the results folder.
+
+### About, desktop shortcut and taskbar
+
+**About** shows the version, the author (Shenuka Fernando) with links to the project, **where ADTD Modern is installed** (with **Open folder**), and buttons to **add or remove the desktop shortcut** and **pin to the taskbar**. It also lists the copyright and third-party notices.
+
+The first time ADTD Modern opens after an install or upgrade, a welcome screen shows the install location and offers:
+- **Add a shortcut to my desktop**
+- **Pin to the taskbar**
+- **Open ADTD Modern now**
+
+Windows 10 (since 1809) and Windows 11 don't let apps pin themselves. If pinning doesn't work, ADTD shows how to do it: with ADTD Modern open, right-click its icon on the taskbar and choose **Pin to taskbar**. This works because ADTD Modern runs as its own app (`ADTD.exe`) with its own icon, not as PowerShell.
 
 ## PowerShell
 
@@ -85,7 +92,8 @@ Use a normal domain user, or a gMSA, for the task. It needs no admin rights.
 
 | Command | What it does |
 |---|---|
-| `Show-ADTD` | Opens the window |
+| `Show-ADTD` | Opens the window (`-Welcome` shows the welcome screen first) |
+| `Test-AdtdConnection` | Checks that ADTD can read AD: `Test-AdtdConnection -Server contoso.com -Credential (Get-Credential)` |
 | `Get-AdtdInventory` | Returns the raw inventory object (topology + security scan) |
 | `Get-AdtdFindings -Inventory $inv` | Runs the checks on an inventory |
 | `Get-AdtdTopologyPlan -Inventory $inv` | Target topology, gap analysis, roadmap, manual checklist |

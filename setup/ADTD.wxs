@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ADTD Modern installer (WiX 3 syntax).
-  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.1.msi ADTD.wxs      (msitools)
+  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.2.msi ADTD.wxs      (msitools)
   Build on Windows: see build-msi.ps1 (WiX Toolset 3.x candle/light, or wixl under WSL)
   Installs the PowerShell module for all users, so "Invoke-ADTD" works in any PowerShell window,
-  and adds Start menu shortcuts. Upgrades replace older ADTD Modern versions automatically.
+  adds ADTD.exe (the app, with its own icon) and Start menu shortcuts. Upgrades replace older
+  ADTD Modern versions automatically. After an interactive install, ADTD Modern opens a welcome
+  screen that shows where it is installed and offers a desktop shortcut and a taskbar pin
+  (silent installs, /qn, skip it).
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.1"
+  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.2"
            Manufacturer="Shenuka Fernando" UpgradeCode="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64"
              Description="ADTD Modern - Active Directory topology, security and hybrid Entra ID assessment"
@@ -15,17 +18,32 @@
     <Media Id="1" Cabinet="adtd.cab" EmbedCab="yes" />
 
     <Upgrade Id="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
-      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.1" IncludeMinimum="yes" IncludeMaximum="no" Property="PREVIOUSFOUND" />
-      <UpgradeVersion Minimum="3.0.1" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
+      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.2" IncludeMinimum="yes" IncludeMaximum="no" Property="PREVIOUSFOUND" />
+      <UpgradeVersion Minimum="3.0.2" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
     </Upgrade>
     <Condition Message="A newer version of ADTD Modern is already installed.">NOT NEWERFOUND</Condition>
     <Condition Message="ADTD Modern needs 64-bit Windows 10 / Windows Server 2016 or later.">VersionNT64</Condition>
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="SetInstallLocation" After="CostFinalize" />
     </InstallExecuteSequence>
 
-    <Property Id="ARPCOMMENTS" Value="Active Directory Topology Diagrammer for current Windows Server releases" />
+    <Icon Id="ADTD.ico" SourceFile="../src/ADTD.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ADTD.ico" />
+    <Property Id="ARPCOMMENTS" Value="Active Directory topology, security and hybrid Entra ID assessment. By Shenuka Fernando." />
+    <Property Id="ARPCONTACT" Value="Shenuka Fernando" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/shenukaf69/ADTD-Modern-3.0" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/shenukaf69/ADTD-Modern-3.0/issues" />
     <Property Id="ARPNOMODIFY" Value="1" />
+
+    <CustomAction Id="SetInstallLocation" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
+
+    <!-- After an interactive install, open the welcome screen (install location, desktop shortcut, pin to
+         taskbar). The UI sequence runs as the signed-in user, not elevated, and is skipped by /qn and /qb. -->
+    <CustomAction Id="LaunchWelcome" FileKey="ADTD.exe" ExeCommand="--welcome" Return="asyncNoWait" />
+    <InstallUISequence>
+      <Custom Action="LaunchWelcome" After="ExecuteAction">NOT Installed AND NOT REMOVE</Custom>
+    </InstallUISequence>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
@@ -33,7 +51,10 @@
           <Directory Id="MODULESDIR" Name="Modules">
             <Directory Id="INSTALLDIR" Name="ADTD">
               <Component Id="ModuleFiles" Guid="3f0c1b6e-2a7d-4d1e-9b3a-6f2d8e4c1a01" Win64="yes">
-                <File Id="ADTD.psd1" Name="ADTD.psd1" Source="../src/ADTD.psd1" KeyPath="yes" />
+                <File Id="ADTD.exe" Name="ADTD.exe" Source="../src/ADTD.exe" KeyPath="yes" />
+                <File Id="ADTD.ico_file" Name="ADTD.ico" Source="../src/ADTD.ico" />
+                <File Id="ADTD_64.png" Name="ADTD-64.png" Source="../src/ADTD-64.png" />
+                <File Id="ADTD.psd1" Name="ADTD.psd1" Source="../src/ADTD.psd1" />
                 <File Id="ADTD.psm1" Name="ADTD.psm1" Source="../src/ADTD.psm1" />
                 <File Id="ADTD.ps1" Name="ADTD.ps1" Source="../src/ADTD.ps1" />
                 <File Id="ADTD.Collect.ps1" Name="ADTD.Collect.ps1" Source="../src/ADTD.Collect.ps1" />
@@ -43,6 +64,7 @@
                 <File Id="ADTD.Assessment.ps1" Name="ADTD.Assessment.ps1" Source="../src/ADTD.Assessment.ps1" />
                 <File Id="ADTD.Report.ps1" Name="ADTD.Report.ps1" Source="../src/ADTD.Report.ps1" />
                 <File Id="ADTD.Icons.ps1" Name="ADTD.Icons.ps1" Source="../src/ADTD.Icons.ps1" />
+                <File Id="ADTD.Gui.ps1" Name="ADTD.Gui.ps1" Source="../src/ADTD.Gui.ps1" />
                 <File Id="Install_Prerequisites.ps1" Name="Install-Prerequisites.ps1" Source="Install-Prerequisites.ps1" />
                 <File Id="README.html" Name="README.html" Source="../src/README.html" />
               </Component>
@@ -59,22 +81,20 @@
       <Directory Id="ProgramMenuFolder">
         <Directory Id="MENUDIR" Name="ADTD Modern">
           <Component Id="Shortcuts" Guid="3f0c1b6e-2a7d-4d1e-9b3a-6f2d8e4c1a02" Win64="yes">
-            <Shortcut Id="ShortcutGui" Name="ADTD Modern" Description="Draw your Active Directory topology"
-                      Target="[System64Folder]WindowsPowerShell\v1.0\powershell.exe"
-                      Arguments="-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -STA -File &quot;[INSTALLDIR]ADTD.ps1&quot; -Gui"
-                      WorkingDirectory="INSTALLDIR" />
-            <Shortcut Id="ShortcutShell" Name="ADTD Modern (PowerShell)" Description="PowerShell with the ADTD commands loaded"
+            <Shortcut Id="ShortcutGui" Name="ADTD Modern" Description="Draw and assess your Active Directory"
+                      Target="[INSTALLDIR]ADTD.exe" WorkingDirectory="INSTALLDIR" />
+            <Shortcut Id="ShortcutShell" Icon="ADTD.ico" Name="ADTD Modern (PowerShell)" Description="PowerShell with the ADTD commands loaded"
                       Target="[System64Folder]WindowsPowerShell\v1.0\powershell.exe"
                       Arguments="-NoExit -NoProfile -ExecutionPolicy Bypass -Command &quot;Import-Module '[INSTALLDIR]ADTD.psd1'; Get-Help Invoke-ADTD -Examples&quot;"
                       WorkingDirectory="INSTALLDIR" />
-            <Shortcut Id="ShortcutPrereq" Name="ADTD Modern - Prerequisites (draw.io, Visio)" Description="Check and install draw.io desktop, draw.io web, PowerShell 7 and optional Visio"
+            <Shortcut Id="ShortcutPrereq" Icon="ADTD.ico" Name="ADTD Modern - Prerequisites (draw.io, Visio)" Description="Check and install draw.io desktop, draw.io web, PowerShell 7 and optional Visio"
                       Target="[System64Folder]WindowsPowerShell\v1.0\powershell.exe"
                       Arguments="-NoExit -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLDIR]Install-Prerequisites.ps1&quot;"
                       WorkingDirectory="INSTALLDIR" />
             <Shortcut Id="ShortcutReadme" Name="ADTD Modern - Read me" Target="[INSTALLDIR]README.html" />
             <RemoveFolder Id="RemoveMenuDir" On="uninstall" />
             <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
-            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.1" />
+            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.2" />
           </Component>
         </Directory>
       </Directory>

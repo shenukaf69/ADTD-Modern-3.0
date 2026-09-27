@@ -40,7 +40,7 @@ On **any domain-joined Windows computer** in the forest:
 
 1. Right-click the zip → **Properties** → **Unblock** → **OK**, then extract it. You can also unblock after extracting: `Get-ChildItem -Recurse | Unblock-File`.
 2. Install ADTD, either:
-   - **with admin rights:** double-click `ADTD_Modern_Setup_3.0.1.msi`, or
+   - **with admin rights:** double-click `ADTD_Modern_Setup_3.0.2.msi`, or
    - **without admin rights:** run `powershell -ExecutionPolicy Bypass -File .\setup\Install-ADTD.ps1`.
 3. Check the prerequisites and install draw.io:
 
@@ -55,7 +55,7 @@ On **any domain-joined Windows computer** in the forest:
 
    Choose **1** to install draw.io desktop from that file. The script checks the file's digital signature before running it.
 4. Run ADTD:
-   - **Window:** Start → **ADTD Modern**. Tick **No internet on this computer (offline mode)**, then click **Draw**.
+   - **Window:** Start → **ADTD Modern**. In step 3, tick **No internet on this computer (offline mode)**, then click **Draw my Active Directory**.
    - **PowerShell:** run the command below.
 
    ```powershell

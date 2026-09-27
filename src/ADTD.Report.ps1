@@ -26,11 +26,12 @@ function Get-AdtdSettings {
 }
 
 function Set-AdtdSettings {
-    param([ValidateSet('Auto', 'Desktop', 'Web')][string]$DrawIoViewer)
+    param([ValidateSet('Auto', 'Desktop', 'Web')][string]$DrawIoViewer, [string]$WelcomeShown)
     $dir = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD'
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
     $s = Get-AdtdSettings
     if ($DrawIoViewer) { $s.DrawIoViewer = $DrawIoViewer }
+    if ($WelcomeShown) { $s | Add-Member -NotePropertyName WelcomeShown -NotePropertyValue $WelcomeShown -Force }
     $s | ConvertTo-Json | Set-Content -Path (Join-Path $dir 'settings.json') -Encoding UTF8
     return $s
 }

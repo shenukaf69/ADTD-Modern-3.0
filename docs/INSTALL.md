@@ -15,23 +15,33 @@
 
 ## Option 1: MSI (recommended, needs admin)
 
-1. Download [`dist/ADTD_Modern_Setup_3.0.1.msi`](../dist/ADTD_Modern_Setup_3.0.1.msi).
+1. Download [`dist/ADTD_Modern_Setup_3.0.2.msi`](../dist/ADTD_Modern_Setup_3.0.2.msi).
 2. Right-click it → **Properties** → tick **Unblock** → **OK**. The MSI isn't code-signed yet.
 3. Double-click it and approve the UAC prompt.
 
-The MSI installs the PowerShell module for all users in `C:\Program Files\WindowsPowerShell\Modules\ADTD`. This means `Invoke-ADTD` works in every PowerShell window. It also adds these Start menu shortcuts:
+The MSI installs ADTD Modern for all users in **`C:\Program Files\WindowsPowerShell\Modules\ADTD`**. This folder holds the app (`ADTD.exe`, with the ADTD Modern icon) and the PowerShell module, so `Invoke-ADTD` works in every PowerShell window.
+
+When the install finishes, ADTD Modern opens a **welcome screen** that shows where it was installed and offers:
+- **Add a shortcut to my desktop**
+- **Pin to the taskbar** (on Windows 10 1809+ and 11, Windows only allows this by hand; the screen shows the two clicks it takes)
+- **Open ADTD Modern now**
+
+You can change these later in **About**. Silent installs (`/qn`) skip the welcome screen; it then appears the first time someone opens ADTD Modern.
+
+The MSI also adds these Start menu shortcuts:
 
 | Shortcut | Opens |
 |---|---|
-| **ADTD Modern** | The window |
+| **ADTD Modern** | The app (`ADTD.exe`) |
 | **ADTD Modern (PowerShell)** | PowerShell with the commands loaded and examples shown |
 | **ADTD Modern - Prerequisites (draw.io, Visio)** | The prerequisites checker and installer |
 | **ADTD Modern - Read me** | The installed read-me |
 
 Other ways to install and remove it:
-- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.1.msi /qn`
+- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.2.msi /qn`
 - **Upgrade:** install a newer MSI, which replaces the old version automatically.
-- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.1.msi /qn`.
+- **Find the install folder:** **About → Installed in**, or Settings → Apps → **ADTD Modern 3.0** (shows the icon, publisher Shenuka Fernando and the project links).
+- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.2.msi /qn`.
 
 ## Option 2: current user, no admin rights
 
@@ -41,12 +51,17 @@ Download or clone the repository, then run:
 powershell -ExecutionPolicy Bypass -File .\setup\Install-ADTD.ps1
 ```
 
-This copies the module to your Documents folder, for both Windows PowerShell and PowerShell 7. It adds **ADTD Modern** and **ADTD Modern - Prerequisites** to your Start menu. To remove it, run the same script with `-Uninstall`.
+This copies ADTD Modern to your Documents folder (`Documents\WindowsPowerShell\Modules\ADTD`, plus a copy for PowerShell 7), adds **ADTD Modern** and **ADTD Modern - Prerequisites** to your Start menu, and opens the welcome screen (install location, desktop shortcut, pin to taskbar).
+
+- `-DesktopShortcut` adds the desktop shortcut straight away.
+- `-NoWelcome` skips the welcome screen.
+- `-Uninstall` removes ADTD Modern, its Start menu folder and the desktop shortcut.
 
 ## Option 3: run without installing
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\src\ADTD.ps1            # window
+.\src\ADTD.exe                                                     # the app
+powershell -ExecutionPolicy Bypass -File .\src\ADTD.ps1            # window, through PowerShell
 powershell -ExecutionPolicy Bypass -File .\src\ADTD.ps1 -All -Open # command line
 ```
 
@@ -104,7 +119,7 @@ You don't need Visio to use ADTD: draw.io opens every drawing. If you need a `.v
 
 ## Execution policy and signing
 
-The Start menu shortcuts run with `-ExecutionPolicy Bypass` for their own process only; they don't change the machine policy. Files installed by the MSI don't carry the "downloaded from the internet" mark, so `RemoteSigned` machines can run `Invoke-ADTD` directly. If your organisation enforces `AllSigned`, sign the scripts with your code-signing certificate: see [DEVELOPMENT.md](DEVELOPMENT.md#signing).
+`ADTD.exe` and the Start menu shortcuts run with `-ExecutionPolicy Bypass` for their own process only; they don't change the machine policy. Files installed by the MSI don't carry the "downloaded from the internet" mark, so `RemoteSigned` machines can run `Invoke-ADTD` directly. If your organisation enforces `AllSigned`, sign the scripts with your code-signing certificate: see [DEVELOPMENT.md](DEVELOPMENT.md#signing).
 
 ## Troubleshooting
 
@@ -116,4 +131,6 @@ The Start menu shortcuts run with `-ExecutionPolicy Bypass` for their own proces
 | draw.io web link doesn't open | Your browser or proxy blocks app.diagrams.net. Install draw.io desktop instead |
 | Report shows "viewer could not load" | No internet access. The rest of the report works; open the `.drawio` file in draw.io desktop |
 | Visio output fails | Visio isn't installed, or runs as a different user. Use draw.io, or install Visio with the prerequisites script |
+| Taskbar shows the PowerShell icon | You started `ADTD.ps1`. Start **ADTD Modern** from the Start menu or run `ADTD.exe` instead |
+| `ADTD.exe` says Windows PowerShell 5.1 is missing | Turn on the Windows PowerShell 2.0/5.1 feature, or use `ADTD.ps1` with PowerShell 7 |
 | Large domain is slow | The security scan reads every user and computer once. Use `-SkipSecurityScan` for a topology-only run |

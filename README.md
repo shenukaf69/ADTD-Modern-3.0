@@ -1,4 +1,8 @@
+<img src="docs/images/app-icon.png" width="72" align="left" alt="ADTD Modern icon">
+
 # ADTD Modern 3.0
+
+*Designed and developed by **Shenuka Fernando***
 
 **Active Directory Topology Diagrammer, rebuilt for Windows Server 2016–2025, with a security assessment and a Microsoft Entra ID hybrid upgrade plan.**
 
@@ -15,6 +19,7 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 ## Contents
 
 - [Quick start](#quick-start)
+- [The app](#the-app)
 - [What's new compared with ADTD 2011](#whats-new-compared-with-adtd-2011)
 - [What it draws](#what-it-draws)
 - [The assessment report](#the-assessment-report)
@@ -33,18 +38,31 @@ Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**
 
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
-1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.1.msi`](dist/ADTD_Modern_Setup_3.0.1.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.2.msi`](dist/ADTD_Modern_Setup_3.0.2.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** and choose one:
    - **1**: install draw.io desktop
    - **2**: use draw.io on the web (nothing to install)
    - **4**: install Visio desktop (optional, and only if you have a licence)
-3. **Run.** Open **Start → ADTD Modern**, keep the default ticks and click **Draw**. Results go to `Documents\ADTD`, and the report and drawing open automatically.
+3. **Run.** After the install, a welcome screen shows where ADTD Modern is installed and offers a **desktop shortcut** and a **taskbar pin**. Open **ADTD Modern**, keep the defaults and click **Draw my Active Directory**. Results go to `Documents\ADTD`, and the report and drawing open automatically.
 
 From PowerShell:
 
 ```powershell
 Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
 ```
+
+## The app
+
+ADTD Modern is a Windows app (`ADTD.exe`) with its own icon on the taskbar, Start menu and desktop. The window walks you through four steps:
+
+| Step | What you do |
+|---|---|
+| **1 Connect to Active Directory** | Leave the domain empty for your own domain, or type a domain or DC. **Sign in as** your Windows account or **a different account** (user name and password right in the window, used for this run only). **Test connection** confirms which DC answered |
+| **2 Choose what to draw** | Tick the pages and the security and hybrid assessment. **Select all / Recommended / Clear** |
+| **3 Save the results** | Formats (draw.io, HTML, tabbed HTML, Markdown, CSV, JSON, Visio), output folder, draw.io desktop or web, offline mode |
+| **4 Activity** | Live progress, with a progress bar and status bar |
+
+The header has **Prerequisites** (installs draw.io desktop and the rest) and **About**. About shows the version, the author, the **install location** with **Open folder**, buttons to **add a desktop shortcut** and **pin to the taskbar**, and the copyright and third-party notices. See [docs/USAGE.md](docs/USAGE.md#the-window).
 
 ## What's new compared with ADTD 2011
 
@@ -59,9 +77,9 @@ Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
 | Security checks | None | 32 security checks: krbtgt, Tier 0 membership, Kerberoasting, AS-REP roasting, delegation, RC4/DES, LAPS, stale accounts, AD CS ESC1, Seamless SSO key age and more |
 | Hybrid identity | None | Detects Entra Connect / Cloud Sync, hybrid join, Seamless SSO, Entra Kerberos, AD FS, Password Protection and UPN readiness; **gap analysis, target topology and 4-phase roadmap** |
 | Runtime | .NET Framework 2.0, 32-bit | Windows PowerShell 5.1 or PowerShell 7, 64-bit. No RSAT or ActiveDirectory module needed |
-| Interface | WinForms window, command-line switches | Window **and** PowerShell module (`Invoke-ADTD`) for scripts and scheduled tasks |
+| Interface | WinForms window, command-line switches | App with its own icon, desktop shortcut and taskbar pin, a guided window with a connection test, **and** a PowerShell module (`Invoke-ADTD`) for scripts and scheduled tasks |
 | Installer | Visual Studio setup project | 64-bit MSI with upgrades and silent install; per-user install; **prerequisites installer** |
-| Tests | None | 125 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
+| Tests | None | 135 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
 
 ## What it draws
 
@@ -267,9 +285,12 @@ Every run writes `ADTD-<forest>-<yyyyMMdd-HHmm>.*`:
 ## Repository layout
 
 ```
-src/                     PowerShell module (installed by the MSI)
+src/                     The app and PowerShell module (installed by the MSI)
+  ADTD.exe               The app: opens the window with the ADTD Modern icon (source in launcher/)
+  ADTD.ico, ADTD-64.png  App icon
   ADTD.ps1               Entry script: window, or Invoke-ADTD with parameters
-  ADTD.psd1 / .psm1      Manifest; Invoke-ADTD and the Show-ADTD window
+  ADTD.psd1 / .psm1      Manifest; Invoke-ADTD
+  ADTD.Gui.ps1           The window, About, and the welcome screen (desktop shortcut, taskbar pin)
   ADTD.Collect.ps1       Topology over LDAP (System.DirectoryServices)
   ADTD.Security.ps1      Security and hybrid-identity scan
   ADTD.Assessment.ps1    Findings catalog (58 checks), gap analysis, target topology, roadmap
@@ -278,8 +299,9 @@ src/                     PowerShell module (installed by the MSI)
   lib/mxClient.min.js    Built-in offline diagram viewer (mxGraph 4.2.2, Apache-2.0)
   ADTD.Versions.ps1      Windows, Exchange, schema and functional-level tables
 setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
-dist/                    ADTD_Modern_Setup_3.0.1.msi
-tests/Test-ADTD.ps1      Offline test suite (125 checks)
+dist/                    ADTD_Modern_Setup_3.0.2.msi
+launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
+tests/Test-ADTD.ps1      Offline test suite (135 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
 samples/                 Sample drawing, reports, JSON and per-finding Markdown
 docs/                    Guides and screenshots
@@ -294,5 +316,7 @@ docs/                    Guides and screenshots
 - **Layout is automatic.** In large forests some lines cross boxes. Drag them in draw.io, or use Visio output, which routes connectors around shapes.
 
 ---
+
+**ADTD Modern** is designed and developed by **Shenuka Fernando** ([GitHub](https://github.com/shenukaf69)). See [COPYRIGHT](COPYRIGHT).
 
 © 2026 Shenuka Fernando. Active Directory, Microsoft Entra, Exchange, Visio and Windows Server are trademarks of Microsoft Corporation. draw.io is a trademark of JGraph Ltd. This project is not affiliated with or endorsed by Microsoft or JGraph.

@@ -63,13 +63,13 @@ th{color:var(--muted)}.scroll{overflow-x:auto}a{color:var(--accent)}
 
 <h2>Requirements</h2>
 <ul>
-<li>A Windows 10/11 or Windows Server 2016+ computer that is joined to the domain, or can reach it (use <em>Use other credentials</em>).</li>
+<li>A Windows 10/11 or Windows Server 2016+ computer that is joined to the domain, or can reach it (choose <em>Sign in as: A different account</em>).</li>
 <li>Any domain user account. ADTD only reads the directory and never changes it. Exchange and DFS-R pages need read access to those containers, which authenticated users have by default.</li>
 <li>A viewer: draw.io desktop or draw.io on the web. Run <b>Start &rarr; ADTD Modern - Prerequisites</b> to install draw.io desktop, choose draw.io on the web, or optionally install Visio (needs a licence).</li>
 </ul>
 
 <h2>Use it</h2>
-<p><b>Window:</b> Start menu &rarr; <b>ADTD Modern</b>. Pick the pages and output formats, then click <b>Draw</b>. By default, results are saved to <code>Documents\ADTD</code>.</p>
+<p><b>Window:</b> Start menu &rarr; <b>ADTD Modern</b>. Connect (your Windows account or a different one, with <b>Test connection</b>), pick the pages and output formats, then click <b>Draw my Active Directory</b>. <b>About</b> shows the install location and adds a desktop shortcut or taskbar pin. By default, results are saved to <code>Documents\ADTD</code>.</p>
 <p><b>PowerShell:</b></p>
 <pre>Invoke-ADTD                                   # summary, sites, replication, domains, hybrid
 Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
@@ -94,7 +94,7 @@ Get-Help Invoke-ADTD -Full</pre>
 
 <h2>Install and remove</h2>
 <ul>
-<li><b>MSI:</b> run <code>ADTD_Modern_Setup_3.0.1.msi</code> (admin). It installs the module for all users in <code>C:\Program Files\WindowsPowerShell\Modules\ADTD</code> and adds Start menu shortcuts. A newer MSI replaces the old one automatically. Remove it in <b>Settings &rarr; Apps</b>. For a silent install, use <code>msiexec /i ADTD_Modern_Setup_3.0.1.msi /qn</code>.</li>
+<li><b>MSI:</b> run <code>ADTD_Modern_Setup_3.0.2.msi</code> (admin). It installs the module for all users in <code>C:\Program Files\WindowsPowerShell\Modules\ADTD</code> and adds the app (<code>ADTD.exe</code>) with Start menu shortcuts. A welcome screen then offers a desktop shortcut and a taskbar pin. A newer MSI replaces the old one automatically. Remove it in <b>Settings &rarr; Apps</b>. For a silent install, use <code>msiexec /i ADTD_Modern_Setup_3.0.2.msi /qn</code>.</li>
 <li><b>Without admin rights:</b> <code>powershell -ExecutionPolicy Bypass -File Install-ADTD.ps1</code> installs for the current user only. Use <code>-Uninstall</code> to remove it.</li>
 <li>The scripts are not code-signed. If your execution policy is <code>AllSigned</code>, sign them with your code-signing certificate, or use the Start menu shortcut, which runs with <code>-ExecutionPolicy Bypass</code> for that process only.</li>
 </ul>
