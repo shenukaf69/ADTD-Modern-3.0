@@ -83,6 +83,14 @@ This uses `wixl` (msitools) on Linux or WSL, or WiX Toolset 3.x (`candle` and `l
 
 Keep the `UpgradeCode` the same so newer MSIs replace older ones.
 
+## Publishing a release
+
+1. Bump the version (see above) and add a section for it at the top of `CHANGELOG.md`.
+2. Rebuild the MSI with `setup/build-msi.ps1` and commit it.
+3. Push a tag: `git tag v3.0.3` then `git push origin v3.0.3`.
+
+The **Release** workflow (`.github/workflows/release.yml`) then runs the tests, builds the MSI and the offline package (`setup/build-offline-package.ps1`), and publishes a GitHub Release with both files. The release notes come from that version's `CHANGELOG.md` section. To publish a release for a tag that already exists, run the workflow from the **Actions** tab and enter the tag.
+
 ## Building ADTD.exe
 
 `src/ADTD.exe` is a small launcher (`launcher/ADTD.cs`). It hosts Windows PowerShell 5.1 inside its own process and calls `Show-ADTD`, so Windows shows the ADTD Modern icon on the taskbar and the app can be pinned. It is DPI aware and shows no console. It's checked in so the repository runs as is; rebuild it after changing `ADTD.cs` or `ADTD.ico`:

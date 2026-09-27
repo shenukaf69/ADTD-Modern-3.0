@@ -2,3 +2,4 @@ tests/output/
 setup/*.wixobj
 setup/*.wixpdb
 *.log
+dist/*.zip
