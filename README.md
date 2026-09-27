@@ -39,7 +39,11 @@ Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
 1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.2.msi`](dist/ADTD_Modern_Setup_3.0.2.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
-2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** and choose one:
+2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** (or **Prerequisites** in the app). It checks the computer, then asks what to install:
+
+   ![Prerequisites check](docs/images/prerequisites.png)
+
+   Choose one or more:
    - **1**: install draw.io desktop
    - **2**: use draw.io on the web (nothing to install)
    - **4**: install Visio desktop (optional, and only if you have a licence)
@@ -61,6 +65,8 @@ ADTD Modern is a Windows app (`ADTD.exe`) with its own icon on the taskbar, Star
 | **2 Choose what to draw** | Tick the pages and the security and hybrid assessment. **Select all / Recommended / Clear** |
 | **3 Save the results** | Formats (draw.io, HTML, tabbed HTML, Markdown, CSV, JSON, Visio), output folder, draw.io desktop or web, offline mode |
 | **4 Activity** | Live progress, with a progress bar and status bar |
+
+![ADTD Modern window with the About box](docs/images/app-about.png)
 
 The header has **Prerequisites** (installs draw.io desktop and the rest) and **About**. About shows the version, the author, the **install location** with **Open folder**, buttons to **add a desktop shortcut** and **pin to the taskbar**, and the copyright and third-party notices. See [docs/USAGE.md](docs/USAGE.md#the-window).
 

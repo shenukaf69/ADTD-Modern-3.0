@@ -23,6 +23,8 @@ Click **Draw my Active Directory**. A progress bar and the status bar show what 
 
 ### About, desktop shortcut and taskbar
 
+![About ADTD Modern](images/app-about.png)
+
 **About** shows the version, the author (Shenuka Fernando) with links to the project, **where ADTD Modern is installed** (with **Open folder**), and buttons to **add or remove the desktop shortcut** and **pin to the taskbar**. It also lists the copyright and third-party notices.
 
 The first time ADTD Modern opens after an install or upgrade, a welcome screen shows the install location and offers:
