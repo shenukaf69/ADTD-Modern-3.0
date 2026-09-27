@@ -397,6 +397,16 @@ Check ($showCmd.Parameters.ContainsKey('Welcome') -and $showCmd.Parameters.Conta
 $info = & $mod { Get-AdtdInstallInfo }
 Check ($info.Folder -and $info.Exe -like '*ADTD.exe' -and $info.Kind -like 'Not installed*') 'install location is detected'
 Check ((& $mod { $script:AdtdAuthor }) -eq 'Shenuka Fernando' -and (Get-Content -Raw (Join-Path $srcDir 'ADTD.Gui.ps1')) -match 'Designed and developed by') 'About shows the author'
+# PowerShell variable names ignore case, so $T and $t are the same variable. Catch that in every function.
+$clash = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
+    foreach ($fn in $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $true)) {
+        $names = $fn.Body.FindAll({ $args[0] -is [System.Management.Automation.Language.VariableExpressionAst] }, $true) |
+            ForEach-Object { $_.VariablePath.UserPath } | Where-Object { $_ -notmatch ':' } | Sort-Object -Unique -CaseSensitive
+        $names | Group-Object { $_.ToLowerInvariant() } | Where-Object Count -gt 1 | ForEach-Object { "$($fn.Name): $($_.Group -join ' / ')" }
+    }
+}
+Check (-not $clash) "no variables that differ only in case $(if ($clash) { '(' + ($clash -join '; ') + ')' })"
 $setFile = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD\settings.json'
 $setBackup = if (Test-Path $setFile) { Get-Content -Raw $setFile } else { $null }
 try {

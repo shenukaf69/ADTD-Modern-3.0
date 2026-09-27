@@ -215,13 +215,13 @@ window.adtdRender=function(host,xml,page){
 
 function ConvertTo-AdtdHtmlTable {
     param($Rows, [string[]]$Columns)
-    $rows = @($Rows)
-    if (-not $rows.Count) { return '<p class="muted">None.</p>' }
+    $list = @($Rows)
+    if (-not $list.Count) { return '<p class="muted">None.</p>' }
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.Append('<div class="scroll"><table><thead><tr>')
     foreach ($c in $Columns) { [void]$sb.Append("<th>$(HE $c)</th>") }
     [void]$sb.Append('</tr></thead><tbody>')
-    foreach ($r in $rows) {
+    foreach ($r in $list) {
         $cls = ''
         if ($r.PSObject.Properties['OSSupportState'] -and $r.OSSupportState -eq 'Unsupported') { $cls = ' class="bad"' }
         [void]$sb.Append("<tr$cls>")
@@ -329,16 +329,16 @@ function Export-AdtdHtmlReport {
         & $sec 'diagrams' 'Diagrams' $body
     }
 
-    $inventory = "<h3>Domains</h3>" + (ConvertTo-AdtdHtmlTable $inv.Domains @('Name', 'NetBIOS', 'ParentDomain', 'FunctionalLevelName', 'PdcEmulator', 'RidMaster', 'InfrastructureMaster', 'SysvolReplication')) +
+    $inventoryHtml = "<h3>Domains</h3>" + (ConvertTo-AdtdHtmlTable $inv.Domains @('Name', 'NetBIOS', 'ParentDomain', 'FunctionalLevelName', 'PdcEmulator', 'RidMaster', 'InfrastructureMaster', 'SysvolReplication')) +
         "<h3>Domain controllers</h3>" + (ConvertTo-AdtdHtmlTable $inv.DomainControllers @('Name', 'Domain', 'Site', 'OperatingSystem', 'OSBuild', 'OSEndOfSupport', 'IsGlobalCatalog', 'IsReadOnly', 'FsmoRoles')) +
         "<h3>Sites</h3>" + (ConvertTo-AdtdHtmlTable $inv.Sites @('Name', 'Location', 'Description', 'ISTG', 'UniversalGroupCaching')) +
         "<h3>Subnets</h3>" + (ConvertTo-AdtdHtmlTable $inv.Subnets @('Name', 'Site', 'Location', 'Description')) +
         "<h3>Site links</h3>" + (ConvertTo-AdtdHtmlTable $inv.SiteLinks @('Name', 'Transport', 'Sites', 'Cost', 'ReplIntervalMin', 'ChangeNotification')) +
         "<h3>Trusts</h3>" + (ConvertTo-AdtdHtmlTable $inv.Trusts @('Source', 'Target', 'Kind', 'Direction', 'Flags', 'Created')) +
         "<h3>Replication connections</h3>" + (ConvertTo-AdtdHtmlTable $inv.Connections @('From', 'To', 'FromSite', 'ToSite', 'Automatic', 'Enabled', 'Transport'))
-    if (@($inv.AppPartitions).Count) { $inventory += '<h3>Application partitions</h3>' + (ConvertTo-AdtdHtmlTable $inv.AppPartitions @('Name', 'Replicas', 'ReadOnlyReplicas')) }
-    if (@($inv.Dfsr).Count) { $inventory += '<h3>DFS Replication</h3>' + (ConvertTo-AdtdHtmlTable $inv.Dfsr @('Domain', 'Name', 'Members', 'Folders')) }
-    if ($inv.Exchange) { $inventory += "<h3>Exchange ($(HE $inv.Exchange.Organization))</h3>" + (ConvertTo-AdtdHtmlTable $inv.Exchange.Servers @('Name', 'Site', 'Product', 'Version', 'Roles', 'Dag')) }
+    if (@($inv.AppPartitions).Count) { $inventoryHtml += '<h3>Application partitions</h3>' + (ConvertTo-AdtdHtmlTable $inv.AppPartitions @('Name', 'Replicas', 'ReadOnlyReplicas')) }
+    if (@($inv.Dfsr).Count) { $inventoryHtml += '<h3>DFS Replication</h3>' + (ConvertTo-AdtdHtmlTable $inv.Dfsr @('Domain', 'Name', 'Members', 'Folders')) }
+    if ($inv.Exchange) { $inventoryHtml += "<h3>Exchange ($(HE $inv.Exchange.Organization))</h3>" + (ConvertTo-AdtdHtmlTable $inv.Exchange.Servers @('Name', 'Site', 'Product', 'Version', 'Roles', 'Dag')) }
     if ($inv.Security) {
         $rows = @(foreach ($d in $inv.Security.Domains) {
                 [pscustomobject]@{
@@ -348,11 +348,11 @@ function Export-AdtdHtmlReport {
                     Laps = "$($d.Computers.WindowsLapsCovered + $d.Computers.LegacyLapsCovered) of $($d.Computers.LapsEligible)"; gMSA = $d.GmsaCount
                 }
             })
-        $inventory += '<h3>Security overview by domain</h3>' + (ConvertTo-AdtdHtmlTable $rows @('Domain', 'Users', 'Computers', 'DomainAdmins', 'Krbtgt', 'PasswordPolicy', 'Laps', 'gMSA'))
+        $inventoryHtml += '<h3>Security overview by domain</h3>' + (ConvertTo-AdtdHtmlTable $rows @('Domain', 'Users', 'Computers', 'DomainAdmins', 'Krbtgt', 'PasswordPolicy', 'Laps', 'gMSA'))
         $os = @(foreach ($d in $inv.Security.Domains) { foreach ($o in $d.Computers.OsCounts) { [pscustomobject]@{ Domain = $d.Domain; OperatingSystem = $o.Name; Count = $o.Count } } })
-        $inventory += '<h3>Computer operating systems</h3>' + (ConvertTo-AdtdHtmlTable ($os | Sort-Object Domain, @{ E = 'Count'; Descending = $true }) @('Domain', 'OperatingSystem', 'Count'))
+        $inventoryHtml += '<h3>Computer operating systems</h3>' + (ConvertTo-AdtdHtmlTable ($os | Sort-Object Domain, @{ E = 'Count'; Descending = $true }) @('Domain', 'OperatingSystem', 'Count'))
     }
-    & $sec 'inventory' 'Inventory' $inventory
+    & $sec 'inventory' 'Inventory' $inventoryHtml
 
     $nav = ($sections | ForEach-Object { "<a href='#s-$($_.Id)'>$(HE ($_.Title -replace ' \(\d+\)$', ''))</a>" }) -join ''
     $body = ($sections | ForEach-Object { "<section id='s-$($_.Id)'><h2>$(HE $_.Title)</h2>$($_.Body)</section>" }) -join "`n"

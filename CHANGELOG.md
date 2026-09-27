@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3 (2026-09-27)
+
+- Fixed: the window showed "Cannot convert null to type System.Drawing.Color" errors when it closed, and the Activity box, status bar, **Select all / Recommended / Clear** links and **Test connection** result lost their colours. Two loops reused the name of the window's colour theme variable (PowerShell names ignore case). The theme variable is renamed, and a new test catches variable names that differ only in case.
+
 ## 3.0.2 (2026-09-27)
 
 - **ADTD Modern is now an app with its own icon.** `ADTD.exe` opens the window, so the taskbar, Start menu, desktop shortcut and Settings → Apps show the ADTD Modern icon instead of PowerShell's, and you can pin it to the taskbar. It is DPI aware, so text stays sharp on high-resolution screens. Source: `launcher/ADTD.cs`.
