@@ -1,0 +1,2577 @@
+{
+  "Tool": "ADTD Modern",
+  "ToolVersion": "3.0.0",
+  "CollectedAt": "2026-09-27 09:28",
+  "CollectedFrom": "dc01.contoso.com",
+  "Forest": {
+    "Name": "contoso.com",
+    "DN": "DC=contoso,DC=com",
+    "FunctionalLevel": 7,
+    "FunctionalLevelName": "Windows Server 2016",
+    "SchemaVersion": 91,
+    "SchemaVersionName": "Windows Server 2025",
+    "ExchangeSchemaVersion": 17003,
+    "ExchangeSchemaName": "Exchange 2019 / Subscription Edition",
+    "SchemaMaster": "DC01",
+    "DomainNamingMaster": "DC01",
+    "TombstoneLifetimeDays": 180,
+    "OptionalFeatures": [
+      {
+        "Name": "Recycle Bin Feature",
+        "Enabled": false
+      },
+      {
+        "Name": "Privileged Access Management Feature",
+        "Enabled": true
+      },
+      {
+        "Name": "Database 32k pages optional feature",
+        "Enabled": false
+      }
+    ]
+  },
+  "Domains": [
+    {
+      "Name": "contoso.com",
+      "NetBIOS": "CONTOSO",
+      "DN": "DC=contoso,DC=com",
+      "ParentDomain": null,
+      "IsForestRoot": true,
+      "FunctionalLevel": 7,
+      "FunctionalLevelName": "Windows Server 2016",
+      "PdcEmulator": "DC01",
+      "RidMaster": "DC01",
+      "InfrastructureMaster": "DC02",
+      "SysvolReplication": "DFSR",
+      "Reachable": true,
+      "GpLink": "[LDAP://cn={31B2F340-016D-11D2-945F-00C04FB984F9},cn=policies,cn=system,DC=contoso,DC=com;0]",
+      "GpOptions": 0
+    },
+    {
+      "Name": "emea.contoso.com",
+      "NetBIOS": "EMEA",
+      "DN": "DC=emea,DC=contoso,DC=com",
+      "ParentDomain": "contoso.com",
+      "IsForestRoot": false,
+      "FunctionalLevel": 6,
+      "FunctionalLevelName": "Windows Server 2012 R2",
+      "PdcEmulator": "EMEADC1",
+      "RidMaster": "EMEADC1",
+      "InfrastructureMaster": "EMEADC1",
+      "SysvolReplication": "FRS",
+      "Reachable": true,
+      "GpLink": null,
+      "GpOptions": 0
+    }
+  ],
+  "Sites": [
+    {
+      "Name": "Auckland",
+      "Description": null,
+      "Location": null,
+      "ISTG": null,
+      "UniversalGroupCaching": false,
+      "Options": 0
+    },
+    {
+      "Name": "Frankfurt",
+      "Description": null,
+      "Location": null,
+      "ISTG": null,
+      "UniversalGroupCaching": false,
+      "Options": 0
+    },
+    {
+      "Name": "London",
+      "Description": null,
+      "Location": "UK",
+      "ISTG": null,
+      "UniversalGroupCaching": false,
+      "Options": 0
+    },
+    {
+      "Name": "NewYork",
+      "Description": null,
+      "Location": null,
+      "ISTG": null,
+      "UniversalGroupCaching": false,
+      "Options": 0
+    },
+    {
+      "Name": "Singapore",
+      "Description": null,
+      "Location": null,
+      "ISTG": null,
+      "UniversalGroupCaching": true,
+      "Options": 32
+    }
+  ],
+  "Subnets": [
+    {
+      "Name": "10.1.0.0/16",
+      "Site": "London",
+      "Location": null,
+      "Description": null
+    },
+    {
+      "Name": "10.1.64.0/18",
+      "Site": "London",
+      "Location": null,
+      "Description": null
+    },
+    {
+      "Name": "10.20.0.0/16",
+      "Site": "Singapore",
+      "Location": "SG",
+      "Description": null
+    },
+    {
+      "Name": "10.30.0.0/16",
+      "Site": "NewYork",
+      "Location": null,
+      "Description": null
+    },
+    {
+      "Name": "10.40.0.0/16",
+      "Site": "Frankfurt",
+      "Location": null,
+      "Description": null
+    },
+    {
+      "Name": "192.168.99.0/24",
+      "Site": null,
+      "Location": null,
+      "Description": null
+    }
+  ],
+  "SiteLinks": [
+    {
+      "Name": "London-Singapore",
+      "Transport": "IP",
+      "Sites": [
+        "London",
+        "Singapore"
+      ],
+      "Cost": 200,
+      "ReplIntervalMin": 60,
+      "ChangeNotification": false,
+      "TwoWaySync": false,
+      "CompressionDisabled": false
+    },
+    {
+      "Name": "London-NewYork",
+      "Transport": "IP",
+      "Sites": [
+        "London",
+        "NewYork"
+      ],
+      "Cost": 100,
+      "ReplIntervalMin": 15,
+      "ChangeNotification": true,
+      "TwoWaySync": false,
+      "CompressionDisabled": false
+    },
+    {
+      "Name": "Europe-Core",
+      "Transport": "IP",
+      "Sites": [
+        "London",
+        "Frankfurt",
+        "NewYork"
+      ],
+      "Cost": 50,
+      "ReplIntervalMin": 180,
+      "ChangeNotification": false,
+      "TwoWaySync": false,
+      "CompressionDisabled": false
+    }
+  ],
+  "SiteLinkBridges": [
+    {
+      "Name": "Bridge-All",
+      "SiteLinks": [
+        "London-Singapore",
+        "Europe-Core"
+      ]
+    }
+  ],
+  "DomainControllers": [
+    {
+      "Name": "EMEADC1",
+      "HostName": "emeadc1.emea.contoso.com",
+      "Site": "Frankfurt",
+      "Domain": "emea.contoso.com",
+      "IsGlobalCatalog": true,
+      "IsReadOnly": false,
+      "OperatingSystem": "Windows Server 2012 R2",
+      "OSBuild": 9600,
+      "OSEndOfSupport": "2023-10-10",
+      "OSSupportState": "Unsupported",
+      "FunctionalLevel": null,
+      "FsmoRoles": [
+        "PDC",
+        "RID",
+        "Infrastructure"
+      ],
+      "NtdsDN": "CN=NTDS Settings,CN=EMEADC1,CN=Servers,CN=Frankfurt,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    },
+    {
+      "Name": "DC01",
+      "HostName": "dc01.contoso.com",
+      "Site": "London",
+      "Domain": "contoso.com",
+      "IsGlobalCatalog": true,
+      "IsReadOnly": false,
+      "OperatingSystem": "Windows Server 2025",
+      "OSBuild": 26100,
+      "OSEndOfSupport": "2034-10-10",
+      "OSSupportState": "Supported",
+      "FunctionalLevel": null,
+      "FsmoRoles": [
+        "PDC",
+        "RID",
+        "Schema",
+        "Domain naming"
+      ],
+      "NtdsDN": "CN=NTDS Settings,CN=DC01,CN=Servers,CN=London,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    },
+    {
+      "Name": "DC02",
+      "HostName": "dc02.contoso.com",
+      "Site": "London",
+      "Domain": "contoso.com",
+      "IsGlobalCatalog": true,
+      "IsReadOnly": false,
+      "OperatingSystem": "Windows Server 2022",
+      "OSBuild": 20348,
+      "OSEndOfSupport": "2031-10-14",
+      "OSSupportState": "Supported",
+      "FunctionalLevel": null,
+      "FsmoRoles": [
+        "Infrastructure"
+      ],
+      "NtdsDN": "CN=NTDS Settings,CN=DC02,CN=Servers,CN=London,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    },
+    {
+      "Name": "NYDC1",
+      "HostName": "nydc1.contoso.com",
+      "Site": "NewYork",
+      "Domain": "contoso.com",
+      "IsGlobalCatalog": false,
+      "IsReadOnly": false,
+      "OperatingSystem": "Windows Server 2016",
+      "OSBuild": 14393,
+      "OSEndOfSupport": "2027-01-12",
+      "OSSupportState": "EndingSoon",
+      "FunctionalLevel": null,
+      "FsmoRoles": [],
+      "NtdsDN": "CN=NTDS Settings,CN=NYDC1,CN=Servers,CN=NewYork,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    },
+    {
+      "Name": "DC03",
+      "HostName": "dc03.contoso.com",
+      "Site": "Singapore",
+      "Domain": "contoso.com",
+      "IsGlobalCatalog": true,
+      "IsReadOnly": false,
+      "OperatingSystem": "Windows Server 2019",
+      "OSBuild": 17763,
+      "OSEndOfSupport": "2029-01-09",
+      "OSSupportState": "Supported",
+      "FunctionalLevel": null,
+      "FsmoRoles": [],
+      "NtdsDN": "CN=NTDS Settings,CN=DC03,CN=Servers,CN=Singapore,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    },
+    {
+      "Name": "SGRODC1",
+      "HostName": "sgrodc1.contoso.com",
+      "Site": "Singapore",
+      "Domain": "contoso.com",
+      "IsGlobalCatalog": true,
+      "IsReadOnly": true,
+      "OperatingSystem": "Windows Server 2025",
+      "OSBuild": 26100,
+      "OSEndOfSupport": "2034-10-10",
+      "OSSupportState": "Supported",
+      "FunctionalLevel": null,
+      "FsmoRoles": [],
+      "NtdsDN": "CN=NTDS Settings,CN=SGRODC1,CN=Servers,CN=Singapore,CN=Sites,CN=Configuration,DC=contoso,DC=com"
+    }
+  ],
+  "Connections": [
+    {
+      "From": "DC01",
+      "To": "DC02",
+      "FromSite": "London",
+      "ToSite": "London",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC02",
+      "To": "DC01",
+      "FromSite": "London",
+      "ToSite": "London",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC01",
+      "To": "DC03",
+      "FromSite": "London",
+      "ToSite": "Singapore",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC03",
+      "To": "DC01",
+      "FromSite": "Singapore",
+      "ToSite": "London",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC03",
+      "To": "SGRODC1",
+      "FromSite": "Singapore",
+      "ToSite": "Singapore",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC02",
+      "To": "NYDC1",
+      "FromSite": "London",
+      "ToSite": "NewYork",
+      "Automatic": false,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "NYDC1",
+      "To": "DC02",
+      "FromSite": "NewYork",
+      "ToSite": "London",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "DC01",
+      "To": "EMEADC1",
+      "FromSite": "London",
+      "ToSite": "Frankfurt",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    },
+    {
+      "From": "EMEADC1",
+      "To": "DC01",
+      "FromSite": "Frankfurt",
+      "ToSite": "London",
+      "Automatic": true,
+      "Enabled": true,
+      "Transport": "RPC"
+    }
+  ],
+  "Trusts": [
+    {
+      "Source": "contoso.com",
+      "Target": "emea.contoso.com",
+      "Direction": "Two-way",
+      "Kind": "Within forest",
+      "Flags": [],
+      "Attributes": 32,
+      "Created": null
+    },
+    {
+      "Source": "contoso.com",
+      "Target": "fabrikam.com",
+      "Direction": "Two-way",
+      "Kind": "Forest",
+      "Flags": [],
+      "Attributes": 8,
+      "Created": null
+    },
+    {
+      "Source": "emea.contoso.com",
+      "Target": "contoso.com",
+      "Direction": "Two-way",
+      "Kind": "Within forest",
+      "Flags": [],
+      "Attributes": 32,
+      "Created": null
+    },
+    {
+      "Source": "emea.contoso.com",
+      "Target": "tailspin.local",
+      "Direction": "Outbound",
+      "Kind": "External",
+      "Flags": [],
+      "Attributes": 0,
+      "Created": null
+    }
+  ],
+  "AppPartitions": [
+    {
+      "Name": "DomainDnsZones.contoso.com",
+      "DN": "DC=DomainDnsZones,DC=contoso,DC=com",
+      "Replicas": [
+        "DC01",
+        "DC02",
+        "DC03"
+      ],
+      "ReadOnlyReplicas": []
+    },
+    {
+      "Name": "ForestDnsZones.contoso.com",
+      "DN": "DC=ForestDnsZones,DC=contoso,DC=com",
+      "Replicas": [
+        "DC01",
+        "EMEADC1"
+      ],
+      "ReadOnlyReplicas": []
+    }
+  ],
+  "OUs": [
+    {
+      "Domain": "contoso.com",
+      "Name": "contoso.com",
+      "DN": "DC=contoso,DC=com",
+      "ParentDN": null,
+      "Depth": 0,
+      "BlockInheritance": false,
+      "GpoLinks": [
+        {
+          "Name": "Default Domain Policy",
+          "Enforced": false,
+          "Disabled": false
+        }
+      ]
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Corp",
+      "DN": "OU=Corp,DC=contoso,DC=com",
+      "ParentDN": "DC=contoso,DC=com",
+      "Depth": 1,
+      "BlockInheritance": false,
+      "GpoLinks": []
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Domain Controllers",
+      "DN": "OU=Domain Controllers,DC=contoso,DC=com",
+      "ParentDN": "DC=contoso,DC=com",
+      "Depth": 1,
+      "BlockInheritance": false,
+      "GpoLinks": [
+        {
+          "Name": "Default Domain Controllers Policy",
+          "Enforced": false,
+          "Disabled": false
+        }
+      ]
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Servers",
+      "DN": "OU=Servers,DC=contoso,DC=com",
+      "ParentDN": "DC=contoso,DC=com",
+      "Depth": 1,
+      "BlockInheritance": false,
+      "GpoLinks": []
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Users",
+      "DN": "OU=Users,OU=Corp,DC=contoso,DC=com",
+      "ParentDN": "OU=Corp,DC=contoso,DC=com",
+      "Depth": 2,
+      "BlockInheritance": false,
+      "GpoLinks": []
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Workstations",
+      "DN": "OU=Workstations,OU=Corp,DC=contoso,DC=com",
+      "ParentDN": "OU=Corp,DC=contoso,DC=com",
+      "Depth": 2,
+      "BlockInheritance": false,
+      "GpoLinks": [
+        {
+          "Name": "(missing GPO {99999999-2222-3333-4444-555555555555})",
+          "Enforced": false,
+          "Disabled": true
+        },
+        {
+          "Name": "Workstation Baseline",
+          "Enforced": true,
+          "Disabled": false
+        }
+      ]
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Kiosks",
+      "DN": "OU=Kiosks,OU=Workstations,OU=Corp,DC=contoso,DC=com",
+      "ParentDN": "OU=Workstations,OU=Corp,DC=contoso,DC=com",
+      "Depth": 3,
+      "BlockInheritance": true,
+      "GpoLinks": []
+    },
+    {
+      "Domain": "emea.contoso.com",
+      "Name": "emea.contoso.com",
+      "DN": "DC=emea,DC=contoso,DC=com",
+      "ParentDN": null,
+      "Depth": 0,
+      "BlockInheritance": false,
+      "GpoLinks": []
+    }
+  ],
+  "Dfsr": [
+    {
+      "Domain": "contoso.com",
+      "Name": "Domain System Volume",
+      "Members": [],
+      "Folders": [],
+      "Connections": []
+    },
+    {
+      "Domain": "contoso.com",
+      "Name": "Branch Files",
+      "Members": [
+        "FS-LON",
+        "FS-SIN"
+      ],
+      "Folders": [
+        "Files"
+      ],
+      "Connections": [
+        {
+          "From": "FS-SIN",
+          "To": "FS-LON",
+          "Enabled": true
+        },
+        {
+          "From": "FS-LON",
+          "To": "FS-SIN",
+          "Enabled": true
+        }
+      ]
+    }
+  ],
+  "Exchange": {
+    "Organization": null,
+    "SchemaName": "Exchange 2019 / Subscription Edition",
+    "Dags": [
+      "DAG1"
+    ],
+    "Servers": [
+      {
+        "Name": "EXSE1",
+        "HostName": "exse1.contoso.com",
+        "Product": "Exchange Server SE",
+        "Version": "15.2.2562",
+        "Supported": true,
+        "Roles": [
+          "Mailbox"
+        ],
+        "Site": "London",
+        "Dag": "DAG1"
+      },
+      {
+        "Name": "EX2019",
+        "HostName": null,
+        "Product": "Exchange 2019",
+        "Version": "15.2.1748",
+        "Supported": false,
+        "Roles": [
+          "Mailbox"
+        ],
+        "Site": "NewYork",
+        "Dag": null
+      },
+      {
+        "Name": "EXSE2",
+        "HostName": "exse2.contoso.com",
+        "Product": "Exchange Server SE",
+        "Version": "15.2.2562",
+        "Supported": true,
+        "Roles": [
+          "Mailbox"
+        ],
+        "Site": "Singapore",
+        "Dag": "DAG1"
+      }
+    ]
+  },
+  "Security": {
+    "ScannedAt": "2026-09-27 09:28",
+    "Forest": {
+      "UpnSuffixes": [],
+      "DeviceRegistrationScp": true,
+      "TenantName": "contoso.onmicrosoft.com",
+      "TenantId": "00000000-1111-2222-3333-444444444444",
+      "WindowsLapsSchema": true,
+      "LegacyLapsSchema": false,
+      "CertificateAuthorities": [
+        {
+          "Name": "Contoso-CA",
+          "HostName": "ca01.contoso.com"
+        }
+      ],
+      "PublishedTemplates": 3,
+      "RiskyTemplates": [
+        {
+          "Name": "VulnTemplate",
+          "DisplayName": null,
+          "Reason": "Enrollee supplies subject, usable for authentication, no manager approval"
+        }
+      ]
+    },
+    "Domains": [
+      {
+        "Domain": "contoso.com",
+        "PasswordPolicy": {
+          "MinLength": 7,
+          "History": 0,
+          "MaxAgeDays": 42,
+          "LockoutThreshold": 0,
+          "Complexity": true,
+          "ReversibleEncryption": false,
+          "FineGrainedPolicies": 0
+        },
+        "MachineAccountQuota": 10,
+        "KrbtgtPasswordAgeDays": 400,
+        "GuestEnabled": true,
+        "Groups": [
+          {
+            "Key": "DomainAdmins",
+            "Name": "Domain Admins",
+            "Sid": "S-1-5-21-1-2-3-512",
+            "EnabledMembers": 8,
+            "Members": [
+              "Administrator",
+              "admin.jane",
+              "svc.sql",
+              "da1",
+              "da2",
+              "da3",
+              "da4",
+              "da.stale"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          },
+          {
+            "Key": "Administrators",
+            "Name": "Administrators",
+            "Sid": "S-1-5-32-544",
+            "EnabledMembers": 0,
+            "Members": [],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          },
+          {
+            "Key": "AccountOperators",
+            "Name": "Account Operators",
+            "Sid": "S-1-5-32-548",
+            "EnabledMembers": 1,
+            "Members": [
+              "helpdesk1"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 1
+          },
+          {
+            "Key": "ProtectedUsers",
+            "Name": "Protected Users",
+            "Sid": "S-1-5-21-1-2-3-525",
+            "EnabledMembers": 1,
+            "Members": [
+              "admin.jane"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          },
+          {
+            "Key": "PreWin2000",
+            "Name": "Pre-Windows 2000 Compatible Access",
+            "Sid": "S-1-5-32-554",
+            "EnabledMembers": 0,
+            "Members": [],
+            "HasAnonymousOrEveryone": true,
+            "DirectMemberCount": 2
+          },
+          {
+            "Key": "EnterpriseAdmins",
+            "Name": "Enterprise Admins",
+            "Sid": "S-1-5-21-1-2-3-519",
+            "EnabledMembers": 1,
+            "Members": [
+              "Administrator"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          },
+          {
+            "Key": "SchemaAdmins",
+            "Name": "Schema Admins",
+            "Sid": "S-1-5-21-1-2-3-518",
+            "EnabledMembers": 1,
+            "Members": [
+              "Administrator"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          },
+          {
+            "Key": "DnsAdmins",
+            "Name": "DnsAdmins",
+            "Sid": null,
+            "EnabledMembers": 1,
+            "Members": [
+              "dns.op"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 1
+          }
+        ],
+        "Users": {
+          "Total": 21,
+          "Enabled": 19,
+          "Stale": [
+            "da.stale",
+            "old.user"
+          ],
+          "PwdNeverExpires": [
+            "Administrator",
+            "svc.sql",
+            "MSOL_1a2b3c4d5e6f"
+          ],
+          "PwdNotRequired": [
+            "nopwd.user"
+          ],
+          "Reversible": [],
+          "DesOnly": [],
+          "NoPreauth": [
+            "asrep.user"
+          ],
+          "ServiceAccountsWithSpn": [
+            "svc.web"
+          ],
+          "SidHistory": [
+            "migrated.user"
+          ],
+          "TrustedForDelegation": [],
+          "TrustedToAuth": [],
+          "Rc4Only": [
+            "svc.web"
+          ],
+          "NoUpn": 1,
+          "UpnSuffixes": [
+            {
+              "Name": "contoso.com",
+              "Count": 17
+            },
+            {
+              "Name": "contoso.local",
+              "Count": 1
+            }
+          ],
+          "Privileged": [
+            {
+              "Name": "Administrator",
+              "HasSpn": false,
+              "PwdNeverExpires": true,
+              "PwdAgeDays": 800,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": true,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "admin.jane",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": true,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "svc.sql",
+              "HasSpn": true,
+              "PwdNeverExpires": true,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "da1",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "da2",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "da3",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "da4",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "da.stale",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": true,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            },
+            {
+              "Name": "helpdesk1",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "contoso.com"
+            }
+          ]
+        },
+        "Computers": {
+          "Total": 12,
+          "Enabled": 10,
+          "Workstations": 2,
+          "Servers": 2,
+          "Stale": [
+            "OLD01"
+          ],
+          "TrustedForDelegation": [
+            "APP01"
+          ],
+          "TrustedToAuth": [],
+          "Unsupported": [
+            "WS02 (Windows 10)",
+            "OLD01 (Windows Server 2012 R2)"
+          ],
+          "EndingSoon": [],
+          "Rc4Only": [],
+          "OsCounts": [
+            {
+              "Name": "OnTap",
+              "Count": 1
+            },
+            {
+              "Name": "Windows 10 Enterprise",
+              "Count": 1
+            },
+            {
+              "Name": "Windows 11 Enterprise",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2012 R2 Standard",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2016 Standard",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2019 Standard",
+              "Count": 2
+            },
+            {
+              "Name": "Windows Server 2022 Standard",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2025 Datacenter",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2025 Standard",
+              "Count": 1
+            }
+          ],
+          "LapsEligible": 4,
+          "WindowsLapsCovered": 3,
+          "LegacyLapsCovered": 0,
+          "NoLaps": [
+            "WS02"
+          ]
+        },
+        "GmsaCount": 0,
+        "Hybrid": {
+          "SeamlessSsoPasswordAgeDays": 120,
+          "SeamlessSsoRc4": true,
+          "EntraKerberos": true,
+          "ConnectSyncAccounts": [
+            {
+              "Account": "MSOL_1a2b3c4d5e6f",
+              "Server": "SYNC01",
+              "Enabled": true
+            }
+          ],
+          "CloudSyncAgents": [],
+          "AdfsDkmContainer": true,
+          "PasswordProtectionAgents": 0
+        }
+      },
+      {
+        "Domain": "emea.contoso.com",
+        "PasswordPolicy": {
+          "MinLength": 14,
+          "History": 0,
+          "MaxAgeDays": 0,
+          "LockoutThreshold": 10,
+          "Complexity": true,
+          "ReversibleEncryption": false,
+          "FineGrainedPolicies": 0
+        },
+        "MachineAccountQuota": 0,
+        "KrbtgtPasswordAgeDays": 20,
+        "GuestEnabled": false,
+        "Groups": [
+          {
+            "Key": "DomainAdmins",
+            "Name": "Domain Admins",
+            "Sid": "S-1-5-21-4-5-6-512",
+            "EnabledMembers": 1,
+            "Members": [
+              "emea.admin"
+            ],
+            "HasAnonymousOrEveryone": false,
+            "DirectMemberCount": 0
+          }
+        ],
+        "Users": {
+          "Total": 3,
+          "Enabled": 2,
+          "Stale": [],
+          "PwdNeverExpires": [],
+          "PwdNotRequired": [],
+          "Reversible": [],
+          "DesOnly": [],
+          "NoPreauth": [],
+          "ServiceAccountsWithSpn": [],
+          "SidHistory": [],
+          "TrustedForDelegation": [],
+          "TrustedToAuth": [],
+          "Rc4Only": [],
+          "NoUpn": 0,
+          "UpnSuffixes": {
+            "Name": "contoso.com",
+            "Count": 2
+          },
+          "Privileged": [
+            {
+              "Name": "emea.admin",
+              "HasSpn": false,
+              "PwdNeverExpires": false,
+              "PwdAgeDays": 30,
+              "Stale": false,
+              "SensitiveNotDelegated": false,
+              "InProtectedUsers": false,
+              "BuiltinAdministrator": false,
+              "Domain": "emea.contoso.com"
+            }
+          ]
+        },
+        "Computers": {
+          "Total": 2,
+          "Enabled": 2,
+          "Workstations": 1,
+          "Servers": 0,
+          "Stale": [],
+          "TrustedForDelegation": [],
+          "TrustedToAuth": [],
+          "Unsupported": [],
+          "EndingSoon": [],
+          "Rc4Only": [],
+          "OsCounts": [
+            {
+              "Name": "Windows 11 Enterprise",
+              "Count": 1
+            },
+            {
+              "Name": "Windows Server 2012 R2 Standard",
+              "Count": 1
+            }
+          ],
+          "LapsEligible": 1,
+          "WindowsLapsCovered": 1,
+          "LegacyLapsCovered": 0,
+          "NoLaps": []
+        },
+        "GmsaCount": 0,
+        "Hybrid": {
+          "SeamlessSsoPasswordAgeDays": null,
+          "SeamlessSsoRc4": false,
+          "EntraKerberos": false,
+          "ConnectSyncAccounts": [],
+          "CloudSyncAgents": [],
+          "AdfsDkmContainer": false,
+          "PasswordProtectionAgents": 0
+        }
+      }
+    ]
+  },
+  "Findings": [
+    {
+      "Id": "S02",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "krbtgt password is old",
+      "Finding": "krbtgt password is older than 180 days in: contoso.com (400 days).",
+      "Recommendation": "Reset the krbtgt password twice, at least 10 hours apart (longer than the maximum ticket lifetime), using Microsoft's documented procedure or script.",
+      "Risk": "The krbtgt key signs every Kerberos ticket. If it was ever stolen, attackers can forge tickets (Golden Ticket) until it is changed twice.",
+      "Steps": [
+        "Reset the krbtgt password twice, at least 10 hours apart (longer than the maximum ticket lifetime), using Microsoft's documented procedure or script.",
+        "Check replication between the two resets.",
+        "Repeat at least every 180 days."
+      ],
+      "References": [
+        {
+          "Title": "Change password for krbtgt account (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#change-password-for-krbtgt-account"
+        },
+        {
+          "Title": "Reset the krbtgt password",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com - 400 days"
+      ]
+    },
+    {
+      "Id": "S05",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Privileged accounts have a service principal name (Kerberoastable)",
+      "Finding": "1 privileged account(s) have an SPN: contoso.com\\svc.sql.",
+      "Recommendation": "Move the service to a group managed service account (gMSA) and remove the SPN from the admin account.",
+      "Risk": "Any domain user can request a ticket for an account with an SPN and crack its password offline. If it is an admin, cracking it gives Tier 0 access.",
+      "Steps": [
+        "Move the service to a group managed service account (gMSA) and remove the SPN from the admin account.",
+        "If the account must stay, give it a long random password (25+ characters) and remove it from privileged groups."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure account attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
+        },
+        {
+          "Title": "Identify service accounts in privileged groups",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#identify-service-accounts-in-privileged-groups"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\svc.sql"
+      ]
+    },
+    {
+      "Id": "S10",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "Accounts do not require Kerberos pre-authentication (AS-REP roasting)",
+      "Finding": "1 account(s) don't require Kerberos pre-authentication: contoso.com\\asrep.user.",
+      "Recommendation": "Remove \"Do not require Kerberos preauthentication\" from each account (Set-ADAccountControl -DoesNotRequirePreAuth $false).",
+      "Risk": "Anyone can request encrypted data for these accounts without knowing the password, and crack it offline.",
+      "Steps": [
+        "Remove \"Do not require Kerberos preauthentication\" from each account (Set-ADAccountControl -DoesNotRequirePreAuth $false)."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure account attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\asrep.user"
+      ]
+    },
+    {
+      "Id": "S12",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "Unconstrained Kerberos delegation on non-DC accounts",
+      "Finding": "1 non-DC account(s) are trusted for unconstrained delegation: contoso.com\\APP01.",
+      "Recommendation": "Change each account to constrained or resource-based constrained delegation to the specific services it needs.",
+      "Risk": "A server trusted for unconstrained delegation stores the TGT of everyone who connects to it. Compromise of that server exposes those users, including admins.",
+      "Steps": [
+        "Change each account to constrained or resource-based constrained delegation to the specific services it needs.",
+        "If delegation is not needed, turn it off."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure Kerberos delegation (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-kerberos-delegation"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\APP01"
+      ]
+    },
+    {
+      "Id": "S27",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Devices",
+      "Title": "Computers run an unsupported Windows version",
+      "Finding": "2 computer(s) run an unsupported Windows version: contoso.com\\WS02 (Windows 10), contoso.com\\OLD01 (Windows Server 2012 R2).",
+      "Recommendation": "Upgrade or retire these computers; isolate any that must stay on a restricted network segment.",
+      "Risk": "Unsupported systems get no security fixes and are the easiest way in.",
+      "Steps": [
+        "Upgrade or retire these computers; isolate any that must stay on a restricted network segment."
+      ],
+      "References": [
+        {
+          "Title": "Microsoft product lifecycle search",
+          "Url": "https://learn.microsoft.com/lifecycle/products/"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 2,
+      "Evidence": [
+        "contoso.com\\WS02 (Windows 10)",
+        "contoso.com\\OLD01 (Windows Server 2012 R2)"
+      ]
+    },
+    {
+      "Id": "S30",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Certificate services",
+      "Title": "Certificate templates let requesters choose the subject (possible ESC1)",
+      "Finding": "1 published certificate template(s) let the requester set the subject and can be used to sign in: VulnTemplate.",
+      "Recommendation": "Check enrollment permissions on each template listed. ADTD does not read ACLs.",
+      "Risk": "If low-privileged users can enroll, anyone can get a certificate that signs in as a domain admin.",
+      "Steps": [
+        "Check enrollment permissions on each template listed. ADTD does not read ACLs.",
+        "Turn off \"Supply in the request\", or require CA manager approval, or remove authentication EKUs, or stop publishing the template."
+      ],
+      "References": [
+        {
+          "Title": "Certificate template assessments (ESC1)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#prevent-users-to-request-a-certificate-valid-for-arbitrary-users-based-on-the-certificate-template-esc1-preview"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "VulnTemplate - Enrollee supplies subject, usable for authentication, no manager approval"
+      ]
+    },
+    {
+      "Id": "S31",
+      "Severity": "High",
+      "Category": "Security",
+      "Area": "Hybrid identity",
+      "Title": "Seamless SSO key has not been rolled over for more than 30 days",
+      "Finding": "AZUREADSSOACC key age: contoso.com 120 days.",
+      "Recommendation": "Roll over the key with Update-AzureADSSOForest on the Entra Connect server (once per forest).",
+      "Risk": "The AZUREADSSOACC key lets anyone who steals it create Kerberos tickets that sign in as any synced user to Microsoft Entra ID.",
+      "Steps": [
+        "Roll over the key with Update-AzureADSSOForest on the Entra Connect server (once per forest).",
+        "Schedule the rollover every 30 days.",
+        "Switch the account to AES after rolling the key."
+      ],
+      "References": [
+        {
+          "Title": "Roll over the Seamless SSO Kerberos decryption key",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-faq"
+        },
+        {
+          "Title": "Seamless SSO technical deep dive (AES and RC4)",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-how-it-works"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com - 120 days"
+      ]
+    },
+    {
+      "Id": "H01",
+      "Severity": "High",
+      "Category": "Health",
+      "Area": "Domain controllers",
+      "Title": "Domain controllers run an unsupported operating system",
+      "Finding": "1 domain controller(s) run an unsupported OS: EMEADC1 (Windows Server 2012 R2).",
+      "Recommendation": "Build replacement domain controllers on Windows Server 2025 (or 2022) in the same sites.",
+      "Risk": "Out-of-support servers get no security updates. A domain controller holds every password hash in the domain, so one unpatched DC exposes the whole forest.",
+      "Steps": [
+        "Build replacement domain controllers on Windows Server 2025 (or 2022) in the same sites.",
+        "Move any FSMO roles off the old DCs (Move-ADDirectoryServerOperationMasterRole).",
+        "Update DNS forwarders, DHCP options and hard-coded DC names that point at the old servers.",
+        "Demote the old DCs with Uninstall-ADDSDomainController and clean up their metadata.",
+        "Raise the domain and forest functional levels when the last old DC is gone."
+      ],
+      "References": [
+        {
+          "Title": "Microsoft product lifecycle search",
+          "Url": "https://learn.microsoft.com/lifecycle/products/"
+        },
+        {
+          "Title": "What's new in Windows Server 2025",
+          "Url": "https://learn.microsoft.com/windows-server/get-started/whats-new-windows-server-2025"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "EMEADC1 - Windows Server 2012 R2, support ended 2023-10-10, site Frankfurt, domain emea.contoso.com"
+      ]
+    },
+    {
+      "Id": "H06",
+      "Severity": "High",
+      "Category": "Health",
+      "Area": "Domains",
+      "Title": "SYSVOL still replicates with FRS",
+      "Finding": "SYSVOL uses FRS in: emea.contoso.com.",
+      "Recommendation": "Check that all DCs replicate cleanly (repadmin /replsummary).",
+      "Risk": "FRS is removed from Windows Server 2019 and later. You cannot add a newer domain controller to this domain until SYSVOL uses DFS Replication.",
+      "Steps": [
+        "Check that all DCs replicate cleanly (repadmin /replsummary).",
+        "Run dfsrmig /setglobalstate 1, 2 and 3 in turn, waiting for every DC to reach each state (dfsrmig /getmigrationstate).",
+        "Confirm SYSVOL is shared from the SYSVOL_DFSR folder on every DC."
+      ],
+      "References": [
+        {
+          "Title": "Migrate SYSVOL replication to DFS Replication",
+          "Url": "https://learn.microsoft.com/windows-server/storage/dfs-replication/migrate-sysvol-to-dfsr"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "emea.contoso.com"
+      ]
+    },
+    {
+      "Id": "H07",
+      "Severity": "High",
+      "Category": "Health",
+      "Area": "Domains",
+      "Title": "A domain has only one writable domain controller",
+      "Finding": "Only one writable DC in: emea.contoso.com.",
+      "Recommendation": "Add a second writable domain controller, preferably in a different site or host.",
+      "Risk": "If that server fails, the domain is down and must be restored from backup.",
+      "Steps": [
+        "Add a second writable domain controller, preferably in a different site or host.",
+        "Make sure both are global catalogs and DNS servers.",
+        "Keep a tested system-state backup of at least one DC per domain."
+      ],
+      "References": [
+        {
+          "Title": "Designing the site topology",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "emea.contoso.com - EMEADC1"
+      ]
+    },
+    {
+      "Id": "H11",
+      "Severity": "High",
+      "Category": "Health",
+      "Area": "Sites",
+      "Title": "A site is not in any site link",
+      "Finding": "Not in any site link: Auckland.",
+      "Recommendation": "Add the site to an IP site link (Active Directory Sites and Services > Inter-Site Transports > IP).",
+      "Risk": "Domain controllers in that site cannot replicate with other sites.",
+      "Steps": [
+        "Add the site to an IP site link (Active Directory Sites and Services > Inter-Site Transports > IP)."
+      ],
+      "References": [
+        {
+          "Title": "Designing the site topology",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "Auckland"
+      ]
+    },
+    {
+      "Id": "H17",
+      "Severity": "High",
+      "Category": "Health",
+      "Area": "Exchange",
+      "Title": "Exchange servers are out of support",
+      "Finding": "1 Exchange server(s) out of support: EX2019 (Exchange 2019).",
+      "Recommendation": "Upgrade to Exchange Server Subscription Edition, or move mailboxes to Exchange Online.",
+      "Risk": "Unsupported Exchange servers get no security updates and are a common attack entry point.",
+      "Steps": [
+        "Upgrade to Exchange Server Subscription Edition, or move mailboxes to Exchange Online.",
+        "If all mailboxes are in Exchange Online, keep only the Exchange Management Tools for recipient management and remove the last servers."
+      ],
+      "References": [
+        {
+          "Title": "Exchange Server supportability matrix",
+          "Url": "https://learn.microsoft.com/exchange/plan-and-deploy/supportability-matrix"
+        },
+        {
+          "Title": "Exchange Server 2019 and 2016 end of support roadmap",
+          "Url": "https://learn.microsoft.com/troubleshoot/exchange/administration/exchange-2019-2016-end-of-support"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "EX2019 - Exchange 2019 15.2.1748, site NewYork"
+      ]
+    },
+    {
+      "Id": "S01",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Trusts",
+      "Title": "External trust without SID filtering",
+      "Finding": "External trusts without SID filtering: emea.contoso.com -> tailspin.local.",
+      "Recommendation": "Turn quarantine back on: netdom trust <trusting> /domain:<trusted> /quarantine:yes.",
+      "Risk": "Without SID filtering an administrator in the trusted domain can add privileged SIDs to SID history and become an admin in your domain.",
+      "Steps": [
+        "Turn quarantine back on: netdom trust <trusting> /domain:<trusted> /quarantine:yes.",
+        "Only leave it off during a migration that needs SID history, and turn it on afterwards."
+      ],
+      "References": [
+        {
+          "Title": "netdom trust (/quarantine and /enablesidhistory)",
+          "Url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "emea.contoso.com -> tailspin.local (Outbound)"
+      ]
+    },
+    {
+      "Id": "S03",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Too many accounts are domain or enterprise administrators",
+      "Finding": "More than five enabled administrators: contoso.com Domain Admins: 8 enabled members.",
+      "Recommendation": "List every member, including nested groups, and remove anyone who doesn't need permanent Tier 0 rights.",
+      "Risk": "Every Tier 0 account is a path to full control of the forest. Microsoft suggests fewer than five people with Domain Admins-equivalent access and no service accounts in Domain Admins.",
+      "Steps": [
+        "List every member, including nested groups, and remove anyone who doesn't need permanent Tier 0 rights.",
+        "Delegate day-to-day tasks with scoped groups instead of Domain Admins.",
+        "Use separate admin accounts and privileged access workstations for Tier 0."
+      ],
+      "References": [
+        {
+          "Title": "Tier model for Active Directory Domain Services",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
+        },
+        {
+          "Title": "Enterprise access model",
+          "Url": "https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 8,
+      "Evidence": [
+        "contoso.com Domain Admins: Administrator",
+        "contoso.com Domain Admins: admin.jane",
+        "contoso.com Domain Admins: svc.sql",
+        "contoso.com Domain Admins: da1",
+        "contoso.com Domain Admins: da2",
+        "contoso.com Domain Admins: da3",
+        "contoso.com Domain Admins: da4",
+        "contoso.com Domain Admins: da.stale"
+      ]
+    },
+    {
+      "Id": "S04",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Schema Admins or Enterprise Admins have permanent members",
+      "Finding": "Schema/Enterprise Admins have 2 permanent member(s): Enterprise Admins: Administrator, Schema Admins: Administrator.",
+      "Recommendation": "Remove all members, and add an account only for the duration of a planned change.",
+      "Risk": "These groups are only needed for schema changes and forest-wide changes, and should normally be empty.",
+      "Steps": [
+        "Remove all members, and add an account only for the duration of a planned change."
+      ],
+      "References": [
+        {
+          "Title": "Tier model for Active Directory Domain Services",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 2,
+      "Evidence": [
+        "Enterprise Admins: Administrator",
+        "Schema Admins: Administrator"
+      ]
+    },
+    {
+      "Id": "S06",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Privileged accounts are not protected against delegation",
+      "Finding": "8 privileged account(s) are neither in Protected Users nor marked sensitive: contoso.com\\svc.sql, contoso.com\\da1, contoso.com\\da2, contoso.com\\da3, contoso.com\\da4 and 3 more.",
+      "Recommendation": "Add human admin accounts to the Protected Users group (test first: it blocks NTLM, DES/RC4 and delegation for them).",
+      "Risk": "Admin accounts that are not marked \"sensitive and cannot be delegated\" (or in Protected Users) can be impersonated through Kerberos delegation.",
+      "Steps": [
+        "Add human admin accounts to the Protected Users group (test first: it blocks NTLM, DES/RC4 and delegation for them).",
+        "For other privileged accounts, set \"Account is sensitive and cannot be delegated\"."
+      ],
+      "References": [
+        {
+          "Title": "Ensure privileged accounts are not delegated",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#ensure-privileged-accounts-are-not-delegated"
+        },
+        {
+          "Title": "Protected Users security group",
+          "Url": "https://learn.microsoft.com/windows-server/security/credentials-protection-and-management/protected-users-security-group"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 8,
+      "Evidence": [
+        "contoso.com\\svc.sql",
+        "contoso.com\\da1",
+        "contoso.com\\da2",
+        "contoso.com\\da3",
+        "contoso.com\\da4",
+        "contoso.com\\da.stale",
+        "contoso.com\\helpdesk1",
+        "emea.contoso.com\\emea.admin"
+      ]
+    },
+    {
+      "Id": "S07",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Privileged accounts with old or non-expiring passwords",
+      "Finding": "2 privileged account(s) have a password older than a year or set to never expire: contoso.com\\Administrator, contoso.com\\svc.sql.",
+      "Recommendation": "Rotate the passwords of these accounts.",
+      "Risk": "Old admin passwords are more likely to have been exposed and reused.",
+      "Steps": [
+        "Rotate the passwords of these accounts.",
+        "Remove \"password never expires\" from admin accounts, or better, use long passphrases with MFA-backed access (smart card, Windows Hello for Business)."
+      ],
+      "References": [
+        {
+          "Title": "Tier model for Active Directory Domain Services",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 2,
+      "Evidence": [
+        "contoso.com\\Administrator - password age 800 days, never expires",
+        "contoso.com\\svc.sql - password age 30 days, never expires"
+      ]
+    },
+    {
+      "Id": "S08",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Privileged accounts are not being used",
+      "Finding": "1 enabled privileged account(s) have not signed in for 90 days: contoso.com\\da.stale.",
+      "Recommendation": "Disable these accounts, wait a few weeks for anything that breaks, then delete them.",
+      "Risk": "Enabled admin accounts that no one signs in with are an easy target nobody watches.",
+      "Steps": [
+        "Disable these accounts, wait a few weeks for anything that breaks, then delete them."
+      ],
+      "References": [
+        {
+          "Title": "Remove stale Active Directory accounts",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\da.stale"
+      ]
+    },
+    {
+      "Id": "S09",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "Operator groups have members",
+      "Finding": "Operator groups have 1 member(s): contoso.com Account Operators: helpdesk1.",
+      "Recommendation": "Empty these groups and delegate the specific tasks with scoped permissions instead.",
+      "Risk": "Account, Server, Backup and Print Operators can log on to DCs or edit privileged objects, so they are effectively Tier 0.",
+      "Steps": [
+        "Empty these groups and delegate the specific tasks with scoped permissions instead."
+      ],
+      "References": [
+        {
+          "Title": "Tier model for Active Directory Domain Services",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com Account Operators: helpdesk1"
+      ]
+    },
+    {
+      "Id": "S11",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "User accounts with service principal names (Kerberoastable)",
+      "Finding": "1 user account(s) have SPNs: contoso.com\\svc.web.",
+      "Recommendation": "Replace these accounts with group managed service accounts (gMSA), which have 120-character rotating passwords.",
+      "Risk": "Service accounts with SPNs can be attacked offline; weak or old passwords are cracked quickly.",
+      "Steps": [
+        "Replace these accounts with group managed service accounts (gMSA), which have 120-character rotating passwords.",
+        "Where that is not possible, set passwords of 25+ random characters and enable AES encryption on the account."
+      ],
+      "References": [
+        {
+          "Title": "Investigate and protect service accounts",
+          "Url": "https://learn.microsoft.com/defender-for-identity/service-account-discovery"
+        },
+        {
+          "Title": "Unsecure account attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\svc.web"
+      ]
+    },
+    {
+      "Id": "S13",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "Accounts trusted to authenticate for delegation (protocol transition)",
+      "Finding": "1 account(s) use protocol transition: .",
+      "Recommendation": "Confirm each one is needed and limited to the right target services; remove it otherwise.",
+      "Risk": "Protocol transition lets the service get tickets for any user to its target services without that user's password.",
+      "Steps": [
+        "Confirm each one is needed and limited to the right target services; remove it otherwise."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure Kerberos delegation (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-kerberos-delegation"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 0,
+      "Evidence": []
+    },
+    {
+      "Id": "S14",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "Accounts that do not need a password",
+      "Finding": "1 account(s) don't require a password: contoso.com\\nopwd.user.",
+      "Recommendation": "Remove the flag (Set-ADUser -PasswordNotRequired $false) and set a password.",
+      "Risk": "PASSWD_NOTREQD lets the account have an empty password.",
+      "Steps": [
+        "Remove the flag (Set-ADUser -PasswordNotRequired $false) and set a password."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure account attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\nopwd.user"
+      ]
+    },
+    {
+      "Id": "S17",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Kerberos",
+      "Title": "Accounts limited to RC4 Kerberos encryption",
+      "Finding": "2 account(s) only allow RC4 for Kerberos: contoso.com\\svc.web, contoso.com\\AZUREADSSOACC.",
+      "Recommendation": "Enable AES 128/256 on each account (msDS-SupportedEncryptionTypes = 0x18 or 0x1C during migration) and reset the password so AES keys exist.",
+      "Risk": "Windows Server updates from July 2026 change the default Kerberos encryption type from RC4 to AES-256. Accounts limited to RC4 are easier to crack and may fail to authenticate.",
+      "Steps": [
+        "Enable AES 128/256 on each account (msDS-SupportedEncryptionTypes = 0x18 or 0x1C during migration) and reset the password so AES keys exist.",
+        "For the AZUREADSSOACC account, roll over its key first, then switch it to AES."
+      ],
+      "References": [
+        {
+          "Title": "Unsecure account attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
+        },
+        {
+          "Title": "Seamless SSO technical deep dive (AES and RC4)",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-how-it-works"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 2,
+      "Evidence": [
+        "contoso.com\\svc.web",
+        "contoso.com\\AZUREADSSOACC"
+      ]
+    },
+    {
+      "Id": "S21",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "Accounts with SID history",
+      "Finding": "1 account(s) carry SID history: contoso.com\\migrated.user.",
+      "Recommendation": "After confirming resource ACLs have been re-permissioned, clear sIDHistory from migrated accounts.",
+      "Risk": "SID history left after a migration can silently grant access, and is a known privilege-escalation technique.",
+      "Steps": [
+        "After confirming resource ACLs have been re-permissioned, clear sIDHistory from migrated accounts."
+      ],
+      "References": [
+        {
+          "Title": "netdom trust (/quarantine and /enablesidhistory)",
+          "Url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\migrated.user"
+      ]
+    },
+    {
+      "Id": "S22",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Domain settings",
+      "Title": "Any user can join computers to the domain (MachineAccountQuota)",
+      "Finding": "MachineAccountQuota is above 0 in: contoso.com (10).",
+      "Recommendation": "Set ms-DS-MachineAccountQuota to 0 on the domain.",
+      "Risk": "By default each user can create 10 computer accounts, which attackers use for relay and delegation attacks.",
+      "Steps": [
+        "Set ms-DS-MachineAccountQuota to 0 on the domain.",
+        "Delegate \"Create computer objects\" on specific OUs to the people or tools that join devices."
+      ],
+      "References": [
+        {
+          "Title": "Default limit to number of workstations a user can join to the domain",
+          "Url": "https://learn.microsoft.com/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com - 10"
+      ]
+    },
+    {
+      "Id": "S23",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Domain settings",
+      "Title": "Default domain password policy is weak",
+      "Finding": "Weak default password policy: contoso.com: minimum length 7, no lockout.",
+      "Recommendation": "Set a minimum length of at least 14 characters (fine-grained policies for admins can require more).",
+      "Risk": "Short passwords and no lockout make password spraying easy.",
+      "Steps": [
+        "Set a minimum length of at least 14 characters (fine-grained policies for admins can require more).",
+        "Set an account lockout threshold (for example 10 attempts) to slow down guessing.",
+        "Add Microsoft Entra Password Protection to block common and breached passwords on-premises."
+      ],
+      "References": [
+        {
+          "Title": "Password policy recommendations",
+          "Url": "https://learn.microsoft.com/microsoft-365/admin/misc/password-policy-recommendations"
+        },
+        {
+          "Title": "Plan and deploy on-premises Microsoft Entra Password Protection",
+          "Url": "https://learn.microsoft.com/entra/identity/authentication/howto-password-ban-bad-on-premises-deploy"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com: minimum length 7, no lockout"
+      ]
+    },
+    {
+      "Id": "S26",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Local admin passwords",
+      "Title": "Some computers have no LAPS password",
+      "Finding": "80% of 5 Windows member computers have a LAPS password; 1 don't: contoso.com\\WS02.",
+      "Recommendation": "Check that the LAPS policy reaches these computers (event log Microsoft-Windows-LAPS/Operational).",
+      "Risk": "Computers without a managed password still share local admin credentials.",
+      "Steps": [
+        "Check that the LAPS policy reaches these computers (event log Microsoft-Windows-LAPS/Operational).",
+        "Retire or fix computers that no longer apply policy."
+      ],
+      "References": [
+        {
+          "Title": "What is Windows LAPS?",
+          "Url": "https://learn.microsoft.com/windows-server/identity/laps/laps-overview"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\WS02"
+      ]
+    },
+    {
+      "Id": "S28",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "The Guest account is enabled",
+      "Finding": "Guest is enabled in: contoso.com.",
+      "Recommendation": "Disable the Guest account.",
+      "Risk": "Guest allows unauthenticated-style access to resources shared with Everyone.",
+      "Steps": [
+        "Disable the Guest account."
+      ],
+      "References": [],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com"
+      ]
+    },
+    {
+      "Id": "S29",
+      "Severity": "Medium",
+      "Category": "Security",
+      "Area": "Domain settings",
+      "Title": "Pre-Windows 2000 Compatible Access contains Anonymous or Everyone",
+      "Finding": "Pre-Windows 2000 Compatible Access includes Anonymous or Everyone in: contoso.com.",
+      "Recommendation": "Remove Anonymous Logon and Everyone from the group; leave Authenticated Users only if old applications need it.",
+      "Risk": "Lets anonymous users read user and group information from the directory.",
+      "Steps": [
+        "Remove Anonymous Logon and Everyone from the group; leave Authenticated Users only if old applications need it."
+      ],
+      "References": [
+        {
+          "Title": "Identity infrastructure security assessments",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com"
+      ]
+    },
+    {
+      "Id": "H02",
+      "Severity": "Medium",
+      "Category": "Health",
+      "Area": "Domain controllers",
+      "Title": "Domain controller support ends within 12 months",
+      "Finding": "1 domain controller(s) reach end of support within 12 months: NYDC1 (Windows Server 2016, 2027-01-12).",
+      "Recommendation": "Add Windows Server 2025 domain controllers to each affected site.",
+      "Risk": "Plan now so the replacement is finished before security updates stop.",
+      "Steps": [
+        "Add Windows Server 2025 domain controllers to each affected site.",
+        "Transfer roles and demote the old DCs before the end-of-support date."
+      ],
+      "References": [
+        {
+          "Title": "Microsoft product lifecycle search",
+          "Url": "https://learn.microsoft.com/lifecycle/products/"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "NYDC1 - Windows Server 2016, support ends 2027-01-12"
+      ]
+    },
+    {
+      "Id": "H04",
+      "Severity": "Medium",
+      "Category": "Health",
+      "Area": "Forest",
+      "Title": "Forest or domain functional level is below Windows Server 2016",
+      "Finding": "Functional level below Windows Server 2016: Domain emea.contoso.com: Windows Server 2012 R2.",
+      "Recommendation": "Make sure every DC in the domain runs Windows Server 2016 or later.",
+      "Risk": "Lower levels block newer security features, such as privileged access management with time-bound group membership and automatic NTLM secret rolling for smart-card users.",
+      "Steps": [
+        "Make sure every DC in the domain runs Windows Server 2016 or later.",
+        "Raise each domain level (Set-ADDomainMode), then the forest level (Set-ADForestMode)."
+      ],
+      "References": [
+        {
+          "Title": "Forest and domain functional levels",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "Domain emea.contoso.com: Windows Server 2012 R2"
+      ]
+    },
+    {
+      "Id": "H09",
+      "Severity": "Medium",
+      "Category": "Health",
+      "Area": "Forest",
+      "Title": "The Active Directory Recycle Bin is not enabled",
+      "Finding": "The Active Directory Recycle Bin is not enabled.",
+      "Recommendation": "Run: Enable-ADOptionalFeature \"Recycle Bin Feature\" -Scope ForestOrConfigurationSet -Target <forest>.",
+      "Risk": "Without it, restoring a deleted user, group or OU needs an authoritative restore from backup.",
+      "Steps": [
+        "Run: Enable-ADOptionalFeature \"Recycle Bin Feature\" -Scope ForestOrConfigurationSet -Target <forest>.",
+        "It cannot be turned off, and objects deleted before it was enabled cannot be recovered with it."
+      ],
+      "References": [
+        {
+          "Title": "Enable and use Active Directory Recycle Bin",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/adac/active-directory-recycle-bin"
+        }
+      ],
+      "Phase": 1,
+      "EvidenceCount": 0,
+      "Evidence": []
+    },
+    {
+      "Id": "X03",
+      "Severity": "Medium",
+      "Category": "Hybrid",
+      "Area": "Authentication",
+      "Title": "AD FS is (or was) deployed",
+      "Finding": "AD FS configuration container found in: contoso.com.",
+      "Recommendation": "Inventory the relying parties in AD FS; move apps to Microsoft Entra ID enterprise apps.",
+      "Risk": "AD FS adds servers to patch and protect as Tier 0, and makes cloud sign-in depend on on-premises availability. Microsoft recommends password hash sync for cloud authentication.",
+      "Steps": [
+        "Inventory the relying parties in AD FS; move apps to Microsoft Entra ID enterprise apps.",
+        "Enable password hash sync and test with Staged Rollout.",
+        "Convert the federated domains to managed, then decommission AD FS and its DKM container."
+      ],
+      "References": [
+        {
+          "Title": "Migrate from federation to cloud authentication",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/connect/migrate-from-federation-to-cloud-authentication"
+        },
+        {
+          "Title": "Migrate to cloud authentication using Staged Rollout",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-staged-rollout"
+        }
+      ],
+      "Phase": 3,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com"
+      ]
+    },
+    {
+      "Id": "X04",
+      "Severity": "Medium",
+      "Category": "Hybrid",
+      "Area": "Directory sync",
+      "Title": "Users have non-routable UPN suffixes",
+      "Finding": "1 enabled user(s) have non-routable UPN suffixes: @contoso.local (1).",
+      "Recommendation": "Add a routable UPN suffix that you have verified in Microsoft 365 (Active Directory Domains and Trusts > Properties > UPN Suffixes).",
+      "Risk": "Users with UPNs such as user@contoso.local sync to Microsoft Entra ID as user@<tenant>.onmicrosoft.com, so their sign-in name differs from their email.",
+      "Steps": [
+        "Add a routable UPN suffix that you have verified in Microsoft 365 (Active Directory Domains and Trusts > Properties > UPN Suffixes).",
+        "Change user UPNs to the new suffix (ideally matching their primary email).",
+        "Run IdFix to find other sync blockers."
+      ],
+      "References": [
+        {
+          "Title": "Prepare a non-routable domain for directory synchronization",
+          "Url": "https://learn.microsoft.com/microsoft-365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization"
+        },
+        {
+          "Title": "Prepare for directory synchronization to Microsoft 365 (IdFix)",
+          "Url": "https://learn.microsoft.com/microsoft-365/enterprise/prepare-for-directory-synchronization"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "@contoso.local - 1 user(s)"
+      ]
+    },
+    {
+      "Id": "S18",
+      "Severity": "Low",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "Enabled user accounts that have not signed in for 90 days",
+      "Finding": "2 enabled user account(s) have not signed in for 90 days: contoso.com\\da.stale, contoso.com\\old.user.",
+      "Recommendation": "Disable the accounts, move them to a quarantine OU, and delete them after your retention period.",
+      "Risk": "Unused accounts are rarely watched and are a common foothold.",
+      "Steps": [
+        "Disable the accounts, move them to a quarantine OU, and delete them after your retention period.",
+        "Automate this with a lifecycle process or Microsoft Entra ID Governance."
+      ],
+      "References": [
+        {
+          "Title": "Remove stale Active Directory accounts",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 2,
+      "Evidence": [
+        "contoso.com\\da.stale",
+        "contoso.com\\old.user"
+      ]
+    },
+    {
+      "Id": "S19",
+      "Severity": "Low",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "Enabled computer accounts that have not signed in for 90 days",
+      "Finding": "1 enabled computer account(s) have not signed in for 90 days: contoso.com\\OLD01.",
+      "Recommendation": "Disable, then delete, computer accounts that no longer exist.",
+      "Risk": "Stale computer accounts clutter the directory and can be reused by attackers.",
+      "Steps": [
+        "Disable, then delete, computer accounts that no longer exist."
+      ],
+      "References": [
+        {
+          "Title": "Remove stale Active Directory accounts",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\OLD01"
+      ]
+    },
+    {
+      "Id": "S20",
+      "Severity": "Low",
+      "Category": "Security",
+      "Area": "Accounts",
+      "Title": "User accounts with passwords that never expire",
+      "Finding": "3 user account(s) have passwords that never expire: contoso.com\\Administrator, contoso.com\\svc.sql, contoso.com\\MSOL_1a2b3c4d5e6f.",
+      "Recommendation": "Review the list: convert service accounts to gMSA, and for people rely on MFA and banned-password checks instead of the flag.",
+      "Risk": "Long-lived passwords are more likely to be leaked and reused. Microsoft no longer recommends forced periodic change for users with MFA, but \"never expires\" on shared or service accounts hides old passwords.",
+      "Steps": [
+        "Review the list: convert service accounts to gMSA, and for people rely on MFA and banned-password checks instead of the flag."
+      ],
+      "References": [
+        {
+          "Title": "Password policy recommendations",
+          "Url": "https://learn.microsoft.com/microsoft-365/admin/misc/password-policy-recommendations"
+        }
+      ],
+      "Phase": 3,
+      "EvidenceCount": 3,
+      "Evidence": [
+        "contoso.com\\Administrator",
+        "contoso.com\\svc.sql",
+        "contoso.com\\MSOL_1a2b3c4d5e6f"
+      ]
+    },
+    {
+      "Id": "S32",
+      "Severity": "Low",
+      "Category": "Security",
+      "Area": "Privileged access",
+      "Title": "DnsAdmins has members",
+      "Finding": "DnsAdmins has 1 member(s): contoso.com DnsAdmins: dns.op.",
+      "Recommendation": "Treat DnsAdmins as Tier 0: keep it empty or limited to Tier 0 admins.",
+      "Risk": "DnsAdmins members can load code on domain controllers running DNS.",
+      "Steps": [
+        "Treat DnsAdmins as Tier 0: keep it empty or limited to Tier 0 admins."
+      ],
+      "References": [
+        {
+          "Title": "Tier model for Active Directory Domain Services",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com DnsAdmins: dns.op"
+      ]
+    },
+    {
+      "Id": "H12",
+      "Severity": "Low",
+      "Category": "Health",
+      "Area": "Sites",
+      "Title": "A site has no subnets",
+      "Finding": "Sites without subnets: Auckland.",
+      "Recommendation": "Assign the IP subnets of that location to the site, or delete the site if it is no longer used.",
+      "Risk": "Clients never land in that site, so its domain controllers only serve clients by accident.",
+      "Steps": [
+        "Assign the IP subnets of that location to the site, or delete the site if it is no longer used."
+      ],
+      "References": [
+        {
+          "Title": "Designing the site topology",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "Auckland"
+      ]
+    },
+    {
+      "Id": "H13",
+      "Severity": "Low",
+      "Category": "Health",
+      "Area": "Sites",
+      "Title": "A subnet is not assigned to a site",
+      "Finding": "Subnets not assigned to a site: 192.168.99.0/24.",
+      "Recommendation": "Assign each subnet to the site of its location.",
+      "Risk": "Clients in that subnet can pick any domain controller, including ones across slow WAN links.",
+      "Steps": [
+        "Assign each subnet to the site of its location.",
+        "Check the Netlogon.log on DCs for NO_CLIENT_SITE entries to find subnets that are still missing."
+      ],
+      "References": [
+        {
+          "Title": "Designing the site topology",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "192.168.99.0/24"
+      ]
+    },
+    {
+      "Id": "H16",
+      "Severity": "Low",
+      "Category": "Health",
+      "Area": "Replication",
+      "Title": "Manually created or disabled replication connections",
+      "Finding": "1 replication connection(s) are manual or disabled: DC02 -> NYDC1.",
+      "Recommendation": "Review each manual connection; delete it unless there is a documented reason, and let the KCC build the topology.",
+      "Risk": "Manual connections are not maintained by the KCC and often outlive the reason they were created. Disabled connections can hide replication gaps.",
+      "Steps": [
+        "Review each manual connection; delete it unless there is a documented reason, and let the KCC build the topology.",
+        "Check replication health with repadmin /replsummary and repadmin /showrepl."
+      ],
+      "References": [
+        {
+          "Title": "Designing the site topology",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "DC02 -> NYDC1 (manual)"
+      ]
+    },
+    {
+      "Id": "X02",
+      "Severity": "Low",
+      "Category": "Hybrid",
+      "Area": "Directory sync",
+      "Title": "Microsoft Entra Connect Sync is in use",
+      "Finding": "Microsoft Entra Connect Sync accounts found: contoso.com\\MSOL_1a2b3c4d5e6f (server SYNC01).",
+      "Recommendation": "Keep Connect Sync on the latest version and protect the server as Tier 0.",
+      "Risk": "Connect Sync is a full sync server that must be patched and protected as Tier 0. Microsoft is putting new sync features into Cloud Sync.",
+      "Steps": [
+        "Keep Connect Sync on the latest version and protect the server as Tier 0.",
+        "Review the decision guide: move to Cloud Sync if you don't need device sync, advanced sync rules or more than 150,000 objects per domain."
+      ],
+      "References": [
+        {
+          "Title": "Connect Sync to Cloud Sync decision guide",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide"
+        },
+        {
+          "Title": "What is Microsoft Entra Cloud Sync?",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/what-is-cloud-sync"
+        }
+      ],
+      "Phase": 3,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "contoso.com\\MSOL_1a2b3c4d5e6f (server SYNC01)"
+      ]
+    },
+    {
+      "Id": "X05",
+      "Severity": "Low",
+      "Category": "Hybrid",
+      "Area": "Directory sync",
+      "Title": "Enabled users without a UPN",
+      "Finding": "1 enabled user(s) have no UPN.",
+      "Recommendation": "Set a UPN on each account that will be synced.",
+      "Risk": "Accounts without a userPrincipalName sync with a generated name and are harder to manage.",
+      "Steps": [
+        "Set a UPN on each account that will be synced."
+      ],
+      "References": [
+        {
+          "Title": "Prepare for directory synchronization to Microsoft 365 (IdFix)",
+          "Url": "https://learn.microsoft.com/microsoft-365/enterprise/prepare-for-directory-synchronization"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 0,
+      "Evidence": []
+    },
+    {
+      "Id": "X07",
+      "Severity": "Low",
+      "Category": "Hybrid",
+      "Area": "Authentication",
+      "Title": "Microsoft Entra Kerberos (cloud Kerberos trust) is not set up",
+      "Finding": "No AzureADKerberos object in: emea.contoso.com.",
+      "Recommendation": "Create the Microsoft Entra Kerberos server object for each domain (Set-AzureADKerberosServer).",
+      "Risk": "Cloud Kerberos trust is the recommended way to deploy Windows Hello for Business and FIDO2 security keys for on-premises access, without a PKI.",
+      "Steps": [
+        "Create the Microsoft Entra Kerberos server object for each domain (Set-AzureADKerberosServer).",
+        "Enable Windows Hello for Business with \"Use cloud trust for on-premises authentication\"."
+      ],
+      "References": [
+        {
+          "Title": "Windows Hello for Business cloud Kerberos trust",
+          "Url": "https://learn.microsoft.com/windows/security/identity-protection/hello-for-business/deploy/hybrid-cloud-kerberos-trust"
+        }
+      ],
+      "Phase": 3,
+      "EvidenceCount": 1,
+      "Evidence": [
+        "emea.contoso.com"
+      ]
+    },
+    {
+      "Id": "X08",
+      "Severity": "Low",
+      "Category": "Hybrid",
+      "Area": "Authentication",
+      "Title": "Microsoft Entra Password Protection is not deployed on domain controllers",
+      "Finding": "No Microsoft Entra Password Protection DC agents are registered.",
+      "Recommendation": "Install the Password Protection proxy on member servers and the DC agent on every DC; start in audit mode, then enforce.",
+      "Risk": "On-premises password changes aren't checked against the global banned password list.",
+      "Steps": [
+        "Install the Password Protection proxy on member servers and the DC agent on every DC; start in audit mode, then enforce."
+      ],
+      "References": [
+        {
+          "Title": "Plan and deploy on-premises Microsoft Entra Password Protection",
+          "Url": "https://learn.microsoft.com/entra/identity/authentication/howto-password-ban-bad-on-premises-deploy"
+        }
+      ],
+      "Phase": 2,
+      "EvidenceCount": 0,
+      "Evidence": []
+    }
+  ],
+  "Plan": {
+    "Target": [
+      {
+        "Area": "Domain controllers",
+        "Recommendation": "Run every DC on Windows Server 2025 (currently 2 of 6). Replace first: EMEADC1, NYDC1."
+      },
+      {
+        "Area": "Domain controllers",
+        "Recommendation": "emea.contoso.com: add a second writable DC (has 1)."
+      },
+      {
+        "Area": "Sites",
+        "Recommendation": "Keep DCs in 4 site(s) with good connectivity; use a hub-and-spoke site-link design with the hub site(s) at the centre, and remove sites that have no subnets and no DCs."
+      },
+      {
+        "Area": "Forest design",
+        "Recommendation": "The forest has 2 domains. Each domain adds Tier 0 servers and admins. Consider consolidating child domains into the root domain (ADMT or a third-party tool) before or while moving to Entra ID; sync works with multiple domains, but fewer is simpler and safer."
+      },
+      {
+        "Area": "Trusts",
+        "Recommendation": "Review the 2 external/forest trust(s) (fabrikam.com, tailspin.local). Cloud Sync can sync disconnected forests to one tenant, which can replace trusts used only for collaboration."
+      },
+      {
+        "Area": "Functional level",
+        "Recommendation": "Raise domains and the forest to Windows Server 2016 now, and to Windows Server 2025 (level 10) when the last older DC is gone."
+      },
+      {
+        "Area": "Identity sync",
+        "Recommendation": "Sync engine: keep Connect Sync for now; move to Cloud Sync when you no longer need device sync for hybrid join or advanced sync rules. Fix UPNs first (1 users on non-routable suffixes)."
+      },
+      {
+        "Area": "Authentication",
+        "Recommendation": "Password hash sync as the sign-in method, with Conditional Access and MFA. Move off AD FS with Staged Rollout, then decommission it. Use Windows Hello for Business with cloud Kerberos trust and FIDO2 keys for passwordless sign-in."
+      },
+      {
+        "Area": "Devices",
+        "Recommendation": "Hybrid join existing domain-joined Windows PCs; enrol new PCs as Microsoft Entra joined with Intune and Autopilot, so the number of domain-joined clients shrinks over time. Manage local admin passwords with Windows LAPS."
+      },
+      {
+        "Area": "Security operations",
+        "Recommendation": "Deploy Defender for Identity sensors on all DCs, AD FS, AD CS and sync servers; apply the Tier 0 model with separate admin accounts and privileged access workstations."
+      },
+      {
+        "Area": "Applications",
+        "Recommendation": "Publish internal web apps that use Kerberos or header authentication through Microsoft Entra application proxy or Private Access; move file shares to SharePoint/OneDrive or Azure Files with Entra Kerberos."
+      },
+      {
+        "Area": "Exchange",
+        "Recommendation": "Complete the move to Exchange Online, then keep only Exchange Server SE (or the management tools) for recipient management while AD is the source of authority."
+      }
+    ],
+    "Phases": [
+      {
+        "Number": 1,
+        "Name": "Stabilise and secure",
+        "Goal": "Close the critical gaps attackers use first. (0-3 months)",
+        "Tasks": [
+          "[S02] krbtgt password is old",
+          "[S05] Privileged accounts have a service principal name (Kerberoastable)",
+          "[S10] Accounts do not require Kerberos pre-authentication (AS-REP roasting)",
+          "[S12] Unconstrained Kerberos delegation on non-DC accounts",
+          "[S27] Computers run an unsupported Windows version",
+          "[S30] Certificate templates let requesters choose the subject (possible ESC1)",
+          "[S31] Seamless SSO key has not been rolled over for more than 30 days",
+          "[H01] Domain controllers run an unsupported operating system",
+          "[H06] SYSVOL still replicates with FRS",
+          "[H07] A domain has only one writable domain controller",
+          "[H11] A site is not in any site link",
+          "[H17] Exchange servers are out of support",
+          "[S01] External trust without SID filtering",
+          "[S03] Too many accounts are domain or enterprise administrators",
+          "[S04] Schema Admins or Enterprise Admins have permanent members",
+          "[S06] Privileged accounts are not protected against delegation",
+          "[S08] Privileged accounts are not being used",
+          "[S09] Operator groups have members",
+          "[S14] Accounts that do not need a password",
+          "[S22] Any user can join computers to the domain (MachineAccountQuota)",
+          "[S28] The Guest account is enabled",
+          "[S29] Pre-Windows 2000 Compatible Access contains Anonymous or Everyone",
+          "[H09] The Active Directory Recycle Bin is not enabled",
+          "Deploy Defender for Identity sensors and review its security assessments",
+          "Confirm offline DC backups and a tested forest recovery plan"
+        ]
+      },
+      {
+        "Number": 2,
+        "Name": "Modernise on-premises AD",
+        "Goal": "Supported, healthy, well-designed AD ready for sync. (3-6 months)",
+        "Tasks": [
+          "[S07] Privileged accounts with old or non-expiring passwords",
+          "[S11] User accounts with service principal names (Kerberoastable)",
+          "[S13] Accounts trusted to authenticate for delegation (protocol transition)",
+          "[S17] Accounts limited to RC4 Kerberos encryption",
+          "[S21] Accounts with SID history",
+          "[S23] Default domain password policy is weak",
+          "[S26] Some computers have no LAPS password",
+          "[H02] Domain controller support ends within 12 months",
+          "[H04] Forest or domain functional level is below Windows Server 2016",
+          "[X04] Users have non-routable UPN suffixes",
+          "[S18] Enabled user accounts that have not signed in for 90 days",
+          "[S19] Enabled computer accounts that have not signed in for 90 days",
+          "[S32] DnsAdmins has members",
+          "[H12] A site has no subnets",
+          "[H13] A subnet is not assigned to a site",
+          "[H16] Manually created or disabled replication connections",
+          "[X05] Enabled users without a UPN",
+          "[X08] Microsoft Entra Password Protection is not deployed on domain controllers",
+          "Run IdFix and clean up duplicate or invalid attributes"
+        ]
+      },
+      {
+        "Number": 3,
+        "Name": "Hybrid identity with Microsoft Entra ID",
+        "Goal": "Sync, cloud authentication, devices and passwordless. (6-12 months)",
+        "Tasks": [
+          "[X03] AD FS is (or was) deployed",
+          "[S20] User accounts with passwords that never expire",
+          "[X02] Microsoft Entra Connect Sync is in use",
+          "[X07] Microsoft Entra Kerberos (cloud Kerberos trust) is not set up",
+          "Enable password hash sync, Conditional Access and MFA for all users",
+          "Windows Hello for Business with cloud Kerberos trust"
+        ]
+      },
+      {
+        "Number": 4,
+        "Name": "Cloud-first and reduce on-premises",
+        "Goal": "Shrink what depends on AD. (12+ months)",
+        "Tasks": [
+          "New devices Microsoft Entra joined with Intune and Autopilot",
+          "Move apps to Entra ID (SAML/OIDC), app proxy or Private Access",
+          "Retire servers and domains that no longer have a purpose",
+          "Raise to the Windows Server 2025 functional level after the last pre-2025 DC is gone"
+        ]
+      }
+    ],
+    "Gaps": [
+      {
+        "Capability": "Supported domain controllers",
+        "Status": "Partial",
+        "Evidence": "4 of 6 DCs supported for at least 12 more months",
+        "Recommendation": "All DCs on Windows Server 2022/2025",
+        "Priority": "High"
+      },
+      {
+        "Capability": "Modern functional level",
+        "Status": "Present",
+        "Evidence": "Windows Server 2016",
+        "Recommendation": "Windows Server 2016 now; 2025 once every DC runs 2025",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "SYSVOL on DFS Replication",
+        "Status": "Missing",
+        "Evidence": "contoso.com: DFSR; emea.contoso.com: FRS",
+        "Recommendation": "DFSR in every domain",
+        "Priority": "High"
+      },
+      {
+        "Capability": "AD Recycle Bin",
+        "Status": "Missing",
+        "Evidence": "",
+        "Recommendation": "Enable it",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Windows LAPS",
+        "Status": "Present",
+        "Evidence": "",
+        "Recommendation": "Windows LAPS with encryption; back up to Entra ID for Entra-joined devices",
+        "Priority": "High"
+      },
+      {
+        "Capability": "Directory sync to Microsoft Entra ID",
+        "Status": "Present",
+        "Evidence": "Connect Sync: contoso.com\\MSOL_1a2b3c4d5e6f (server SYNC01)",
+        "Recommendation": "Cloud Sync (or Connect Sync where its extra features are needed)",
+        "Priority": "Low"
+      },
+      {
+        "Capability": "Routable UPNs matching email",
+        "Status": "Partial",
+        "Evidence": "1 users on non-routable suffixes",
+        "Recommendation": "UPN = primary email on a verified domain",
+        "Priority": "High"
+      },
+      {
+        "Capability": "Cloud authentication (no AD FS)",
+        "Status": "Missing",
+        "Evidence": "AD FS container in contoso.com",
+        "Recommendation": "Password hash sync + Conditional Access + MFA",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Microsoft Entra hybrid join",
+        "Status": "Present",
+        "Evidence": "SCP points to contoso.onmicrosoft.com",
+        "Recommendation": "Hybrid join existing PCs; Entra join + Intune + Autopilot for new PCs",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Microsoft Entra Kerberos (cloud Kerberos trust)",
+        "Status": "Partial",
+        "Evidence": "Missing in emea.contoso.com",
+        "Recommendation": "Enables Windows Hello for Business and FIDO2 keys for on-premises access",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Seamless SSO",
+        "Status": "Present",
+        "Evidence": "",
+        "Recommendation": "Only needed for devices that are not hybrid or Entra joined; roll its key every 30 days",
+        "Priority": "Low"
+      },
+      {
+        "Capability": "Entra Password Protection on DCs",
+        "Status": "Missing",
+        "Evidence": "",
+        "Recommendation": "Block banned and breached passwords on-premises",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Defender for Identity",
+        "Status": "Not detectable",
+        "Evidence": "",
+        "Recommendation": "Sensors on every DC, AD FS, AD CS and Entra Connect server",
+        "Priority": "High"
+      },
+      {
+        "Capability": "Conditional Access and MFA",
+        "Status": "Not detectable",
+        "Evidence": "",
+        "Recommendation": "Require phishing-resistant MFA for admins and MFA for all users",
+        "Priority": "High"
+      },
+      {
+        "Capability": "Exchange",
+        "Status": "On-premises",
+        "Evidence": "3 server(s)",
+        "Recommendation": "Exchange Online; keep Exchange SE or management tools only for recipient management",
+        "Priority": "Medium"
+      },
+      {
+        "Capability": "Certificate services",
+        "Status": "On-premises",
+        "Evidence": "1 CA(s), 1 risky template(s)",
+        "Recommendation": "Treat AD CS as Tier 0; cloud Kerberos trust removes the need for WHfB certificates",
+        "Priority": "Medium"
+      }
+    ],
+    "VerifyManually": [
+      {
+        "Item": "LDAP signing and LDAP channel binding are required on all domain controllers",
+        "Why": "Blocks NTLM relay to LDAP.",
+        "Ref": {
+          "Title": "Identity infrastructure security assessments",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+        }
+      },
+      {
+        "Item": "SMB signing is required and SMBv1 is removed",
+        "Why": "Blocks relay and old exploits.",
+        "Ref": {
+          "Title": "Identity infrastructure security assessments",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+        }
+      },
+      {
+        "Item": "The Print Spooler service is disabled on domain controllers",
+        "Why": "Prevents coerced authentication of DC accounts.",
+        "Ref": {
+          "Title": "Identity infrastructure security assessments",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+        }
+      },
+      {
+        "Item": "NTLMv1 and LM are blocked (LmCompatibilityLevel 5)",
+        "Why": "NTLMv1 hashes can be cracked or relayed easily.",
+        "Ref": {
+          "Title": "Identity infrastructure security assessments",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+        }
+      },
+      {
+        "Item": "Microsoft Defender for Identity sensors run on every DC, AD FS, AD CS and Entra Connect server",
+        "Why": "Detects attacks on AD and adds identity posture assessments.",
+        "Ref": {
+          "Title": "Microsoft Defender for Identity deployment overview",
+          "Url": "https://learn.microsoft.com/defender-for-identity/deploy/deploy-defender-identity"
+        }
+      },
+      {
+        "Item": "System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan",
+        "Why": "Ransomware targets AD first.",
+        "Ref": {
+          "Title": "Reset the krbtgt password",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password"
+        }
+      },
+      {
+        "Item": "Tier 0 admins use separate accounts, privileged access workstations and phishing-resistant MFA",
+        "Why": "Stops credential theft from everyday devices.",
+        "Ref": {
+          "Title": "Enterprise access model",
+          "Url": "https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model"
+        }
+      },
+      {
+        "Item": "Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access",
+        "Why": "Keeps you in control if MFA or federation fails.",
+        "Ref": {
+          "Title": "Enterprise access model",
+          "Url": "https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model"
+        }
+      },
+      {
+        "Item": "Entra Connect / Cloud Sync agent servers are managed as Tier 0",
+        "Why": "They can change passwords and read hashes for every synced user.",
+        "Ref": {
+          "Title": "Connect Sync to Cloud Sync decision guide",
+          "Url": "https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide"
+        }
+      }
+    ]
+  }
+}

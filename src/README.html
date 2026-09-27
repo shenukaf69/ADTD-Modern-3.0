@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADTD Modern</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--fg:#1d2330;--muted:#5d6675;--line:#e1e4ea;--accent:#2f6fb3;--code:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--bg:#14171c;--card:#1d2128;--fg:#e6e8ec;--muted:#9aa3b2;--line:#2c323c;--accent:#7fb0e8;--code:#262b33}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 "Segoe UI",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 16px 48px}h1{margin:0 0 4px}h2{margin-top:32px;font-size:19px}
+.muted{color:var(--muted)}code,pre{background:var(--code);border-radius:6px;font-family:Consolas,monospace;font-size:13px}code{padding:1px 5px}
+pre{padding:10px 12px;overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted)}.scroll{overflow-x:auto}a{color:var(--accent)}
+</style></head><body><main>
+<h1>ADTD Modern 3.0</h1>
+<p class="muted">Active Directory Topology Diagrammer, rebuilt for Windows Server 2016, 2019, 2022 and 2025, with a security assessment and a Microsoft Entra ID hybrid upgrade plan. It replaces Microsoft's ADTD 2011 (<code>ADTD.Net_Setup.msi</code>), which stopped at Windows Server 2008 R2, Exchange 2010 and Visio 2003&ndash;2010. It is not a Microsoft product.</p>
+
+<h2>What it draws</h2>
+<div class="scroll"><table>
+<tr><th>Page</th><th>Shows</th></tr>
+<tr><td>Summary</td><td>Forest facts, domain controller operating systems, and health findings with the fix for each</td></tr>
+<tr><td>Sites and site links</td><td>Every site with its domain controllers and subnets; site links with cost, interval and change notification; multi-site links; site link bridges</td></tr>
+<tr><td>Replication</td><td>Connection objects between domain controllers: created by the KCC, created manually, or disabled</td></tr>
+<tr><td>Domains and trusts</td><td>Domain tree, domain and forest functional levels, FSMO role holders, SYSVOL replication (DFSR or FRS), forest, external and realm trusts with direction and SID filtering</td></tr>
+<tr><td>Application partitions</td><td>DomainDnsZones, ForestDnsZones and custom partitions, and the domain controllers that hold them</td></tr>
+<tr><td>OUs</td><td>OU tree per domain with linked GPOs, enforced and disabled links, blocked inheritance and links to missing GPOs</td></tr>
+<tr><td>DFS Replication</td><td>Replication groups, members, connections and folders</td></tr>
+<tr><td>Exchange</td><td>Servers by site with version (2013, 2016, 2019, Subscription Edition), roles and DAG</td></tr>
+<tr><td>Target hybrid topology</td><td>Today's AD, the identity bridge (sync, UPNs, hybrid join, Entra Kerberos) and the Microsoft Entra ID target, coloured by status</td></tr>
+<tr><td>Upgrade roadmap</td><td>Four phases with every finding placed, plus the suggested target topology</td></tr>
+</table></div>
+
+<h2>The assessment</h2>
+<ul>
+<li><b>58 checks</b>: 18 health, 32 security and 8 hybrid readiness. Each finding comes with what was found, the affected objects, why it matters, step-by-step fixes and Microsoft references.</li>
+<li><b>Security</b> examples:
+<ul>
+<li>Tier 0 membership, Protected Users and krbtgt age</li>
+<li>Kerberoasting and AS-REP roasting</li>
+<li>Unconstrained delegation, and RC4/DES</li>
+<li>Stale accounts, LAPS coverage and unsupported Windows</li>
+<li>MachineAccountQuota and password policy</li>
+<li>AD CS ESC1-style templates</li>
+<li>Seamless SSO key age</li>
+</ul></li>
+<li><b>Hybrid readiness</b>: detects Entra Connect or Cloud Sync, hybrid join and tenant, Seamless SSO, Entra Kerberos, AD FS, Password Protection and UPN suffixes. It shows what on-premises AD is missing, with a target topology and a roadmap.</li>
+<li>Reports:
+<ul>
+<li>HTML, as a single page or <b>tabbed</b>: Summary, Findings, Diagrams, Hybrid plan, Inventory</li>
+<li>One Markdown file per finding</li>
+<li>CSV and JSON</li>
+</ul></li>
+</ul>
+<p>Domain controllers are coloured by support: green is supported, orange means support ends within 12 months, red means out of support. Read-only domain controllers have a dashed border.</p>
+
+<h2>What's new compared with ADTD 2011</h2>
+<ul>
+<li>Recognises Windows Server 2012 to 2025: functional levels up to 10 and schema versions up to 91.</li>
+<li>Recognises Exchange 2013, 2016, 2019 and Exchange Server Subscription Edition, and DAGs. The old routing groups are gone.</li>
+<li>Drawings are <code>.drawio</code> files for <b>draw.io desktop</b> or <b>draw.io on the web</b>, which are both free. Each run also saves a link that opens the drawing in app.diagrams.net. Visio is optional: with Visio 2013 or later, ADTD can also draw straight into Visio.</li>
+<li>Adds an HTML health report plus CSV and JSON exports. A saved JSON inventory can be redrawn later without connecting to Active Directory.</li>
+<li>Checks for out-of-support domain controllers, FRS SYSVOL, the Recycle Bin being off, single-DC domains, sites without links or subnets, unassigned subnets, SMTP site links, trusts without SID filtering, and unsupported Exchange servers.</li>
+<li>Runs on Windows PowerShell 5.1 or PowerShell 7. It doesn't need .NET 2.0, RSAT or the ActiveDirectory module.</li>
+</ul>
+
+<h2>Requirements</h2>
+<ul>
+<li>A Windows 10/11 or Windows Server 2016+ computer that is joined to the domain, or can reach it (use <em>Use other credentials</em>).</li>
+<li>Any domain user account. ADTD only reads the directory and never changes it. Exchange and DFS-R pages need read access to those containers, which authenticated users have by default.</li>
+<li>A viewer: draw.io desktop or draw.io on the web. Run <b>Start &rarr; ADTD Modern - Prerequisites</b> to install draw.io desktop, choose draw.io on the web, or optionally install Visio (needs a licence).</li>
+</ul>
+
+<h2>Use it</h2>
+<p><b>Window:</b> Start menu &rarr; <b>ADTD Modern</b>. Pick the pages and output formats, then click <b>Draw</b>. By default, results are saved to <code>Documents\ADTD</code>.</p>
+<p><b>PowerShell:</b></p>
+<pre>Invoke-ADTD                                   # summary, sites, replication, domains, hybrid
+Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
+Invoke-ADTD -Open -DrawIoViewer Web           # open the drawing in draw.io on the web
+Invoke-ADTD -Server dc01.contoso.com -Credential (Get-Credential)
+Invoke-ADTD -Drawings Sites, OUs -MaxOUs 1000
+Invoke-ADTD -InputFile .\ADTD-contoso.com-20260927-1015.json -Format Visio   # redraw offline
+Get-Help Invoke-ADTD -Full</pre>
+
+<h2>Output files</h2>
+<div class="scroll"><table>
+<tr><th>File</th><th>Open with</th></tr>
+<tr><td><code>ADTD-&lt;forest&gt;-&lt;date&gt;.drawio</code></td><td>draw.io desktop, app.diagrams.net, or the VS Code Draw.io Integration extension. One tab per page. To get a Visio file, choose File &rarr; Export as &rarr; VSDX.</td></tr>
+<tr><td><code>.vsdx</code></td><td>Microsoft Visio (optional, <code>-Format Visio</code>, needs Visio installed)</td></tr>
+<tr><td><code>-open-in-drawio-web.url</code></td><td>Opens the drawing in draw.io on the web (the drawing is inside the link, not uploaded)</td></tr>
+<tr><td><code>.html</code> / <code>-tabs.html</code></td><td>Any browser: the assessment report, as a single page or with tabs</td></tr>
+<tr><td><code>-findings\*.md</code></td><td>One Markdown report per finding, plus <code>hybrid-plan.md</code></td></tr>
+<tr><td><code>.json</code></td><td>The raw inventory, which can be redrawn with <code>-InputFile</code></td></tr>
+<tr><td><code>-csv\*.csv</code></td><td>Excel: findings, evidence, gap analysis, roadmap and inventory tables</td></tr>
+<tr><td><code>.log</code></td><td>What was read, and any containers that could not be read</td></tr>
+</table></div>
+
+<h2>Install and remove</h2>
+<ul>
+<li><b>MSI:</b> run <code>ADTD_Modern_Setup_3.0.0.msi</code> (admin). It installs the module for all users in <code>C:\Program Files\WindowsPowerShell\Modules\ADTD</code> and adds Start menu shortcuts. A newer MSI replaces the old one automatically. Remove it in <b>Settings &rarr; Apps</b>. For a silent install, use <code>msiexec /i ADTD_Modern_Setup_3.0.0.msi /qn</code>.</li>
+<li><b>Without admin rights:</b> <code>powershell -ExecutionPolicy Bypass -File Install-ADTD.ps1</code> installs for the current user only. Use <code>-Uninstall</code> to remove it.</li>
+<li>The scripts are not code-signed. If your execution policy is <code>AllSigned</code>, sign them with your code-signing certificate, or use the Start menu shortcut, which runs with <code>-ExecutionPolicy Bypass</code> for that process only.</li>
+</ul>
+
+<h2>Keeping it current</h2>
+<p>Every version table (functional levels, schema versions, Windows Server builds and support dates, Exchange builds) is in <code>ADTD.Versions.ps1</code>. When Microsoft ships a new release, add a row there. Nothing else needs to change.</p>
+</main></body></html>
