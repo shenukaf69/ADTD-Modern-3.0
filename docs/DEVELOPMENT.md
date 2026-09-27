@@ -86,7 +86,7 @@ Keep the `UpgradeCode` the same so newer MSIs replace older ones.
 $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
 Get-ChildItem .\src, .\setup -Include *.ps1, *.psm1, *.psd1 -Recurse | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.digicert.com
 pwsh ./setup/build-msi.ps1
-signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.0.msi
+signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.1.msi
 ```
 
 ## Previewing drawings without draw.io

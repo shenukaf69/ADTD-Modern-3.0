@@ -5,7 +5,9 @@ Checks and installs what ADTD Modern needs: draw.io (desktop or web), PowerShell
 .DESCRIPTION
 Run it with no parameters for a status report and a menu. Or use switches:
 
-  -DrawIoDesktop   Install the free draw.io desktop app (winget, or the official installer from GitHub).
+  -DrawIoDesktop   Install the free draw.io desktop app: from a local installer file if one is found
+                   (-DrawIoInstaller, or a draw.io-*.exe / .msi in the package's drawio folder), else winget,
+                   else the official installer from GitHub. Offline computers: use a local installer file.
   -DrawIoWeb       Use draw.io on the web (app.diagrams.net) instead: nothing to install. Checks it is reachable.
   -PowerShell7     Install PowerShell 7 (optional; Windows PowerShell 5.1 is enough).
   -Visio           Install Visio desktop with Microsoft's Office Deployment Tool (optional; you need a Visio licence).
@@ -28,6 +30,7 @@ powershell -ExecutionPolicy Bypass -File .\Install-Prerequisites.ps1 -Visio -Vis
 [CmdletBinding()]
 param(
     [switch]$DrawIoDesktop,
+    [string]$DrawIoInstaller,
     [switch]$DrawIoWeb,
     [switch]$PowerShell7,
     [switch]$Visio,
@@ -92,12 +95,16 @@ function Show-Status {
     $domain = $null; $dc = $null
     try { $domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetComputerDomain(); $dc = $domain.FindDomainController().Name } catch { }
     & $add 'Domain membership' $(if ($domain) { 'OK' } else { 'Not joined' }) $(if ($domain) { "$($domain.Name), DC $dc" } else { 'Not domain-joined: use ADTD -Server <dc> -Credential (Get-Credential)' })
+    $rootOk = $false; $nc = $null
+    try { $rd = New-Object System.DirectoryServices.DirectoryEntry('LDAP://RootDSE'); $nc = $rd.Properties['defaultNamingContext'][0]; $rootOk = [bool]$nc } catch { }
+    & $add 'Read Active Directory as this user' $(if ($rootOk) { 'OK' } else { 'Failed' }) $(if ($rootOk) { "$env:USERDOMAIN\$env:USERNAME can read $nc (ADTD only needs read access)" } else { 'Could not read RootDSE: log on with a domain account, or run ADTD with -Server and -Credential' })
     if ($dc) {
         & $add 'LDAP (389) to a DC' $(if (Test-Port $dc 389) { 'OK' } else { 'Blocked' }) $dc
         & $add 'Global catalog (3268)' $(if (Test-Port $dc 3268) { 'OK' } else { 'Blocked' }) 'Used to read DC operating systems across the forest'
     }
     $d = Find-DrawIo
-    & $add 'draw.io desktop' $(if ($d) { 'OK' } else { 'Not installed' }) $(if ($d) { $d } else { 'Install with -DrawIoDesktop, or use draw.io on the web' })
+    $li = try { Find-LocalDrawIoInstaller } catch { $null }
+    & $add 'draw.io desktop' $(if ($d) { 'OK' } else { 'Not installed' }) $(if ($d) { $d } elseif ($li) { "Installer ready: $li (choose 1)" } else { 'Install with -DrawIoDesktop, or use draw.io on the web' })
     & $add 'draw.io on the web' $(if (Test-Url 'https://app.diagrams.net') { 'Reachable' } else { 'Not reachable' }) 'https://app.diagrams.net (and viewer.diagrams.net for the report viewer)'
     & $add 'winget' $(if (Get-Winget) { 'OK' } else { 'Not available' }) 'Used to install draw.io and PowerShell 7; a direct download is used otherwise'
     $v = Find-Visio
@@ -109,8 +116,37 @@ function Show-Status {
     $rows | Format-Table -AutoSize -Wrap | Out-Host
 }
 
+function Find-LocalDrawIoInstaller {
+    if ($DrawIoInstaller) { if (Test-Path $DrawIoInstaller) { return (Resolve-Path $DrawIoInstaller).Path } else { throw "Installer not found: $DrawIoInstaller" } }
+    foreach ($dir in @($PSScriptRoot, (Join-Path $PSScriptRoot 'drawio'), (Join-Path $PSScriptRoot '..\drawio'), (Join-Path $PSScriptRoot '..\..\drawio'))) {
+        if (-not (Test-Path $dir)) { continue }
+        $f = Get-ChildItem -Path $dir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^draw\.io-.*\.(exe|msi)$' } | Sort-Object Name -Descending | Select-Object -First 1
+        if ($f) { return $f.FullName }
+    }
+    return $null
+}
+
+function Install-DrawIoFromFile([string]$File) {
+    $sig = Get-AuthenticodeSignature $File
+    if ($sig.Status -ne 'Valid') { throw "The installer's signature is not valid ($($sig.Status)); not running it. File: $File" }
+    Write-Host "Installing draw.io desktop from $File (signed by: $($sig.SignerCertificate.Subject))"
+    if ($File -match '\.msi$') {
+        if (-not (Test-Admin)) { throw 'The draw.io .msi installs for all users and needs an elevated PowerShell. Use the draw.io-*-windows-installer.exe for a per-user install.' }
+        Start-Process msiexec.exe -ArgumentList "/i `"$File`" /qn" -Wait
+    } else {
+        Start-Process -FilePath $File -ArgumentList '/S' -Wait
+    }
+    return [bool](Find-DrawIo)
+}
+
 function Install-DrawIoDesktop {
     if (Find-DrawIo) { Write-Host 'draw.io desktop is already installed.' -ForegroundColor Green; return $true }
+    $local = Find-LocalDrawIoInstaller
+    if ($local) {
+        if (Install-DrawIoFromFile $local) { Write-Host 'draw.io desktop installed.' -ForegroundColor Green; return $true }
+        Write-Warning 'The local installer finished but draw.io.exe was not found in the usual folders.'
+        return $false
+    }
     $wg = Get-Winget
     if ($wg) {
         Write-Host 'Installing draw.io desktop with winget (JGraph.Draw)...'

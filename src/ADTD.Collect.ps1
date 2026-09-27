@@ -249,11 +249,11 @@ function Get-AdtdInventory {
 
     # ---------- Forest ----------
     Write-AdtdLog 'Reading forest and schema...'
-    $partitions = Search-Adtd @{ SearchBase = "CN=Partitions,$configNC"; Scope = 'Base'; Properties = @('msDS-Behavior-Version', 'fsmoRoleOwner', 'msDS-EnabledFeature') } 'forest partitions'
-    $schemaHead = Search-Adtd @{ SearchBase = $schemaNC; Scope = 'Base'; Properties = @('objectVersion', 'fsmoRoleOwner') } 'schema version'
-    $exSchema = Search-Adtd @{ SearchBase = "CN=ms-Exch-Schema-Version-Pt,$schemaNC"; Scope = 'Base'; Properties = @('rangeUpper') } 'Exchange schema'
-    $dirService = Search-Adtd @{ SearchBase = "CN=Directory Service,CN=Windows NT,CN=Services,$configNC"; Scope = 'Base'; Properties = @('tombstoneLifetime', 'msDS-DeletedObjectLifetime') } 'tombstone lifetime'
-    $optional = Search-Adtd @{ SearchBase = "CN=Optional Features,CN=Directory Service,CN=Windows NT,CN=Services,$configNC"; Filter = '(objectClass=msDS-OptionalFeature)'; Scope = 'OneLevel'; Properties = @('name') } 'optional features'
+    $partitions = @(Search-Adtd @{ SearchBase = "CN=Partitions,$configNC"; Scope = 'Base'; Properties = @('msDS-Behavior-Version', 'fsmoRoleOwner', 'msDS-EnabledFeature') } 'forest partitions')
+    $schemaHead = @(Search-Adtd @{ SearchBase = $schemaNC; Scope = 'Base'; Properties = @('objectVersion', 'fsmoRoleOwner') } 'schema version')
+    $exSchema = @(Search-Adtd @{ SearchBase = "CN=ms-Exch-Schema-Version-Pt,$schemaNC"; Scope = 'Base'; Properties = @('rangeUpper') } 'Exchange schema')
+    $dirService = @(Search-Adtd @{ SearchBase = "CN=Directory Service,CN=Windows NT,CN=Services,$configNC"; Scope = 'Base'; Properties = @('tombstoneLifetime', 'msDS-DeletedObjectLifetime') } 'tombstone lifetime')
+    $optional = @(Search-Adtd @{ SearchBase = "CN=Optional Features,CN=Directory Service,CN=Windows NT,CN=Services,$configNC"; Filter = '(objectClass=msDS-OptionalFeature)'; Scope = 'OneLevel'; Properties = @('name') } 'optional features')
 
     $p = $partitions | Select-Object -First 1
     $enabled = @(Get-AAll $p 'msDS-EnabledFeature' | ForEach-Object { "$_".ToLower() })
@@ -282,8 +282,8 @@ function Get-AdtdInventory {
     # ---------- Sites, subnets, links ----------
     Write-AdtdLog 'Reading sites, subnets and site links...'
     $sitesDN = "CN=Sites,$configNC"
-    $sites = Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=site)'; Scope = 'OneLevel'; Properties = @('name', 'description', 'location') } 'sites'
-    $siteSettings = Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=nTDSSiteSettings)'; Properties = @('options', 'interSiteTopologyGenerator') } 'site settings'
+    $sites = @(Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=site)'; Scope = 'OneLevel'; Properties = @('name', 'description', 'location') } 'sites')
+    $siteSettings = @(Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=nTDSSiteSettings)'; Properties = @('options', 'interSiteTopologyGenerator') } 'site settings')
     $settingsBySite = @{}
     foreach ($s in $siteSettings) { $settingsBySite[(Get-RdnValue (Get-A $s 'distinguishedName') 1)] = $s }
     $inv.Sites = @(foreach ($s in $sites | Sort-Object { Get-A $_ 'name' }) {
@@ -300,7 +300,7 @@ function Get-AdtdInventory {
         }
     })
 
-    $subnets = Search-Adtd @{ SearchBase = "CN=Subnets,$sitesDN"; Filter = '(objectClass=subnet)'; Scope = 'OneLevel'; Properties = @('name', 'siteObject', 'location', 'description') } 'subnets'
+    $subnets = @(Search-Adtd @{ SearchBase = "CN=Subnets,$sitesDN"; Filter = '(objectClass=subnet)'; Scope = 'OneLevel'; Properties = @('name', 'siteObject', 'location', 'description') } 'subnets')
     $inv.Subnets = @(foreach ($s in $subnets) {
         $siteDN = Get-A $s 'siteObject'
         [pscustomobject]@{
@@ -311,7 +311,7 @@ function Get-AdtdInventory {
         }
     })
 
-    $links = Search-Adtd @{ SearchBase = "CN=Inter-Site Transports,$sitesDN"; Filter = '(objectClass=siteLink)'; Properties = @('name', 'siteList', 'cost', 'replInterval', 'options') } 'site links'
+    $links = @(Search-Adtd @{ SearchBase = "CN=Inter-Site Transports,$sitesDN"; Filter = '(objectClass=siteLink)'; Properties = @('name', 'siteList', 'cost', 'replInterval', 'options') } 'site links')
     $inv.SiteLinks = @(foreach ($l in $links) {
         $opt = [int](Get-A $l 'options')
         [pscustomobject]@{
@@ -325,14 +325,14 @@ function Get-AdtdInventory {
             CompressionDisabled = [bool]($opt -band 4)
         }
     })
-    $bridges = Search-Adtd @{ SearchBase = "CN=Inter-Site Transports,$sitesDN"; Filter = '(objectClass=siteLinkBridge)'; Properties = @('name', 'siteLinkList') } 'site link bridges'
+    $bridges = @(Search-Adtd @{ SearchBase = "CN=Inter-Site Transports,$sitesDN"; Filter = '(objectClass=siteLinkBridge)'; Properties = @('name', 'siteLinkList') } 'site link bridges')
     $inv.SiteLinkBridges = @(foreach ($b in $bridges) {
         [pscustomobject]@{ Name = Get-A $b 'name'; SiteLinks = @(Get-AAll $b 'siteLinkList' | ForEach-Object { Get-RdnValue $_ 0 }) }
     })
 
     # ---------- Domains ----------
     Write-AdtdLog 'Reading domains...'
-    $crossRefs = Search-Adtd @{ SearchBase = "CN=Partitions,$configNC"; Filter = '(objectClass=crossRef)'; Scope = 'OneLevel'; Properties = @('nCName', 'dnsRoot', 'nETBIOSName', 'systemFlags', 'trustParent', 'msDS-NC-Replica-Locations', 'msDS-NC-RO-Replica-Locations') } 'partitions'
+    $crossRefs = @(Search-Adtd @{ SearchBase = "CN=Partitions,$configNC"; Filter = '(objectClass=crossRef)'; Scope = 'OneLevel'; Properties = @('nCName', 'dnsRoot', 'nETBIOSName', 'systemFlags', 'trustParent', 'msDS-NC-Replica-Locations', 'msDS-NC-RO-Replica-Locations') } 'partitions')
     $domainRefs = @($crossRefs | Where-Object { ([int](Get-A $_ 'systemFlags') -band 3) -eq 3 })
     $appRefs = @($crossRefs | Where-Object {
             $f = [int](Get-A $_ 'systemFlags'); $nc = "$(Get-A $_ 'nCName')"
@@ -344,9 +344,9 @@ function Get-AdtdInventory {
         $dn = Get-A $ref 'nCName'
         $dns = Get-A $ref 'dnsRoot'
         $parentDN = if (Get-A $ref 'trustParent') { Get-A (@(Search-Adtd @{ SearchBase = (Get-A $ref 'trustParent'); Scope = 'Base'; Properties = @('nCName') } 'parent domain') | Select-Object -First 1) 'nCName' } else { $null }
-        $head = Search-Adtd @{ Server = $dns; SearchBase = $dn; Scope = 'Base'; Properties = @('msDS-Behavior-Version', 'fsmoRoleOwner', 'gPLink', 'gPOptions') } "domain $dns"
-        $rid = Search-Adtd @{ Server = $dns; SearchBase = "CN=RID Manager`$,CN=System,$dn"; Scope = 'Base'; Properties = @('fsmoRoleOwner') } "RID master for $dns"
-        $infra = Search-Adtd @{ Server = $dns; SearchBase = "CN=Infrastructure,$dn"; Scope = 'Base'; Properties = @('fsmoRoleOwner') } "infrastructure master for $dns"
+        $head = @(Search-Adtd @{ Server = $dns; SearchBase = $dn; Scope = 'Base'; Properties = @('msDS-Behavior-Version', 'fsmoRoleOwner', 'gPLink', 'gPOptions') } "domain $dns")
+        $rid = @(Search-Adtd @{ Server = $dns; SearchBase = "CN=RID Manager`$,CN=System,$dn"; Scope = 'Base'; Properties = @('fsmoRoleOwner') } "RID master for $dns")
+        $infra = @(Search-Adtd @{ Server = $dns; SearchBase = "CN=Infrastructure,$dn"; Scope = 'Base'; Properties = @('fsmoRoleOwner') } "infrastructure master for $dns")
         $h = $head | Select-Object -First 1
         $dfl = Get-A $h 'msDS-Behavior-Version'
         $domains += [pscustomobject]@{
@@ -370,13 +370,13 @@ function Get-AdtdInventory {
 
     # ---------- Domain controllers ----------
     Write-AdtdLog 'Reading domain controllers...'
-    $servers = Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=server)'; Properties = @('name', 'dNSHostName', 'serverReference') } 'servers'
-    $ntds = Search-Adtd @{ SearchBase = $sitesDN; Filter = '(|(objectCategory=nTDSDSA)(objectCategory=nTDSDSARO))'; Properties = @('options', 'objectClass', 'msDS-Behavior-Version', 'msDS-HasDomainNCs', 'hasMasterNCs', 'msDS-hasMasterNCs', 'msDS-hasFullReplicaNCs') } 'NTDS settings'
+    $servers = @(Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=server)'; Properties = @('name', 'dNSHostName', 'serverReference') } 'servers')
+    $ntds = @(Search-Adtd @{ SearchBase = $sitesDN; Filter = '(|(objectCategory=nTDSDSA)(objectCategory=nTDSDSARO))'; Properties = @('options', 'objectClass', 'msDS-Behavior-Version', 'msDS-HasDomainNCs', 'hasMasterNCs', 'msDS-hasMasterNCs', 'msDS-hasFullReplicaNCs') } 'NTDS settings')
     $ntdsByServerDN = @{}
     foreach ($n in $ntds) { $ntdsByServerDN[(Get-ParentDN (Get-A $n 'distinguishedName')).ToLower()] = $n }
 
     $computers = @{}
-    $dcComputers = Search-Adtd @{ SearchBase = $forestDN; GlobalCatalog = $true; Filter = '(&(objectCategory=computer)(|(primaryGroupID=516)(primaryGroupID=521)))'; Properties = @('dNSHostName', 'name', 'operatingSystem', 'operatingSystemVersion') } 'domain controller computer accounts (global catalog)'
+    $dcComputers = @(Search-Adtd @{ SearchBase = $forestDN; GlobalCatalog = $true; Filter = '(&(objectCategory=computer)(|(primaryGroupID=516)(primaryGroupID=521)))'; Properties = @('dNSHostName', 'name', 'operatingSystem', 'operatingSystemVersion') } 'domain controller computer accounts (global catalog)')
     foreach ($c in $dcComputers) {
         $computers[("$(Get-A $c 'distinguishedName')").ToLower()] = $c
         if (Get-A $c 'dNSHostName') { $computers[("$(Get-A $c 'dNSHostName')").ToLower()] = $c }
@@ -429,7 +429,7 @@ function Get-AdtdInventory {
 
     # ---------- Replication connections ----------
     Write-AdtdLog 'Reading replication connections...'
-    $conns = Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=nTDSConnection)'; Properties = @('name', 'fromServer', 'options', 'enabledConnection', 'transportType') } 'replication connections'
+    $conns = @(Search-Adtd @{ SearchBase = $sitesDN; Filter = '(objectClass=nTDSConnection)'; Properties = @('name', 'fromServer', 'options', 'enabledConnection', 'transportType') } 'replication connections')
     $inv.Connections = @(foreach ($c in $conns) {
         $cdn = Get-A $c 'distinguishedName'
         $en = Get-A $c 'enabledConnection'
@@ -449,7 +449,7 @@ function Get-AdtdInventory {
     foreach ($d in $inv.Domains) {
         if (-not $d.Reachable) { continue }
         Write-AdtdLog "Reading trusts for $($d.Name)..."
-        $tds = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=System,$($d.DN)"; Filter = '(objectClass=trustedDomain)'; Scope = 'OneLevel'; Properties = @('trustPartner', 'flatName', 'trustType', 'trustDirection', 'trustAttributes', 'whenCreated') } "trusts for $($d.Name)"
+        $tds = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=System,$($d.DN)"; Filter = '(objectClass=trustedDomain)'; Scope = 'OneLevel'; Properties = @('trustPartner', 'flatName', 'trustType', 'trustDirection', 'trustAttributes', 'whenCreated') } "trusts for $($d.Name)")
         foreach ($t in $tds) {
             $desc = Get-TrustDescription -Direction ([int](Get-A $t 'trustDirection')) -Type ([int](Get-A $t 'trustType')) -Attributes ([int](Get-A $t 'trustAttributes'))
             $trusts += [pscustomobject]@{
@@ -463,12 +463,12 @@ function Get-AdtdInventory {
             }
         }
 
-        $dfsrSysvol = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=DFSR-GlobalSettings,CN=System,$($d.DN)"; Filter = '(&(objectClass=msDFSR-ReplicationGroup)(name=Domain System Volume))'; Scope = 'OneLevel'; Properties = @('name') } "SYSVOL replication for $($d.Name)"
+        $dfsrSysvol = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=DFSR-GlobalSettings,CN=System,$($d.DN)"; Filter = '(&(objectClass=msDFSR-ReplicationGroup)(name=Domain System Volume))'; Scope = 'OneLevel'; Properties = @('name') } "SYSVOL replication for $($d.Name)")
         $d.SysvolReplication = if ($dfsrSysvol.Count) { 'DFSR' } else { 'FRS' }
 
         if ($IncludeOUs) {
             Write-AdtdLog "Reading OUs and GPO links for $($d.Name)..."
-            $gpos = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Policies,CN=System,$($d.DN)"; Filter = '(objectClass=groupPolicyContainer)'; Scope = 'OneLevel'; Properties = @('name', 'displayName') } "GPOs for $($d.Name)"
+            $gpos = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Policies,CN=System,$($d.DN)"; Filter = '(objectClass=groupPolicyContainer)'; Scope = 'OneLevel'; Properties = @('name', 'displayName') } "GPOs for $($d.Name)")
             $gpoNames = @{}
             foreach ($g in $gpos) { $gpoNames["$(Get-A $g 'name')".ToUpper()] = Get-A $g 'displayName' }
             $resolve = {
@@ -481,7 +481,7 @@ function Get-AdtdInventory {
                 BlockInheritance = [bool]($d.GpOptions -band 1)
                 GpoLinks = @(ConvertFrom-GpLink $d.GpLink | ForEach-Object { & $resolve $_ })
             }
-            $ouObjs = Search-Adtd @{ Server = $d.Name; SearchBase = $d.DN; Filter = '(objectClass=organizationalUnit)'; Properties = @('name', 'gPLink', 'gPOptions') } "OUs for $($d.Name)"
+            $ouObjs = @(Search-Adtd @{ Server = $d.Name; SearchBase = $d.DN; Filter = '(objectClass=organizationalUnit)'; Properties = @('name', 'gPLink', 'gPOptions') } "OUs for $($d.Name)")
             $sorted = @($ouObjs | Sort-Object { (Split-DistinguishedName (Get-A $_ 'distinguishedName')).Count }, { Get-A $_ 'name' })
             if ($sorted.Count -gt $MaxOUs) {
                 Write-AdtdLog "$($d.Name) has $($sorted.Count) OUs; drawing the first $MaxOUs by depth (raise -MaxOUs to draw more)." -Level Warn
@@ -502,17 +502,17 @@ function Get-AdtdInventory {
         if ($IncludeDfsr) {
             Write-AdtdLog "Reading DFS Replication groups for $($d.Name)..."
             $gs = "CN=DFSR-GlobalSettings,CN=System,$($d.DN)"
-            $rgs = Search-Adtd @{ Server = $d.Name; SearchBase = $gs; Filter = '(objectClass=msDFSR-ReplicationGroup)'; Scope = 'OneLevel'; Properties = @('name') } "DFSR groups for $($d.Name)"
+            $rgs = @(Search-Adtd @{ Server = $d.Name; SearchBase = $gs; Filter = '(objectClass=msDFSR-ReplicationGroup)'; Scope = 'OneLevel'; Properties = @('name') } "DFSR groups for $($d.Name)")
             foreach ($rg in $rgs) {
                 $rgDN = Get-A $rg 'distinguishedName'
-                $members = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Topology,$rgDN"; Filter = '(objectClass=msDFSR-Member)'; Scope = 'OneLevel'; Properties = @('name', 'msDFSR-ComputerReference') } "DFSR members of $(Get-A $rg 'name')"
+                $members = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Topology,$rgDN"; Filter = '(objectClass=msDFSR-Member)'; Scope = 'OneLevel'; Properties = @('name', 'msDFSR-ComputerReference') } "DFSR members of $(Get-A $rg 'name')")
                 $memberNames = @{}
                 foreach ($m in $members) {
                     $cref = Get-A $m 'msDFSR-ComputerReference'
                     $memberNames[("$(Get-A $m 'distinguishedName')").ToLower()] = if ($cref) { Get-RdnValue $cref 0 } else { Get-A $m 'name' }
                 }
-                $mconns = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Topology,$rgDN"; Filter = '(objectClass=msDFSR-Connection)'; Properties = @('fromServer', 'msDFSR-Enabled') } "DFSR connections of $(Get-A $rg 'name')"
-                $folders = Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Content,$rgDN"; Filter = '(objectClass=msDFSR-ContentSet)'; Scope = 'OneLevel'; Properties = @('name') } "DFSR folders of $(Get-A $rg 'name')"
+                $mconns = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Topology,$rgDN"; Filter = '(objectClass=msDFSR-Connection)'; Properties = @('fromServer', 'msDFSR-Enabled') } "DFSR connections of $(Get-A $rg 'name')")
+                $folders = @(Search-Adtd @{ Server = $d.Name; SearchBase = "CN=Content,$rgDN"; Filter = '(objectClass=msDFSR-ContentSet)'; Scope = 'OneLevel'; Properties = @('name') } "DFSR folders of $(Get-A $rg 'name')")
                 $dfsr += [pscustomobject]@{
                     Domain      = $d.Name
                     Name        = Get-A $rg 'name'
@@ -551,10 +551,10 @@ function Get-AdtdInventory {
     if ($IncludeExchange) {
         Write-AdtdLog 'Reading Exchange organization...'
         $exRoot = "CN=Microsoft Exchange,CN=Services,$configNC"
-        $org = Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectClass=msExchOrganizationContainer)'; Scope = 'OneLevel'; Properties = @('name') } 'Exchange organization'
+        $org = @(Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectClass=msExchOrganizationContainer)'; Scope = 'OneLevel'; Properties = @('name') } 'Exchange organization')
         if ($org.Count) {
-            $exServers = Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectCategory=msExchExchangeServer)'; Properties = @('name', 'serialNumber', 'msExchCurrentServerRoles', 'msExchServerSite', 'networkAddress', 'msExchMDBAvailabilityGroupLink') } 'Exchange servers'
-            $dags = Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectClass=msExchMDBAvailabilityGroup)'; Properties = @('name') } 'Exchange DAGs'
+            $exServers = @(Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectCategory=msExchExchangeServer)'; Properties = @('name', 'serialNumber', 'msExchCurrentServerRoles', 'msExchServerSite', 'networkAddress', 'msExchMDBAvailabilityGroupLink') } 'Exchange servers')
+            $dags = @(Search-Adtd @{ SearchBase = $exRoot; Filter = '(objectClass=msExchMDBAvailabilityGroup)'; Properties = @('name') } 'Exchange DAGs')
             $inv.Exchange = [pscustomobject]@{
                 Organization = Get-A $org[0] 'name'
                 SchemaName   = $inv.Forest.ExchangeSchemaName

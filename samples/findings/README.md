@@ -1,9 +1,9 @@
 # Active Directory assessment: contoso.com
 
-Collected 2026-09-27 09:28 from dc01.contoso.com with ADTD Modern 3.0.0. Read-only: nothing in Active Directory was changed.
+Collected 2026-09-27 09:51 from dc01.contoso.com with ADTD Modern 3.0.1. Read-only: nothing in Active Directory was changed.
 
 - **High**: 12
-- **Medium**: 22
+- **Medium**: 21
 - **Low**: 11
 
 | ID | Severity | Category | Finding | Affected |
@@ -28,7 +28,6 @@ Collected 2026-09-27 09:28 from dc01.contoso.com with ADTD Modern 3.0.0. Read-on
 | [S08](S08-privileged-accounts-are-not-being-used.md) | Medium | Security | Privileged accounts are not being used | 1 |
 | [S09](S09-operator-groups-have-members.md) | Medium | Security | Operator groups have members | 1 |
 | [S11](S11-user-accounts-with-service-principal-names-kerberoastable.md) | Medium | Security | User accounts with service principal names (Kerberoastable) | 1 |
-| [S13](S13-accounts-trusted-to-authenticate-for-delegation-protocol.md) | Medium | Security | Accounts trusted to authenticate for delegation (protocol transition) | 0 |
 | [S14](S14-accounts-that-do-not-need-a-password.md) | Medium | Security | Accounts that do not need a password | 1 |
 | [S17](S17-accounts-limited-to-rc4-kerberos-encryption.md) | Medium | Security | Accounts limited to RC4 Kerberos encryption | 2 |
 | [S21](S21-accounts-with-sid-history.md) | Medium | Security | Accounts with SID history | 1 |

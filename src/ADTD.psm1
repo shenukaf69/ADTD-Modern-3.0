@@ -1,10 +1,11 @@
 # ADTD Modern - Active Directory Topology Diagrammer for current Windows Server releases.
 # A read-only replacement for Microsoft's ADTD 2011 (ADTD.Net_Setup.msi).
 
-$script:AdtdVersion = '3.0.0'
+$script:AdtdVersion = '3.0.1'
 $script:AllDrawings = @('Summary', 'Sites', 'Replication', 'Domains', 'Hybrid', 'AppPartitions', 'OUs', 'Dfsr', 'Exchange')
 
 . (Join-Path $PSScriptRoot 'ADTD.Versions.ps1')
+. (Join-Path $PSScriptRoot 'ADTD.Icons.ps1')
 . (Join-Path $PSScriptRoot 'ADTD.Collect.ps1')
 . (Join-Path $PSScriptRoot 'ADTD.Security.ps1')
 . (Join-Path $PSScriptRoot 'ADTD.Assessment.ps1')
@@ -35,6 +36,13 @@ function Invoke-ADTD {
     .PARAMETER DrawIoViewer
     Where -Open shows the drawing: Desktop (draw.io desktop app), Web (app.diagrams.net in your browser) or Auto
     (desktop if installed, otherwise web). The default comes from Install-Prerequisites.ps1 or Set-AdtdSettings.
+
+    .PARAMETER Offline
+    For computers without internet access: no draw.io web links. (The reports' diagram viewer is built in and
+    works offline by default.)
+
+    .PARAMETER DrawIoWebViewer
+    Use draw.io's online viewer (viewer.diagrams.net) in the HTML reports instead of the built-in offline viewer.
 
     .PARAMETER SkipSecurityScan
     Skip the security and hybrid-readiness scan of users, computers, groups, AD CS and Entra ID objects.
@@ -68,12 +76,15 @@ function Invoke-ADTD {
         [string]$DrawIoViewer,
         [switch]$SkipSecurityScan,
         [switch]$NoDrawIoWeb,
+        [switch]$Offline,
+        [switch]$DrawIoWebViewer,
         [string]$OutputFolder = (Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'ADTD'),
         [string]$InputFile,
         [int]$MaxOUs = 400,
         [switch]$Open
     )
     if ($All) { $Drawings = $script:AllDrawings }
+    if ($Offline) { $NoDrawIoWeb = [switch]$true; $DrawIoWebViewer = [switch]$false }
     $script:AdtdLogLines.Clear()
     if (-not (Test-Path $OutputFolder)) { New-Item -ItemType Directory -Path $OutputFolder -Force | Out-Null }
 
@@ -105,8 +116,8 @@ function Invoke-ADTD {
         $out.DrawIoWebLink = "$base-open-in-drawio-web.url"
         "[InternetShortcut]`r`nURL=$(Get-AdtdDrawIoWebUrl $out.DrawIo)`r`n" | Set-Content -Path $out.DrawIoWebLink -Encoding ASCII
     }
-    if ($Format -contains 'Html') { $out.Html = Export-AdtdHtmlReport $inv "$base.html" $out.DrawIo -NoDrawIoWeb:$NoDrawIoWeb; Write-AdtdLog "Saved $($out.Html)" }
-    if ($Format -contains 'HtmlTabs') { $out.HtmlTabs = Export-AdtdHtmlReport $inv "$base-tabs.html" $out.DrawIo -NoDrawIoWeb:$NoDrawIoWeb -Tabs; Write-AdtdLog "Saved $($out.HtmlTabs)" }
+    if ($Format -contains 'Html') { $out.Html = Export-AdtdHtmlReport $inv "$base.html" $out.DrawIo -NoDrawIoWeb:$NoDrawIoWeb -DrawIoWebViewer:$DrawIoWebViewer; Write-AdtdLog "Saved $($out.Html)" }
+    if ($Format -contains 'HtmlTabs') { $out.HtmlTabs = Export-AdtdHtmlReport $inv "$base-tabs.html" $out.DrawIo -NoDrawIoWeb:$NoDrawIoWeb -DrawIoWebViewer:$DrawIoWebViewer -Tabs; Write-AdtdLog "Saved $($out.HtmlTabs)" }
     if ($Format -contains 'Markdown') { $out.Markdown = Export-AdtdMarkdown $inv "$base-findings"; Write-AdtdLog "Saved one Markdown report per finding to $($out.Markdown)" }
     if ($Format -contains 'Json') {
         $inv | ConvertTo-Json -Depth 10 | Set-Content -Path "$base.json" -Encoding UTF8
@@ -122,7 +133,7 @@ function Invoke-ADTD {
 
     if ($Open) {
         foreach ($k in 'HtmlTabs', 'Html', 'Visio') { if ($out[$k] -and (Test-Path $out[$k])) { try { Invoke-Item $out[$k] } catch { } } }
-        if ($out.DrawIo) { try { $how = Open-AdtdDrawing -Path $out.DrawIo -Viewer $DrawIoViewer; Write-AdtdLog "Opened the drawing in draw.io ($how)." } catch { Write-AdtdLog "Could not open draw.io: $($_.Exception.Message)" -Level Warn } }
+        if ($out.DrawIo) { try { $how = Open-AdtdDrawing -Path $out.DrawIo -Viewer $(if ($Offline) { 'Desktop' } else { $DrawIoViewer }); Write-AdtdLog "Opened the drawing in draw.io ($how)." } catch { Write-AdtdLog "Could not open draw.io: $($_.Exception.Message)" -Level Warn } }
     }
     [pscustomobject]@{
         Forest            = $inv.Forest.Name
@@ -230,6 +241,10 @@ function Show-ADTD {
     $log.Location = New-Object System.Drawing.Point(14, $y); $log.Size = New-Object System.Drawing.Size(656, (580 - $y)); $log.Anchor = 'Top,Bottom,Left,Right'
     $form.Controls.Add($log)
 
+    $offCb = New-Object System.Windows.Forms.CheckBox
+    $offCb.Text = 'No internet on this computer (offline mode)'; $offCb.AutoSize = $true
+    $offCb.Location = New-Object System.Drawing.Point(230, 598); $offCb.Anchor = 'Bottom,Left'
+    $form.Controls.Add($offCb)
     $openCb = New-Object System.Windows.Forms.CheckBox
     $openCb.Text = 'Open the results when done'; $openCb.Checked = $true; $openCb.AutoSize = $true
     $openCb.Location = New-Object System.Drawing.Point(14, 598); $openCb.Anchor = 'Bottom,Left'
@@ -247,7 +262,7 @@ function Show-ADTD {
                 $fmts = @($fmt.Keys | Where-Object { $fmt[$_].Checked })
                 if (-not $sel.Count -or -not $fmts.Count) { throw 'Pick at least one drawing and one output format.' }
                 $p = @{ Drawings = $sel; Format = $fmts; OutputFolder = $folder.Text; Open = $openCb.Checked
-                    SkipSecurityScan = -not $boxes.Security.Checked; DrawIoViewer = @('Auto', 'Desktop', 'Web')[$viewer.SelectedIndex] }
+                    SkipSecurityScan = -not $boxes.Security.Checked; DrawIoViewer = @('Auto', 'Desktop', 'Web')[$viewer.SelectedIndex]; Offline = $offCb.Checked }
                 [void](Set-AdtdSettings -DrawIoViewer $p.DrawIoViewer)
                 if ($server.Text.Trim()) { $p.Server = $server.Text.Trim() }
                 if ($useCred.Checked) {

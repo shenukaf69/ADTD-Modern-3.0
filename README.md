@@ -27,11 +27,13 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 - [Repository layout](#repository-layout)
 - [Known limitations](#known-limitations)
 
-Guides: [Installation](docs/INSTALL.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
+Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**](docs/OFFLINE.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
 
 ## Quick start
 
-1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.0.msi`](dist/ADTD_Modern_Setup_3.0.0.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+> **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
+
+1. **Install.** Download and run [`dist/ADTD_Modern_Setup_3.0.1.msi`](dist/ADTD_Modern_Setup_3.0.1.msi) (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** and choose one:
    - **1**: install draw.io desktop
    - **2**: use draw.io on the web (nothing to install)
@@ -59,7 +61,7 @@ Invoke-ADTD -All -Format DrawIo, Html, HtmlTabs, Markdown, Csv, Json -Open
 | Runtime | .NET Framework 2.0, 32-bit | Windows PowerShell 5.1 or PowerShell 7, 64-bit. No RSAT or ActiveDirectory module needed |
 | Interface | WinForms window, command-line switches | Window **and** PowerShell module (`Invoke-ADTD`) for scripts and scheduled tasks |
 | Installer | Visual Studio setup project | 64-bit MSI with upgrades and silent install; per-user install; **prerequisites installer** |
-| Tests | None | 119 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
+| Tests | None | 125 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
 
 ## What it draws
 
@@ -77,6 +79,8 @@ Each drawing is one page (tab) in the `.drawio` file.
 | **Exchange** | Servers by site, with version (2013 to SE), roles and DAG |
 | **Target hybrid topology** | Today's on-premises AD, the identity bridge (sync, UPNs, hybrid join, Entra Kerberos, Defender for Identity) and the Entra ID / Microsoft 365 target. Each box is coloured: in place, needs work, missing, or not visible from AD |
 | **Upgrade roadmap** | The four phases with every finding placed in its phase, plus the suggested target topology |
+
+The drawings use a built-in set of flat icons, embedded in the file. They include domain controllers, sites, subnets, forests, domains, Exchange, OUs, GPOs, DFS-R, Entra ID, sync, Defender, LAPS and certificates. The icons look the same in draw.io desktop, draw.io web, the offline report viewer and PNG/SVG/PDF exports, with no stencil libraries or internet access needed.
 
 Domain controllers are coloured by support status. **Green** means supported, **orange** means support ends within 12 months, and **red** means out of support. A dashed border marks a read-only DC.
 
@@ -99,7 +103,7 @@ Every run writes an HTML report. There are two layouts, and you can have both:
 - **`HtmlTabs`** (optional): a single file with tabs:
   - **Summary**
   - **Findings**, with severity and category filters and a search box that also searches affected objects
-  - **Diagrams**, with one sub-tab per draw.io page, shown in the draw.io web viewer with zoom, full screen and "edit in draw.io"
+  - **Diagrams**, with one sub-tab per draw.io page. The built-in viewer works **without internet access**, with zoom and pan
   - **Hybrid plan**
   - **Inventory**
 
@@ -198,7 +202,9 @@ Details: [docs/HYBRID.md](docs/HYBRID.md).
 
 Choose the default in the window (**Open drawings in**), or with `-DrawIoViewer Desktop|Web|Auto`. You can also run `Install-Prerequisites.ps1`, which saves your choice.
 
-About the web link: the drawing travels in the URL fragment (`#R…`), which browsers do not send to any server. draw.io decodes it in your browser. The in-report viewer loads draw.io's viewer script from `viewer.diagrams.net`. Use `-NoDrawIoWeb` for fully offline reports.
+About the web link: the drawing travels in the URL fragment (`#R…`), which browsers do not send to any server. draw.io decodes it in your browser.
+
+The diagram viewer inside the HTML reports is **built in** (mxGraph, Apache-2.0, bundled in `src/lib`) and works without internet access. Use `-Offline` on computers with no internet access: it also drops the draw.io web links and opens drawings in draw.io desktop. If you'd rather use draw.io's own online viewer in the report, add `-DrawIoWebViewer`. Step-by-step offline guide: [docs/OFFLINE.md](docs/OFFLINE.md).
 
 ## Supported versions
 
@@ -233,7 +239,9 @@ Get-Help Invoke-ADTD -Full
 | `-Format` | `DrawIo`, `Html`, `HtmlTabs`, `Markdown`, `Csv`, `Json`, `Visio` | DrawIo, Html, Json |
 | `-DrawIoViewer` | Where `-Open` shows drawings: `Desktop`, `Web`, `Auto` | Saved setting (Auto) |
 | `-SkipSecurityScan` | Health and topology only | |
-| `-NoDrawIoWeb` | No draw.io web link or viewer (fully offline report) | |
+| `-Offline` | For computers without internet access: no draw.io web links, open drawings in draw.io desktop | |
+| `-NoDrawIoWeb` | Leave out the draw.io web link and shortcut | |
+| `-DrawIoWebViewer` | Use draw.io's online viewer in the HTML reports instead of the built-in offline viewer | |
 | `-OutputFolder` | Where files go | `Documents\ADTD` |
 | `-Server`, `-Credential` | DC or domain, and the account to read with | Logon domain and account |
 | `-InputFile` | Re-assess and redraw a saved `.json` without contacting AD | |
@@ -267,10 +275,11 @@ src/                     PowerShell module (installed by the MSI)
   ADTD.Assessment.ps1    Findings catalog (58 checks), gap analysis, target topology, roadmap
   ADTD.Render.ps1        Page layouts, draw.io writer, Visio (COM) writer
   ADTD.Report.ps1        HTML (single page and tabbed), Markdown, CSV, draw.io web link
+  lib/mxClient.min.js    Built-in offline diagram viewer (mxGraph 4.2.2, Apache-2.0)
   ADTD.Versions.ps1      Windows, Exchange, schema and functional-level tables
-setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1
-dist/                    ADTD_Modern_Setup_3.0.0.msi
-tests/Test-ADTD.ps1      Offline test suite (119 checks)
+setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
+dist/                    ADTD_Modern_Setup_3.0.1.msi
+tests/Test-ADTD.ps1      Offline test suite (125 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
 samples/                 Sample drawing, reports, JSON and per-finding Markdown
 docs/                    Guides and screenshots

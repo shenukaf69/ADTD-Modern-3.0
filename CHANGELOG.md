@@ -1,5 +1,28 @@
 # Changelog
 
+## 3.0.1 (2026-09-27)
+
+- **Works without internet access.** The HTML reports have a built-in diagram viewer (mxGraph 4.2.2, Apache-2.0, bundled in `src/lib`), so diagrams display offline. `-DrawIoWebViewer` switches back to draw.io's online viewer.
+- `-Offline` switch, plus a matching checkbox in the window: no draw.io web links, and drawings open in draw.io desktop.
+- `Install-Prerequisites.ps1`:
+  - installs draw.io desktop from a local installer (`-DrawIoInstaller`, or a file in the package's `drawio` folder) after checking its signature
+  - checks that the current account can read Active Directory
+- Offline package with `START-HERE.txt` and [docs/OFFLINE.md](docs/OFFLINE.md).
+- **Redesigned diagrams**:
+  - title banners
+  - coloured site and group headers
+  - card-style boxes with icons and shadows
+  - softer status colours
+  - label chips on connectors
+  - curved arrows for replication between sites
+  - KPI tiles on the summary page
+  - colour-coded roadmap phases
+  - a page background
+- **Icon set**: 29 flat icons (domain controller, RODC, site, subnet, forest, domain, Exchange, OU, GPO, DFS-R, partition, Entra ID, sync, Defender, LAPS key, certificate, device, app and more). They are embedded in the `.drawio` file, so they look the same in draw.io desktop, draw.io web, the offline report and PNG/SVG/PDF exports, without needing stencil libraries or internet access.
+- Fixed: when a search returned exactly one object, it was read incorrectly. This affected the Exchange organization name and the counts of gMSAs, fine-grained password policies and Password Protection agents.
+- Fixed: read-only DCs are no longer reported for protocol transition. RODC accounts have that flag by design.
+- Fixed: the protocol-transition and RC4 findings no longer appear with empty evidence.
+
 ## 3.0.0 (2026-09-27)
 
 First release of ADTD Modern, a rewrite of Microsoft's Active Directory Topology Diagrammer 1.8 (2011).

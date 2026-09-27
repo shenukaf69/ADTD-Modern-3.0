@@ -184,6 +184,8 @@ $mod = Import-Module (Join-Path $PSScriptRoot '..\src\ADTD.psm1') -Force -PassTh
     C 'EMEAWS1' $emea 'Windows 11 Enterprise' '10.0 (26200)' -Laps
 
     O "CN=ms-LAPS-Password,$sch" @('top', 'attributeSchema')
+    O "CN=gmsa-web,CN=Managed Service Accounts,$root" @('top', 'msDS-GroupManagedServiceAccount') @{ sAMAccountName = 'gmsa-web$' }
+    O "CN=Admins-PSO,CN=Password Settings Container,CN=System,$root" @('top', 'msDS-PasswordSettings')
     O "CN=62a0ff2e-97b9-4513-943f-0d221bd30080,CN=Device Registration Configuration,CN=Services,$cfg" @('top', 'serviceConnectionPoint') @{ keywords = @('azureADName:contoso.onmicrosoft.com', 'azureADId:00000000-1111-2222-3333-444444444444') }
     O "CN=ADFS,CN=Microsoft,CN=Program Data,$root" @('top', 'container')
     $pks = "CN=Public Key Services,CN=Services,$cfg"
@@ -192,7 +194,7 @@ $mod = Import-Module (Join-Path $PSScriptRoot '..\src\ADTD.psm1') -Force -PassTh
     O "CN=WebServer,CN=Certificate Templates,$pks" @('top', 'pKICertificateTemplate') @{ 'msPKI-Certificate-Name-Flag' = 1; 'msPKI-Enrollment-Flag' = 0; 'msPKI-RA-Signature' = 0; pKIExtendedKeyUsage = @('1.3.6.1.5.5.7.3.1') }
     O "CN=User,CN=Certificate Templates,$pks" @('top', 'pKICertificateTemplate') @{ 'msPKI-Certificate-Name-Flag' = 0x82000000; 'msPKI-Enrollment-Flag' = 41; pKIExtendedKeyUsage = @('1.3.6.1.5.5.7.3.2') }
 
-    foreach ($o in @($script:FakeDir | Where-Object { $_.objectclass -contains 'computer' -and $_.primarygroupid -in 516, 521 -and -not $_.lastlogontimestamp })) { $o['lastlogontimestamp'] = (Get-FakeFileTime 1); $o['useraccountcontrol'] = 0x82000; $o['name'] = ($o.distinguishedname -replace '^CN=([^,]+),.*$', '$1') }
+    foreach ($o in @($script:FakeDir | Where-Object { $_.objectclass -contains 'computer' -and $_.primarygroupid -in 516, 521 -and -not $_.lastlogontimestamp })) { $o['lastlogontimestamp'] = (Get-FakeFileTime 1); $o['useraccountcontrol'] = $(if ($o.primarygroupid -eq 521) { 0x5001000 } else { 0x82000 }); $o['name'] = ($o.distinguishedname -replace '^CN=([^,]+),.*$', '$1') }
 
     # ---- tiny LDAP filter evaluator ----
     function script:Test-Filter([hashtable]$o, [string]$f) {
@@ -298,6 +300,8 @@ Check ($sc.Hybrid.SeamlessSsoPasswordAgeDays -ge 119 -and $sc.Hybrid.EntraKerber
 Check ((@($sc.Hybrid.ConnectSyncAccounts)[0]).Server -eq 'SYNC01') 'Entra Connect server from MSOL account'
 Check ($inv.Security.Forest.TenantName -eq 'contoso.onmicrosoft.com' -and $inv.Security.Forest.WindowsLapsSchema) 'tenant from SCP, Windows LAPS schema'
 Check ((@($inv.Security.Forest.RiskyTemplates).Name -join ',') -eq 'VulnTemplate') 'ESC1-style template detected, safe templates ignored'
+Check ($inv.Exchange.Organization -eq 'Contoso') 'single search result (Exchange organization) is read correctly'
+Check ($sc.GmsaCount -eq 1 -and $sc.PasswordPolicy.FineGrainedPolicies -eq 1) 'single gMSA and single fine-grained policy counted as 1'
 
 Write-Host 'Findings'
 $f = @($inv.Findings)
@@ -313,6 +317,8 @@ Check ((@($f | Where-Object Id -eq 'S31')[0].Severity) -eq 'High') 'SSO key olde
 Check ((@($f | Where-Object Id -eq 'S17')[0].Evidence) -contains 'contoso.com\AZUREADSSOACC') 'RC4 check includes AZUREADSSOACC'
 Check ((@($f | Where-Object Id -eq 'X07')[0].Evidence) -contains 'emea.contoso.com') 'Entra Kerberos missing in emea only'
 Check (@($f | Where-Object { -not $_.Steps.Count -or -not $_.Risk }).Count -eq 0) 'every finding has risk and steps'
+Check (@($f | Where-Object { @($_.Evidence | Where-Object { -not "$_" }).Count -or $_.Finding -match ': \.$' }).Count -eq 0) 'no finding has empty evidence'
+Check (-not ($ids -contains 'S13')) 'RODCs are not flagged for protocol transition'
 Check ($f[0].Severity -eq 'High' -and $f[-1].Severity -eq 'Low') 'findings sorted by severity'
 
 Write-Host 'Hybrid plan'
@@ -345,7 +351,12 @@ Check ((Get-Content -Raw $r.Files.Html) -match 'Exchange Server SE') 'HTML repor
 Check (@(Get-ChildItem "$($r.Files.Json -replace '\.json$','')-csv" -Filter *.csv).Count -ge 14) 'CSV files'
 $html = Get-Content -Raw $r.Files.Html
 Check ($html -match 'id="S05"' -and $html -match 'How to fix' -and $html -match 'learn.microsoft.com') 'HTML has a card per finding with steps and references'
-Check ($html -match 'class=.mxgraph' -and $html -match 'viewer-static.min.js') 'HTML embeds the draw.io web viewer'
+Check ($html -match 'window.adtdRender' -and $html -match 'mxGraph' -and $html -notmatch 'viewer.diagrams.net/js') 'HTML has the built-in offline diagram viewer'
+$ro = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, HtmlTabs -Offline -OutputFolder (Join-Path $OutputFolder 'offline')
+$offHtml = Get-Content -Raw $ro.Files.HtmlTabs
+Check (-not $ro.Files.DrawIoWebLink -and $offHtml -notmatch 'app.diagrams.net/\?' -and $offHtml -match 'window.adtdRender') 'offline mode: no web links, built-in viewer'
+$rw = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, Html -DrawIoWebViewer -OutputFolder (Join-Path $OutputFolder 'webviewer')
+Check ((Get-Content -Raw $rw.Files.Html) -match 'viewer-static.min.js') 'optional draw.io web viewer'
 Check ($html -match 'what on-premises AD is missing') 'HTML has the gap analysis'
 $tabs = Get-Content -Raw $r.Files.HtmlTabs
 Check ($tabs -match "data-tab='findings'" -and $tabs -match "data-tab='diagrams'" -and $tabs -match "data-tab='plan'" -and $tabs -match "data-tab='inventory'") 'tabbed HTML has all tabs'

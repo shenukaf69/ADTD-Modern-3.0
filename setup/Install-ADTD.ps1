@@ -26,6 +26,7 @@ if ($Uninstall) {
 foreach ($t in $targets) {
     New-Item -ItemType Directory -Path $t -Force | Out-Null
     Copy-Item (Join-Path $src '*.ps*1') $t -Force
+    if (Test-Path (Join-Path $src 'lib')) { Copy-Item (Join-Path $src 'lib') $t -Recurse -Force }
     $prereq = Join-Path $PSScriptRoot 'Install-Prerequisites.ps1'
     if (Test-Path $prereq) { Copy-Item $prereq $t -Force }
     Get-ChildItem $t | Unblock-File

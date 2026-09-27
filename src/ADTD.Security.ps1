@@ -188,7 +188,7 @@ function Get-AdtdDomainSecurity {
         $stale = if ($last) { (Get-AdtdAgeDays $last $Now) -gt $script:StaleDays } else { -not $created -or (Get-AdtdAgeDays $created $Now) -gt $script:StaleDays }
         if ($stale) { Add-Capped $c.Stale $name }
         if (-not $isDc -and ($uac -band $script:UAC.TrustedForDelegation)) { Add-Capped $c.TrustedForDelegation $name }
-        if ($uac -band $script:UAC.TrustedToAuth) { Add-Capped $c.TrustedToAuth $name }
+        if (-not $isDc -and ($uac -band $script:UAC.TrustedToAuth)) { Add-Capped $c.TrustedToAuth $name }   # RODC accounts have this flag by design
         $enc = Get-A $x 'msDS-SupportedEncryptionTypes'
         if ($null -ne $enc -and "$enc" -ne '' -and ([int]$enc -band 0x18) -eq 0 -and ([int]$enc -band 0x7)) { Add-Capped $c.Rc4Only $name }
         $info = Get-WindowsOsInfo -OperatingSystem $os -OperatingSystemVersion (Get-A $x 'operatingSystemVersion') -Today $Now

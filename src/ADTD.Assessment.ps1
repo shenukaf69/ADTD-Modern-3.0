@@ -351,16 +351,16 @@ function Get-AdtdFindings {
 
         $e = & $collect { param($d) $d.Users.NoPreauth }; if ($e.Count) { & $add 'S10' "$($e.Count) account(s) don't require Kerberos pre-authentication: $(& $names $e)." $e }
         $e = & $collect { param($d) $d.Users.ServiceAccountsWithSpn }; if ($e.Count) { & $add 'S11' "$($e.Count) user account(s) have SPNs: $(& $names $e)." $e }
-        $e = @((& $collect { param($d) $d.Computers.TrustedForDelegation }) + (& $collect { param($d) $d.Users.TrustedForDelegation })); if ($e.Count) { & $add 'S12' "$($e.Count) non-DC account(s) are trusted for unconstrained delegation: $(& $names $e)." $e }
-        $e = @((& $collect { param($d) $d.Computers.TrustedToAuth }) + (& $collect { param($d) $d.Users.TrustedToAuth })); if ($e.Count) { & $add 'S13' "$($e.Count) account(s) use protocol transition: $(& $names $e)." $e }
+        $e = @(@(& $collect { param($d) $d.Computers.TrustedForDelegation }) + @(& $collect { param($d) $d.Users.TrustedForDelegation })); if ($e.Count) { & $add 'S12' "$($e.Count) non-DC account(s) are trusted for unconstrained delegation: $(& $names $e)." $e }
+        $e = @(@(& $collect { param($d) $d.Computers.TrustedToAuth }) + @(& $collect { param($d) $d.Users.TrustedToAuth })); if ($e.Count) { & $add 'S13' "$($e.Count) account(s) use protocol transition: $(& $names $e)." $e }
         $e = & $collect { param($d) $d.Users.PwdNotRequired }; if ($e.Count) { & $add 'S14' "$($e.Count) account(s) don't require a password: $(& $names $e)." $e }
         $e = & $collect { param($d) $d.Users.Reversible }
         $revPol = @($doms | Where-Object { $_.PasswordPolicy.ReversibleEncryption } | ForEach-Object { "$($_.Domain) default password policy" })
         if ($e.Count -or $revPol.Count) { & $add 'S15' "Reversible encryption is set on $($e.Count) account(s)$(if ($revPol.Count) { " and in the password policy of $(& $names ($revPol))" }): $(& $names $e)." @($revPol + $e) }
         $e = & $collect { param($d) $d.Users.DesOnly }; if ($e.Count) { & $add 'S16' "$($e.Count) account(s) are limited to DES: $(& $names $e)." $e }
-        $e = @((& $collect { param($d) $d.Users.Rc4Only }) + (& $collect { param($d) $d.Computers.Rc4Only }))
+        $e = @(@(& $collect { param($d) $d.Users.Rc4Only }) + @(& $collect { param($d) $d.Computers.Rc4Only }))
         $ssoRc4 = @($doms | Where-Object { $_.Hybrid.SeamlessSsoRc4 } | ForEach-Object { "$($_.Domain)\AZUREADSSOACC" })
-        $e = @($e + $ssoRc4)
+        $e = @(@($e) + @($ssoRc4) | Where-Object { $_ })
         if ($e.Count) { & $add 'S17' "$($e.Count) account(s) only allow RC4 for Kerberos: $(& $names $e)." $e }
         $e = & $collect { param($d) $d.Users.Stale }; if ($e.Count) { & $add 'S18' "$($e.Count) enabled user account(s) have not signed in for 90 days$(if ($e.Count -ge $script:MaxEvidence) { ' (list capped)' }): $(& $names $e)." $e }
         $e = & $collect { param($d) $d.Computers.Stale }; if ($e.Count) { & $add 'S19' "$($e.Count) enabled computer account(s) have not signed in for 90 days: $(& $names $e)." $e }

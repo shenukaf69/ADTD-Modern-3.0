@@ -52,6 +52,7 @@ function Open-AdtdDrawing {
     $exe = Find-AdtdDrawIoDesktop
     if ($Viewer -eq 'Desktop' -or ($Viewer -eq 'Auto' -and $exe)) {
         if ($exe) { Start-Process -FilePath $exe -ArgumentList "`"$Path`""; return 'Desktop' }
+        if ($Viewer -eq 'Desktop') { try { Invoke-Item $Path; return 'Default app' } catch { throw 'draw.io desktop is not installed. Install it with Install-Prerequisites.ps1 -DrawIoDesktop -DrawIoInstaller <file>.' } }
         Write-AdtdLog 'draw.io desktop is not installed; opening draw.io on the web instead. Run Install-Prerequisites.ps1 -DrawIoDesktop to install it.' -Level Warn
     }
     Start-Process (Get-AdtdDrawIoWebUrl $Path)
@@ -175,6 +176,42 @@ function Export-AdtdMarkdown {
 
 # ---------------------------------------------------------------- HTML
 
+function Get-AdtdOfflineViewerScript {
+    <#
+    Inline viewer for the report's diagrams: mxGraph 4.2.2 (Apache-2.0, src/lib) plus a small renderer.
+    Works from a local file with no internet access.
+    #>
+    $lib = Join-Path (Join-Path $PSScriptRoot 'lib') 'mxClient.min.js'
+    if (-not (Test-Path $lib)) { throw "Offline viewer library not found: $lib" }
+    $js = [System.IO.File]::ReadAllText($lib) -replace '</(script)', '<\/$1'
+    $renderer = @'
+window.adtdRender=function(host,xml,page){
+  try{
+  var doc=mxUtils.parseXml(xml), d=doc.getElementsByTagName('diagram')[page]; if(!d) return;
+  var model=mxUtils.parseXml(mxUtils.getXml(d.getElementsByTagName('mxGraphModel')[0])).documentElement;
+  [].slice.call(model.getElementsByTagName('UserObject')).forEach(function(u){var c=u.getElementsByTagName('mxCell')[0];c.setAttribute('id',u.getAttribute('id'));c.setAttribute('value',u.getAttribute('label')||'');u.parentNode.replaceChild(c,u)});
+  host.innerHTML='';
+  var bar=document.createElement('div');bar.className='dgm-bar';
+  var box=document.createElement('div');box.className='dgm-canvas';
+  host.appendChild(bar);host.appendChild(box);
+  var g=new mxGraph(box); g.setHtmlLabels(true); g.setEnabled(false); g.setPanning(true); g.panningHandler.useLeftButtonForPanning=true; g.foldingEnabled=false; g.setTooltips(false);
+  var ss=g.getStylesheet(), v=ss.getDefaultVertexStyle(), e=ss.getDefaultEdgeStyle();
+  v[mxConstants.STYLE_FILLCOLOR]='#ffffff'; v[mxConstants.STYLE_STROKECOLOR]='#666666'; v[mxConstants.STYLE_FONTCOLOR]='#1d2330'; v[mxConstants.STYLE_FONTFAMILY]='Segoe UI,Helvetica,Arial,sans-serif';
+  e[mxConstants.STYLE_FONTCOLOR]='#1d2330'; e[mxConstants.STYLE_FONTFAMILY]='Segoe UI,Helvetica,Arial,sans-serif'; e[mxConstants.STYLE_STROKECOLOR]='#666666';
+  ss.putCellStyle('swimlane',{shape:'swimlane',verticalAlign:'top',fontStyle:1});
+  ss.putCellStyle('text',{fillColor:'none',strokeColor:'none'});
+  ss.putCellStyle('ellipse',{shape:'ellipse',perimeter:mxPerimeter.EllipsePerimeter});
+  new mxCodec(model.ownerDocument).decode(model,g.getModel());
+  var fit=function(){ g.fit(8); if(g.view.scale>1){ g.zoomTo(1) } };
+  [['Fit',fit],['+',function(){g.zoomIn()}],['-',function(){g.zoomOut()}],['100%',function(){g.zoomActual()}]].forEach(function(b){var x=document.createElement('button');x.type='button';x.textContent=b[0];x.onclick=b[1];bar.appendChild(x)});
+  fit();
+  }catch(err){ host.textContent='Could not draw this page: '+err.message }
+};
+'@
+    return "<script>var mxBasePath='.';var mxLoadResources=false;var mxLoadStylesheets=false;var mxForceIncludes=false;</script><script>$js</script><script>$renderer</script>"
+}
+
+
 function ConvertTo-AdtdHtmlTable {
     param($Rows, [string[]]$Columns)
     $rows = @($Rows)
@@ -228,7 +265,7 @@ function Export-AdtdHtmlReport {
     Summary, Findings (filter and search), Diagrams (one tab per draw.io page, shown with the draw.io web viewer),
     Hybrid plan and Inventory.
     #>
-    param($Inventory, [string]$Path, [string]$DrawingFile, [switch]$NoDrawIoWeb, [switch]$Tabs)
+    param($Inventory, [string]$Path, [string]$DrawingFile, [switch]$NoDrawIoWeb, [switch]$Tabs, [switch]$DrawIoWebViewer)
     $inv = $Inventory; $f = $inv.Forest
     $findings = @($inv.Findings)
     $cnt = @{}; foreach ($s in 'High', 'Medium', 'Low') { $cnt[$s] = @($findings | Where-Object Severity -eq $s).Count }
@@ -265,25 +302,29 @@ function Export-AdtdHtmlReport {
         & $sec 'verify' 'Check by hand' "<p>These settings matter as much as the findings above, but they live in registry, services or cloud configuration that LDAP can't read.</p>$vm"
     }
 
-    if ($Tabs -and $DrawingFile -and (Test-Path $DrawingFile)) {
+    if ($DrawingFile -and (Test-Path $DrawingFile)) {
         $xmlText = [System.IO.File]::ReadAllText($DrawingFile)
         $names = @(([xml]$xmlText).mxfile.diagram | ForEach-Object { $_.name })
-        $webUrl = if ($NoDrawIoWeb) { $null } else { Get-AdtdDrawIoWebUrl $DrawingFile }
-        $sub = ($names | ForEach-Object -Begin { $i = 0 } -Process { "<button class='sub' data-page='$i'>$(HE $_)</button>"; $i++ }) -join ''
-        $link = if ($webUrl -and $webUrl.Length -lt 1900000) { "<a class='btn' href='$(HE $webUrl)' target='_blank' rel='noopener'>Open all pages in draw.io web</a>" } else { '' }
-        $body = "<p class='muted'>File <code>$(HE (Split-Path $DrawingFile -Leaf))</code>. Pick a page. Use the viewer's toolbar to zoom or open it full screen, or edit it in draw.io. $link</p><div class='subtabs'>$sub</div><div id='dgm' class='dgm'></div><p id='dgm-offline' class='muted' hidden>The draw.io viewer could not load (no internet access?). Open the .drawio file in draw.io desktop, or use the link above on a machine with internet access.</p>"
-        $body += "<script type='application/json' id='dgm-xml'>$(($xmlText | ConvertTo-Json -Compress) -replace '</', '<\/')</script>"
-        if (-not $NoDrawIoWeb) { $body += "<script src='https://viewer.diagrams.net/js/viewer-static.min.js' async onerror=`"document.getElementById('dgm-offline').hidden=false`"></script>" }
-        & $sec 'diagrams' 'Diagrams' $body
-    } elseif ($DrawingFile -and (Test-Path $DrawingFile)) {
         $leaf = HE (Split-Path $DrawingFile -Leaf)
-        $body = "<p>File: <code>$leaf</code>. Open it in <b>draw.io desktop</b>, or in <b>draw.io on the web</b>: <a href='https://app.diagrams.net' target='_blank' rel='noopener'>app.diagrams.net</a> &rarr; <i>Open existing diagram</i>."
-        if (-not $NoDrawIoWeb) {
-            $url = Get-AdtdDrawIoWebUrl $DrawingFile
-            if ($url.Length -lt 1900000) { $body += " Or use this link, which opens the drawing straight in draw.io on the web (the drawing is inside the link and is not uploaded): <a class='btn' href='$(HE $url)' target='_blank' rel='noopener'>Open in draw.io web</a>" }
-            $cfg = @{ highlight = '#2f6fb3'; nav = $true; resize = $true; toolbar = 'zoom pages layers lightbox'; edit = '_blank'; xml = [System.IO.File]::ReadAllText($DrawingFile) } | ConvertTo-Json -Compress
-            $body += "</p><div class='viewer'><div class='mxgraph' style='max-width:100%;border:1px solid var(--line);border-radius:8px' data-mxgraph='$(HE $cfg)'></div></div><p class='muted'>The interactive viewer loads draw.io's viewer script from viewer.diagrams.net and needs internet access; the drawing itself stays in this file.</p><script src='https://viewer.diagrams.net/js/viewer-static.min.js' async></script>"
-        } else { $body += '</p>' }
+        $webUrl = if ($NoDrawIoWeb) { $null } else { Get-AdtdDrawIoWebUrl $DrawingFile }
+        $link = if ($webUrl -and $webUrl.Length -lt 1900000) { " <a class='btn' href='$(HE $webUrl)' target='_blank' rel='noopener'>Open in draw.io web</a>" } else { '' }
+        $xmlJson = "<script type='application/json' id='dgm-xml'>$(($xmlText | ConvertTo-Json -Compress) -replace '</', '<\/')</script>"
+        $offline = -not $DrawIoWebViewer
+        $viewerJs = if ($offline) { Get-AdtdOfflineViewerScript } else { "<script src='https://viewer.diagrams.net/js/viewer-static.min.js' async onerror=`"document.getElementById('dgm-offline').hidden=false`"></script>" }
+        $how = if ($offline) { 'The viewer is built into this file and works without internet access. Scroll or use the buttons to zoom; to edit, open the .drawio file in draw.io desktop or on the web.' } else { "The viewer loads draw.io's script from viewer.diagrams.net (needs internet access); the drawing stays in this file." }
+        if ($Tabs) {
+            $sub = ($names | ForEach-Object -Begin { $i = 0 } -Process { "<button class='sub' data-page='$i'>$(HE $_)</button>"; $i++ }) -join ''
+            $body = "<p class='muted'>File <code>$leaf</code>. Pick a page. $how$link</p><div class='subtabs'>$sub</div><div id='dgm' class='dgm'></div><p id='dgm-offline' class='muted' hidden>The draw.io viewer could not load (no internet access?). Open the .drawio file in draw.io desktop, or run ADTD without -DrawIoWebViewer to get the built-in offline viewer.</p>"
+        } else {
+            $pagesHtml = ($names | ForEach-Object -Begin { $i = 0 } -Process { "<h3>$(HE $_)</h3><div class='dgm dgm-page' data-page='$i'></div>"; $i++ }) -join ''
+            $body = "<p class='muted'>File <code>$leaf</code>. $how$link</p>"
+            if ($offline) { $body += $pagesHtml } else {
+                $cfg = @{ highlight = '#2f6fb3'; nav = $true; resize = $true; toolbar = 'zoom pages layers lightbox'; edit = '_blank'; xml = $xmlText } | ConvertTo-Json -Compress
+                $body += "<div class='viewer'><div class='mxgraph' style='max-width:100%;border:1px solid var(--line);border-radius:8px' data-mxgraph='$(HE $cfg)'></div></div><p id='dgm-offline' class='muted' hidden>The draw.io viewer could not load (no internet access?).</p>"
+            }
+        }
+        $body += $xmlJson + $viewerJs
+        if (-not $Tabs -and $offline) { $body += "<script>(function(){var x=JSON.parse(document.getElementById('dgm-xml').textContent);[].forEach.call(document.querySelectorAll('.dgm-page'),function(h){adtdRender(h,x,+h.dataset.page)})})();</script>" }
         & $sec 'diagrams' 'Diagrams' $body
     }
 
@@ -349,6 +390,7 @@ function Export-AdtdHtmlReport {
   subs.forEach(function(b){ b.addEventListener('click',function(){ current=+b.dataset.page; drawPage(current) }) });
   function drawPage(i){ if(!xml) return; subs.forEach(function(b){ b.classList.toggle('on',+b.dataset.page===i) });
     var host=document.getElementById('dgm'); if(!host||host.offsetParent===null) return;
+    if(window.adtdRender){ adtdRender(host,xml,i); return }
     if(!window.GraphViewer){ setTimeout(function(){ if(window.GraphViewer) drawPage(i); else document.getElementById('dgm-offline').hidden=false },1500); return }
     host.innerHTML=''; var d=document.createElement('div'); d.className='mxgraph'; d.style.maxWidth='100%';
     d.setAttribute('data-mxgraph',JSON.stringify({highlight:'#2f6fb3',nav:true,resize:true,page:i,toolbar:'zoom layers lightbox',edit:'_blank',xml:xml}));
@@ -391,7 +433,9 @@ footer{padding:8px 32px 32px;color:var(--muted);font-size:12px}
 nav.tabs button.tab{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:4px 14px;background:var(--card);color:var(--fg)}nav.tabs button.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 32px 12px}.filters button,.subtabs button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:6px;padding:3px 10px;background:var(--card);color:var(--fg)}.filters button.on,.subtabs button.on{border-color:var(--accent);color:var(--accent);font-weight:600}
 .filters select,.filters input{font:inherit;padding:3px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}.filters input{flex:1;min-width:180px}
-.subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.dgm{min-height:300px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:auto}
+.subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.dgm{min-height:300px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.dgm-bar{display:flex;gap:6px;padding:6px;border-bottom:1px solid #e1e4ea;background:#f7f8fa}.dgm-bar button{font:inherit;font-size:12px;cursor:pointer;border:1px solid #c9ced8;border-radius:5px;background:#fff;color:#1d2330;padding:2px 10px}
+.dgm-canvas{position:relative;height:70vh;min-height:420px;overflow:auto;cursor:grab;background:#fff}
 @media (max-width:700px){.filters{margin:0 16px 12px}}
 @media print{nav,.viewer,.btn,.filters,.subtabs{display:none}.panel{display:block!important}.panel[hidden]{display:block!important}section,.finding{break-inside:avoid-page}body{background:#fff}}
 </style></head><body>

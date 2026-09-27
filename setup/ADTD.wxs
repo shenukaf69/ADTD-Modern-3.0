@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ADTD Modern installer (WiX 3 syntax).
-  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.0.msi ADTD.wxs      (msitools)
+  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.1.msi ADTD.wxs      (msitools)
   Build on Windows: see build-msi.ps1 (WiX Toolset 3.x candle/light, or wixl under WSL)
   Installs the PowerShell module for all users, so "Invoke-ADTD" works in any PowerShell window,
   and adds Start menu shortcuts. Upgrades replace older ADTD Modern versions automatically.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.0"
+  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.1"
            Manufacturer="Shenuka Fernando" UpgradeCode="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64"
              Description="ADTD Modern - Active Directory topology, security and hybrid Entra ID assessment"
@@ -15,8 +15,8 @@
     <Media Id="1" Cabinet="adtd.cab" EmbedCab="yes" />
 
     <Upgrade Id="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
-      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.0" IncludeMinimum="yes" IncludeMaximum="no" Property="PREVIOUSFOUND" />
-      <UpgradeVersion Minimum="3.0.0" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
+      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.1" IncludeMinimum="yes" IncludeMaximum="no" Property="PREVIOUSFOUND" />
+      <UpgradeVersion Minimum="3.0.1" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
     </Upgrade>
     <Condition Message="A newer version of ADTD Modern is already installed.">NOT NEWERFOUND</Condition>
     <Condition Message="ADTD Modern needs 64-bit Windows 10 / Windows Server 2016 or later.">VersionNT64</Condition>
@@ -42,9 +42,16 @@
                 <File Id="ADTD.Security.ps1" Name="ADTD.Security.ps1" Source="../src/ADTD.Security.ps1" />
                 <File Id="ADTD.Assessment.ps1" Name="ADTD.Assessment.ps1" Source="../src/ADTD.Assessment.ps1" />
                 <File Id="ADTD.Report.ps1" Name="ADTD.Report.ps1" Source="../src/ADTD.Report.ps1" />
+                <File Id="ADTD.Icons.ps1" Name="ADTD.Icons.ps1" Source="../src/ADTD.Icons.ps1" />
                 <File Id="Install_Prerequisites.ps1" Name="Install-Prerequisites.ps1" Source="Install-Prerequisites.ps1" />
                 <File Id="README.html" Name="README.html" Source="../src/README.html" />
               </Component>
+              <Directory Id="LIBDIR" Name="lib">
+                <Component Id="LibFiles" Guid="3f0c1b6e-2a7d-4d1e-9b3a-6f2d8e4c1a03" Win64="yes">
+                  <File Id="mxClient.min.js" Name="mxClient.min.js" Source="../src/lib/mxClient.min.js" KeyPath="yes" />
+                  <File Id="mxgraph_LICENSE.txt" Name="mxgraph-LICENSE.txt" Source="../src/lib/mxgraph-LICENSE.txt" />
+                </Component>
+              </Directory>
             </Directory>
           </Directory>
         </Directory>
@@ -67,7 +74,7 @@
             <Shortcut Id="ShortcutReadme" Name="ADTD Modern - Read me" Target="[INSTALLDIR]README.html" />
             <RemoveFolder Id="RemoveMenuDir" On="uninstall" />
             <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
-            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.0" />
+            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.1" />
           </Component>
         </Directory>
       </Directory>
@@ -75,6 +82,7 @@
 
     <Feature Id="Main" Title="ADTD Modern" Level="1">
       <ComponentRef Id="ModuleFiles" />
+      <ComponentRef Id="LibFiles" />
       <ComponentRef Id="Shortcuts" />
     </Feature>
   </Product>

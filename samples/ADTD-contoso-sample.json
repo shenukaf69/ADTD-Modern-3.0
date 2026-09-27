@@ -1,7 +1,7 @@
 {
   "Tool": "ADTD Modern",
-  "ToolVersion": "3.0.0",
-  "CollectedAt": "2026-09-27 09:28",
+  "ToolVersion": "3.0.1",
+  "CollectedAt": "2026-09-27 09:51",
   "CollectedFrom": "dc01.contoso.com",
   "Forest": {
     "Name": "contoso.com",
@@ -570,7 +570,7 @@
     }
   ],
   "Exchange": {
-    "Organization": null,
+    "Organization": "Contoso",
     "SchemaName": "Exchange 2019 / Subscription Edition",
     "Dags": [
       "DAG1"
@@ -615,7 +615,7 @@
     ]
   },
   "Security": {
-    "ScannedAt": "2026-09-27 09:28",
+    "ScannedAt": "2026-09-27 09:51",
     "Forest": {
       "UpnSuffixes": [],
       "DeviceRegistrationScp": true,
@@ -648,7 +648,7 @@
           "LockoutThreshold": 0,
           "Complexity": true,
           "ReversibleEncryption": false,
-          "FineGrainedPolicies": 0
+          "FineGrainedPolicies": 1
         },
         "MachineAccountQuota": 10,
         "KrbtgtPasswordAgeDays": 400,
@@ -953,7 +953,7 @@
             "WS02"
           ]
         },
-        "GmsaCount": 0,
+        "GmsaCount": 1,
         "Hybrid": {
           "SeamlessSsoPasswordAgeDays": 120,
           "SeamlessSsoRc4": true,
@@ -1620,28 +1620,6 @@
       "Evidence": [
         "contoso.com\\svc.web"
       ]
-    },
-    {
-      "Id": "S13",
-      "Severity": "Medium",
-      "Category": "Security",
-      "Area": "Kerberos",
-      "Title": "Accounts trusted to authenticate for delegation (protocol transition)",
-      "Finding": "1 account(s) use protocol transition: .",
-      "Recommendation": "Confirm each one is needed and limited to the right target services; remove it otherwise.",
-      "Risk": "Protocol transition lets the service get tickets for any user to its target services without that user's password.",
-      "Steps": [
-        "Confirm each one is needed and limited to the right target services; remove it otherwise."
-      ],
-      "References": [
-        {
-          "Title": "Unsecure Kerberos delegation (Defender for Identity)",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-kerberos-delegation"
-        }
-      ],
-      "Phase": 2,
-      "EvidenceCount": 0,
-      "Evidence": []
     },
     {
       "Id": "S14",
@@ -2341,7 +2319,6 @@
         "Tasks": [
           "[S07] Privileged accounts with old or non-expiring passwords",
           "[S11] User accounts with service principal names (Kerberoastable)",
-          "[S13] Accounts trusted to authenticate for delegation (protocol transition)",
           "[S17] Accounts limited to RC4 Kerberos encryption",
           "[S21] Accounts with SID history",
           "[S23] Default domain password policy is weak",

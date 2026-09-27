@@ -74,7 +74,6 @@ _Supported, healthy, well-designed AD ready for sync. (3-6 months)_
 
 - [ ] [S07] Privileged accounts with old or non-expiring passwords
 - [ ] [S11] User accounts with service principal names (Kerberoastable)
-- [ ] [S13] Accounts trusted to authenticate for delegation (protocol transition)
 - [ ] [S17] Accounts limited to RC4 Kerberos encryption
 - [ ] [S21] Accounts with SID history
 - [ ] [S23] Default domain password policy is weak

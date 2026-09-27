@@ -25,6 +25,8 @@ param(
     [string]$DrawIoViewer,
     [switch]$SkipSecurityScan,
     [switch]$NoDrawIoWeb,
+    [switch]$Offline,
+    [switch]$DrawIoWebViewer,
     [switch]$Open
 )
 Import-Module (Join-Path $PSScriptRoot 'ADTD.psd1') -Force
