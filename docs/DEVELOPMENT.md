@@ -87,9 +87,9 @@ Keep the `UpgradeCode` the same so newer MSIs replace older ones.
 
 1. Bump the version (see above) and add a section for it at the top of `CHANGELOG.md`.
 2. Rebuild the MSI with `setup/build-msi.ps1` and commit it.
-3. Push a tag: `git tag v3.0.3` then `git push origin v3.0.3`.
+3. Push to `main`.
 
-The **Release** workflow (`.github/workflows/release.yml`) then runs the tests, builds the MSI and the offline package (`setup/build-offline-package.ps1`), and publishes a GitHub Release with both files. The release notes come from that version's `CHANGELOG.md` section. You can also run the workflow from the **Actions** tab (Release → Run workflow) and enter a tag such as `v3.0.3`; it creates the tag on the chosen branch if needed.
+The **Release** workflow (`.github/workflows/release.yml`) sees the new `ModuleVersion` in `src/ADTD.psd1`, runs the tests, builds the MSI and the offline package (`setup/build-offline-package.ps1`), creates the tag `v<version>` and publishes a GitHub Release with both files. The release notes come from that version's `CHANGELOG.md` section. If a release for that version already exists, it does nothing. You can also push a `v*` tag, or run it from the **Actions** tab (Release → Run workflow).
 
 ## Building ADTD.exe
 
