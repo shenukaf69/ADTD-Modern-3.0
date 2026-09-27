@@ -1,0 +1,62 @@
+name: Release
+
+# Push a version tag (for example v3.0.2) to build the MSI and the offline package
+# and publish them as a GitHub Release. The release notes come from CHANGELOG.md.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to release, for example v3.0.2
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - name: Install wixl
+        run: sudo apt-get update && sudo apt-get install -y wixl
+      - name: Test
+        shell: pwsh
+        run: ./tests/Test-ADTD.ps1
+      - name: Build MSI and offline package
+        shell: pwsh
+        run: |
+          ./setup/build-msi.ps1
+          ./setup/build-offline-package.ps1
+      - name: Release notes from CHANGELOG.md
+        shell: pwsh
+        run: |
+          $v = (Import-PowerShellDataFile ./src/ADTD.psd1).ModuleVersion
+          $log = Get-Content -Raw ./CHANGELOG.md
+          $m = [regex]::Match($log, "(?ms)^## $([regex]::Escape($v))\b.*?\r?\n(.*?)(?=^## |\z)")
+          $notes = @(
+            "**ADTD Modern $v** - Active Directory topology diagrams, security assessment and Microsoft Entra ID hybrid upgrade plan. By Shenuka Fernando.",
+            '',
+            '### Download',
+            "- **ADTD_Modern_Setup_$v.msi**: installer (needs admin). Right-click, Properties, Unblock, then run it.",
+            "- **ADTD-Modern-$v-offline.zip**: everything for computers without internet access. Start with START-HERE.txt.",
+            '',
+            "### What's new",
+            $m.Groups[1].Value.Trim(),
+            '',
+            'Guides: [Install](https://github.com/${{ github.repository }}/blob/main/docs/INSTALL.md) | [Offline](https://github.com/${{ github.repository }}/blob/main/docs/OFFLINE.md) | [Usage](https://github.com/${{ github.repository }}/blob/main/docs/USAGE.md)'
+          ) -join "`n"
+          Set-Content -Path release-notes.md -Value $notes -Encoding UTF8
+          "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: ADTD Modern ${{ env.VERSION }}
+          body_path: release-notes.md
+          files: |
+            dist/ADTD_Modern_Setup_*.msi
+            dist/ADTD-Modern-*-offline.zip

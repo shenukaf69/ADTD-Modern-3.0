@@ -12,7 +12,10 @@
   - Settings → Apps shows the icon, publisher, install location and project links
   - opens the welcome screen after an interactive install (silent installs skip it)
 - `Install-ADTD.ps1`: installs `ADTD.exe`, and has new `-DesktopShortcut` and `-NoWelcome` switches. `-Uninstall` also removes the desktop shortcut.
-- Added a `COPYRIGHT` file. Tests: 135 checks.
+- The cards in the window scroll on small screens, and the Activity log fills its card. The About notices open at the top.
+- Reinstalling the same MSI version replaces it instead of adding a second entry in Settings → Apps.
+- Releases: pushing a `v*` tag builds the MSI and the offline package and publishes them as a GitHub Release (`.github/workflows/release.yml`, `setup/build-offline-package.ps1`).
+- Added a `COPYRIGHT` file and screenshots of the app. Tests: 135 checks.
 
 ## 3.0.1 (2026-09-27)
 
