@@ -15,7 +15,7 @@
 
 ## Option 1: MSI (recommended, needs admin)
 
-1. Download [`dist/ADTD_Modern_Setup_3.0.2.msi`](../dist/ADTD_Modern_Setup_3.0.2.msi).
+1. Download [`dist/ADTD_Modern_Setup_3.0.3.msi`](../dist/ADTD_Modern_Setup_3.0.3.msi).
 2. Right-click it → **Properties** → tick **Unblock** → **OK**. The MSI isn't code-signed yet.
 3. Double-click it and approve the UAC prompt.
 
@@ -38,10 +38,10 @@ The MSI also adds these Start menu shortcuts:
 | **ADTD Modern - Read me** | The installed read-me |
 
 Other ways to install and remove it:
-- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.2.msi /qn`
+- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.3.msi /qn`
 - **Upgrade:** install a newer MSI, which replaces the old version automatically.
 - **Find the install folder:** **About → Installed in**, or Settings → Apps → **ADTD Modern 3.0** (shows the icon, publisher Shenuka Fernando and the project links).
-- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.2.msi /qn`.
+- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.3.msi /qn`.
 
 ## Option 2: current user, no admin rights
 

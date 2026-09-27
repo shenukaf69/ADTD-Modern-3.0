@@ -40,7 +40,7 @@ Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**
 
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
-1. **Install.** Download `ADTD_Modern_Setup_3.0.2.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+1. **Install.** Download `ADTD_Modern_Setup_3.0.3.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** (or **Prerequisites** in the app). It checks the computer, then asks what to install:
 
    ![Prerequisites check](docs/images/prerequisites.png)
@@ -309,7 +309,7 @@ src/                     The app and PowerShell module (installed by the MSI)
   lib/mxClient.min.js    Built-in offline diagram viewer (mxGraph 4.2.2, Apache-2.0)
   ADTD.Versions.ps1      Windows, Exchange, schema and functional-level tables
 setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
-dist/                    ADTD_Modern_Setup_3.0.2.msi
+dist/                    ADTD_Modern_Setup_3.0.3.msi
 launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
 tests/Test-ADTD.ps1      Offline test suite (135 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)

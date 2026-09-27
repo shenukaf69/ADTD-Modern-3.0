@@ -1,6 +1,6 @@
 @{
     RootModule        = 'ADTD.psm1'
-    ModuleVersion     = '3.0.2'
+    ModuleVersion     = '3.0.3'
     GUID              = '51198933-11de-4cc3-b34c-26dd01c7f6d6'
     Author            = 'Shenuka Fernando'
     Description       = 'ADTD Modern: draws Active Directory (sites, replication, domains, trusts, OUs, DFS-R, Exchange) up to Windows Server 2025 in draw.io, and assesses health, security and Microsoft Entra ID hybrid readiness with a per-finding report and upgrade roadmap. Read-only.'

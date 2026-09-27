@@ -94,7 +94,7 @@ Get-Help Invoke-ADTD -Full</pre>
 
 <h2>Install and remove</h2>
 <ul>
-<li><b>MSI:</b> run <code>ADTD_Modern_Setup_3.0.2.msi</code> (admin). It installs the module for all users in <code>C:\Program Files\WindowsPowerShell\Modules\ADTD</code> and adds the app (<code>ADTD.exe</code>) with Start menu shortcuts. A welcome screen then offers a desktop shortcut and a taskbar pin. A newer MSI replaces the old one automatically. Remove it in <b>Settings &rarr; Apps</b>. For a silent install, use <code>msiexec /i ADTD_Modern_Setup_3.0.2.msi /qn</code>.</li>
+<li><b>MSI:</b> run <code>ADTD_Modern_Setup_3.0.3.msi</code> (admin). It installs the module for all users in <code>C:\Program Files\WindowsPowerShell\Modules\ADTD</code> and adds the app (<code>ADTD.exe</code>) with Start menu shortcuts. A welcome screen then offers a desktop shortcut and a taskbar pin. A newer MSI replaces the old one automatically. Remove it in <b>Settings &rarr; Apps</b>. For a silent install, use <code>msiexec /i ADTD_Modern_Setup_3.0.3.msi /qn</code>.</li>
 <li><b>Without admin rights:</b> <code>powershell -ExecutionPolicy Bypass -File Install-ADTD.ps1</code> installs for the current user only. Use <code>-Uninstall</code> to remove it.</li>
 <li>The scripts are not code-signed. If your execution policy is <code>AllSigned</code>, sign them with your code-signing certificate, or use the Start menu shortcut, which runs with <code>-ExecutionPolicy Bypass</code> for that process only.</li>
 </ul>

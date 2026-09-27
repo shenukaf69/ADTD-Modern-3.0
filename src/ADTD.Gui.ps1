@@ -382,7 +382,7 @@ function Show-ADTD {
     Initialize-AdtdGui
     # Event handlers below run inside $form.ShowDialog(), while this function is still running,
     # so they can use its variables directly ($form, $log, $boxes, ...).
-    $T = $script:AdtdTheme
+    $Theme = $script:AdtdTheme
 
     $installed = (Get-AdtdInstallInfo -HostPath $HostPath).Kind -notlike 'Not installed*'
     if ($Welcome -or ($installed -and [string](Get-AdtdSettings).WelcomeShown -ne $script:AdtdVersion)) {
@@ -397,7 +397,7 @@ function Show-ADTD {
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "ADTD Modern $script:AdtdVersion"
     $form.Font = New-Object System.Drawing.Font('Segoe UI', 9.75)
-    $form.BackColor = $T.Back
+    $form.BackColor = $Theme.Back
     $form.StartPosition = 'CenterScreen'
     $area = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
     $form.Size = New-Object System.Drawing.Size([math]::Min((Get-AdtdPx 1040), $area.Width - 20), [math]::Min((Get-AdtdPx 790), $area.Height - 20))
@@ -410,7 +410,7 @@ function Show-ADTD {
     $header.Dock = 'Top'; $header.Height = Get-AdtdPx 78
     $grad = New-Object System.Drawing.Bitmap(400, 40)
     $gg = [System.Drawing.Graphics]::FromImage($grad)
-    $gb = New-Object System.Drawing.Drawing2D.LinearGradientBrush((New-Object System.Drawing.Rectangle(0, 0, 400, 40)), $T.AccentDark, $T.Accent, 0.0)
+    $gb = New-Object System.Drawing.Drawing2D.LinearGradientBrush((New-Object System.Drawing.Rectangle(0, 0, 400, 40)), $Theme.AccentDark, $Theme.Accent, 0.0)
     $gg.FillRectangle($gb, 0, 0, 400, 40); $gb.Dispose(); $gg.Dispose()
     $header.BackgroundImage = $grad; $header.BackgroundImageLayout = 'Stretch'
     $hl = New-AdtdTable 3 -Stretch 1
@@ -465,7 +465,7 @@ function Show-ADTD {
     $server.Dock = 'Fill'; $server.Margin = New-Object System.Windows.Forms.Padding(0, (Get-AdtdPx 2), 0, 0)
     $tips.SetToolTip($server, 'Examples: contoso.com  or  dc01.contoso.com')
     $b1.Controls.Add($server)
-    $b1.Controls.Add((New-AdtdLabel "Leave empty to use $dom, or type a domain (contoso.com) or a domain controller (dc01.contoso.com)." 8.75 -Color $T.Muted -Wrap))
+    $b1.Controls.Add((New-AdtdLabel "Leave empty to use $dom, or type a domain (contoso.com) or a domain controller (dc01.contoso.com)." 8.75 -Color $Theme.Muted -Wrap))
 
     $signIn = New-AdtdLabel 'Sign in as' 9.75 'Bold'; $signIn.Margin = New-Object System.Windows.Forms.Padding(0, (Get-AdtdPx 8), 0, 0)
     $b1.Controls.Add($signIn)
@@ -484,7 +484,7 @@ function Show-ADTD {
     $pass = New-Object System.Windows.Forms.TextBox; $pass.Dock = 'Fill'; $pass.UseSystemPasswordChar = $true
     foreach ($l in $lu, $lp) { $l.Anchor = 'Left'; $l.Margin = New-Object System.Windows.Forms.Padding(0, 0, (Get-AdtdPx 10), 0) }
     foreach ($tb in $user, $pass) { $tb.Margin = New-Object System.Windows.Forms.Padding(0, (Get-AdtdPx 2), 0, (Get-AdtdPx 2)) }
-    $credHint = New-AdtdLabel 'CONTOSO\jane or jane@contoso.com. Used for this run only; never saved.' 8.75 -Color $T.Muted -Wrap -WrapWidth 360
+    $credHint = New-AdtdLabel 'CONTOSO\jane or jane@contoso.com. Used for this run only; never saved.' 8.75 -Color $Theme.Muted -Wrap -WrapWidth 360
     $cred.Controls.Add($lu, 0, 0); $cred.Controls.Add($user, 1, 0)
     $cred.Controls.Add($lp, 0, 1); $cred.Controls.Add($pass, 1, 1)
     $cred.Controls.Add($credHint, 1, 2)
@@ -568,9 +568,9 @@ function Show-ADTD {
     $tips.SetToolTip($boxes.Security, 'Health, security and Entra ID hybrid-readiness checks. Reads every user and computer once; untick for a quick topology-only run.')
     $sel = New-Object System.Windows.Forms.FlowLayoutPanel
     $sel.AutoSize = $true; $sel.Margin = New-Object System.Windows.Forms.Padding(0, (Get-AdtdPx 6), 0, 0)
-    $links = foreach ($t in 'Select all', 'Recommended', 'Clear') {
+    $links = foreach ($linkText in 'Select all', 'Recommended', 'Clear') {
         $ln = New-Object System.Windows.Forms.LinkLabel
-        $ln.Text = $t; $ln.AutoSize = $true; $ln.LinkColor = $T.Accent
+        $ln.Text = $linkText; $ln.AutoSize = $true; $ln.LinkColor = $Theme.Accent
         $ln.Margin = New-Object System.Windows.Forms.Padding(0, 0, (Get-AdtdPx 14), 0)
         $sel.Controls.Add($ln); $ln
     }
@@ -582,24 +582,24 @@ function Show-ADTD {
     $c4, $b4 = New-AdtdCard '4' 'Activity' ''
     $log = New-Object System.Windows.Forms.TextBox
     $log.Multiline = $true; $log.ScrollBars = 'Vertical'; $log.ReadOnly = $true; $log.BorderStyle = 'None'
-    $log.BackColor = $T.Back; $log.Font = New-Object System.Drawing.Font('Consolas', 9)
+    $log.BackColor = $Theme.Back; $log.Font = New-Object System.Drawing.Font('Consolas', 9)
     $log.Dock = 'Fill'; $log.MinimumSize = New-Object System.Drawing.Size(0, (Get-AdtdPx 150))
     $log.Text = "Ready. Choose the options, then click 'Draw my Active Directory'."
     $b4.Controls.Add($log)
     $right.Controls.Add($c4)
     # Activity takes the rest of the right column, and the log fills the card.
-    foreach ($t in $right, $c4) {
-        $t.RowStyles.Clear()
-        for ($i = 0; $i -lt $t.Controls.Count; $i++) {
-            $style = if ($i -eq $t.Controls.Count - 1) { New-Object System.Windows.Forms.RowStyle('Percent', 100) } else { New-Object System.Windows.Forms.RowStyle('AutoSize') }
-            [void]$t.RowStyles.Add($style)
+    foreach ($tbl in $right, $c4) {
+        $tbl.RowStyles.Clear()
+        for ($i = 0; $i -lt $tbl.Controls.Count; $i++) {
+            $style = if ($i -eq $tbl.Controls.Count - 1) { New-Object System.Windows.Forms.RowStyle('Percent', 100) } else { New-Object System.Windows.Forms.RowStyle('AutoSize') }
+            [void]$tbl.RowStyles.Add($style)
         }
     }
     [void]$b4.RowStyles.Add((New-Object System.Windows.Forms.RowStyle('Percent', 100)))
 
     # ---- action bar and status bar ----------------------------------------------------------------
     $bar = New-Object System.Windows.Forms.Panel
-    $bar.Dock = 'Bottom'; $bar.Height = Get-AdtdPx 64; $bar.BackColor = $T.Card
+    $bar.Dock = 'Bottom'; $bar.Height = Get-AdtdPx 64; $bar.BackColor = $Theme.Card
     $bar.Add_Paint({ param($s, $e) $p = New-Object System.Drawing.Pen($script:AdtdTheme.Border); $e.Graphics.DrawLine($p, 0, 0, $s.Width, 0); $p.Dispose() })
     $bl = New-AdtdTable 3 -Stretch 0
     $bl.Padding = New-Object System.Windows.Forms.Padding((Get-AdtdPx 16), (Get-AdtdPx 12), (Get-AdtdPx 16), 0)
@@ -613,13 +613,13 @@ function Show-ADTD {
     $bar.Controls.Add($bl)
 
     $status = New-Object System.Windows.Forms.StatusStrip
-    $status.BackColor = $T.Back
+    $status.BackColor = $Theme.Back
     $st1 = New-Object System.Windows.Forms.ToolStripStatusLabel
     $st1.Text = 'Ready'; $st1.Spring = $true; $st1.TextAlign = 'MiddleLeft'
     $st2 = New-Object System.Windows.Forms.ToolStripStatusLabel
-    $st2.Text = "Signed in as $me"; $st2.ForeColor = $T.Muted
+    $st2.Text = "Signed in as $me"; $st2.ForeColor = $Theme.Muted
     $st3 = New-Object System.Windows.Forms.ToolStripStatusLabel
-    $st3.Text = "  by $script:AdtdAuthor"; $st3.ForeColor = $T.Muted
+    $st3.Text = "  by $script:AdtdAuthor"; $st3.ForeColor = $Theme.Muted
     [void]$status.Items.AddRange(@($st1, $st2, $st3))
 
     $form.Controls.Add($scroll); $form.Controls.Add($bar); $form.Controls.Add($status); $form.Controls.Add($header)
@@ -656,16 +656,16 @@ function Show-ADTD {
             Start-Process explorer.exe "`"$($folder.Text)`""
         })
     $testBtn.Add_Click({
-            $testRes.Text = 'Connecting...'; $testRes.ForeColor = $T.Muted
+            $testRes.Text = 'Connecting...'; $testRes.ForeColor = $Theme.Muted
             $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
             [System.Windows.Forms.Application]::DoEvents()
             try {
                 $r = Test-AdtdConnection -Server $server.Text.Trim() -Credential (& $getCred)
                 $testRes.Text = "Connected to $($r.Domain) ($($r.DomainController)) as $($r.Account)"
-                $testRes.ForeColor = $T.Good
+                $testRes.ForeColor = $Theme.Good
             } catch {
                 $testRes.Text = "Could not connect: $($_.Exception.Message)"
-                $testRes.ForeColor = $T.Bad
+                $testRes.ForeColor = $Theme.Bad
             } finally { $form.Cursor = [System.Windows.Forms.Cursors]::Default }
         })
 
