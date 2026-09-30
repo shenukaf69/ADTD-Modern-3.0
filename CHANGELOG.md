@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fixed: on Windows PowerShell 5.1 (and so in `ADTD.exe`), every run that saved a draw.io drawing without `-Offline` stopped with "Exception calling "EscapeDataString" with "1" argument(s): Invalid URI: The Uri string is too long". .NET Framework's `[uri]::EscapeDataString` refuses text longer than about 65,000 characters, and the draw.io web link escapes the whole drawing. The text is now escaped in chunks. New tests round-trip a full-size drawing through the web link and check that chunking keeps emoji and other surrogate pairs whole. Found in lab testing on Windows Server 2022.
+- The window now says clearly when a run succeeds: a **"ADTD finished successfully"** message with the summary and the output folder, a green **Finished successfully.** in the status bar, and a matching line in Activity. Before, only the status bar changed, and long summaries were cut off. Errors now show in red in the status bar.
 
 ## 3.0.3 (2026-09-27)
 
