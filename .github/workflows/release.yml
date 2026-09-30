@@ -83,6 +83,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: ADTD Modern ${{ env.VERSION }}
           body_path: release-notes.md
+          # Exact names: dist/ also holds the MSI committed to the repo, which may be an older version.
           files: |
-            dist/ADTD_Modern_Setup_*.msi
-            dist/ADTD-Modern-*-offline.zip
+            dist/ADTD_Modern_Setup_${{ env.VERSION }}.msi
+            dist/ADTD-Modern-${{ env.VERSION }}-offline.zip
