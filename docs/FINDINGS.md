@@ -117,7 +117,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Make sure every DC in the domain runs Windows Server 2016 or later.
 2. Raise each domain level (Set-ADDomainMode), then the forest level (Set-ADForestMode).
 
-*References:* [Forest and domain functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels)
+*References:* [Forest and domain functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels) · [Raise domain and forest functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels)
 
 ### H05
 
@@ -130,7 +130,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Raise the domain functional levels to Windows Server 2025, then the forest level.
 2. Consider enabling the 32k database page size optional feature after testing (it can't be turned off).
 
-*References:* [Forest and domain functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels) · [What's new in Windows Server 2025](https://learn.microsoft.com/windows-server/get-started/whats-new-windows-server-2025)
+*References:* [Forest and domain functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels) · [Raise domain and forest functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels) · [What's new in Windows Server 2025](https://learn.microsoft.com/windows-server/get-started/whats-new-windows-server-2025)
 
 ### H06
 
@@ -384,7 +384,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Rotate the passwords of these accounts.
 2. Remove "password never expires" from admin accounts, or better, use long passphrases with MFA-backed access (smart card, Windows Hello for Business).
 
-*References:* [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)
+*References:* [Change password of built-in domain Administrator account (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#change-password-of-built-in-domain-administrator-account) · [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)
 
 ### S08
 
@@ -396,7 +396,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 
 1. Disable these accounts, wait a few weeks for anything that breaks, then delete them.
 
-*References:* [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts)
+*References:* [Dormant entities in sensitive groups (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#dormant-entities-in-sensitive-groups) · [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts)
 
 ### S09
 
@@ -408,7 +408,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 
 1. Empty these groups and delegate the specific tasks with scoped permissions instead.
 
-*References:* [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)
+*References:* [Locate accounts in built-in Operator Groups (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#locate-accounts-in-built-in-operator-groups) · [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)
 
 ### S10
 
@@ -507,7 +507,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Enable AES 128/256 on each account (msDS-SupportedEncryptionTypes = 0x18 or 0x1C during migration) and reset the password so AES keys exist.
 2. For the AZUREADSSOACC account, roll over its key first, then switch it to AES.
 
-*References:* [Unsecure account attributes (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes) · [Seamless SSO technical deep dive (AES and RC4)](https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-how-it-works)
+*References:* [Detect and remediate RC4 usage in Kerberos](https://learn.microsoft.com/windows-server/security/kerberos/detect-remediate-rc4-kerberos) · [Unsecure account attributes (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes) · [Seamless SSO technical deep dive (AES and RC4)](https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-how-it-works)
 
 ### S18
 
@@ -520,7 +520,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Disable the accounts, move them to a quarantine OU, and delete them after your retention period.
 2. Automate this with a lifecycle process or Microsoft Entra ID Governance.
 
-*References:* [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts)
+*References:* [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts)
 
 ### S19
 
@@ -532,7 +532,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 
 1. Disable, then delete, computer accounts that no longer exist.
 
-*References:* [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts)
+*References:* [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts)
 
 ### S20
 
@@ -556,7 +556,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 
 1. After confirming resource ACLs have been re-permissioned, clear sIDHistory from migrated accounts.
 
-*References:* [netdom trust (/quarantine and /enablesidhistory)](https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust)
+*References:* [Unsecure SID History attributes (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-sid-history-attributes) · [netdom trust (/quarantine and /enablesidhistory)](https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust)
 
 ### S22
 
@@ -569,7 +569,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Set ms-DS-MachineAccountQuota to 0 on the domain.
 2. Delegate "Create computer objects" on specific OUs to the people or tools that join devices.
 
-*References:* [Default limit to number of workstations a user can join to the domain](https://learn.microsoft.com/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain)
+*References:* [Default limit to number of workstations a user can join to the domain](https://learn.microsoft.com/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain) · [Active Directory domain join permissions](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions)
 
 ### S23
 
@@ -596,7 +596,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Deploy Windows LAPS (built into Windows 10/11 and Server 2019+ with current updates): run Update-LapsADSchema, grant computers permission with Set-LapsADComputerSelfPermission, and enable it with Group Policy or Intune.
 2. Back up passwords to Microsoft Entra ID for Entra-joined devices.
 
-*References:* [What is Windows LAPS?](https://learn.microsoft.com/windows-server/identity/laps/laps-overview)
+*References:* [What is Windows LAPS?](https://learn.microsoft.com/windows-server/identity/laps/laps-overview) · [Microsoft LAPS usage (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#microsoft-laps-usage)
 
 ### S25
 
@@ -622,7 +622,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Check that the LAPS policy reaches these computers (event log Microsoft-Windows-LAPS/Operational).
 2. Retire or fix computers that no longer apply policy.
 
-*References:* [What is Windows LAPS?](https://learn.microsoft.com/windows-server/identity/laps/laps-overview)
+*References:* [What is Windows LAPS?](https://learn.microsoft.com/windows-server/identity/laps/laps-overview) · [Microsoft LAPS usage (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#microsoft-laps-usage)
 
 ### S27
 
@@ -669,7 +669,7 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 1. Check enrollment permissions on each template listed. ADTD does not read ACLs.
 2. Turn off "Supply in the request", or require CA manager approval, or remove authentication EKUs, or stop publishing the template.
 
-*References:* [Certificate template assessments (ESC1)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#prevent-users-to-request-a-certificate-valid-for-arbitrary-users-based-on-the-certificate-template-esc1-preview)
+*References:* [Certificate template assessments (ESC1)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#prevent-users-to-request-a-certificate-valid-for-arbitrary-users-based-on-the-certificate-template-esc1-preview) · [Certificate templates with Any Purpose or no EKU (ESC2)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#edit-overly-permissive-certificate-template-with-privileged-eku-any-purpose-eku-or-no-eku-esc2)
 
 ### S31
 
@@ -808,12 +808,12 @@ IDs: **H** = health and topology, **S** = security, **X** = hybrid identity (Mic
 
 These can't be read over LDAP, so the report lists them as a checklist:
 
-- **LDAP signing and LDAP channel binding are required on all domain controllers**: Blocks NTLM relay to LDAP. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
+- **LDAP signing and LDAP channel binding are required on all domain controllers**: Blocks NTLM relay to LDAP. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/ldap-signing))
 - **SMB signing is required and SMBv1 is removed**: Blocks relay and old exploits. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
-- **The Print Spooler service is disabled on domain controllers**: Prevents coerced authentication of DC accounts. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
+- **The Print Spooler service is disabled on domain controllers**: Prevents coerced authentication of DC accounts. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure#disable-print-spooler-service-on-domain-controllers))
 - **NTLMv1 and LM are blocked (LmCompatibilityLevel 5)**: NTLMv1 hashes can be cracked or relayed easily. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
 - **Microsoft Defender for Identity sensors run on every DC, AD FS, AD CS and Entra Connect server**: Detects attacks on AD and adds identity posture assessments. ([reference](https://learn.microsoft.com/defender-for-identity/deploy/deploy-defender-identity))
-- **System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan**: Ransomware targets AD first. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password))
+- **System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan**: Ransomware targets AD first. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide))
 - **Tier 0 admins use separate accounts, privileged access workstations and phishing-resistant MFA**: Stops credential theft from everyday devices. ([reference](https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model))
-- **Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access**: Keeps you in control if MFA or federation fails. ([reference](https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model))
+- **Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access**: Keeps you in control if MFA or federation fails. ([reference](https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access))
 - **Entra Connect / Cloud Sync agent servers are managed as Tier 0**: They can change passwords and read hashes for every synced user. ([reference](https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide))
