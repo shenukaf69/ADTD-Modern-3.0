@@ -76,9 +76,11 @@ function Invoke-AdtdLdapSearch {
             $h
         }
     } finally {
-        if ($results) { $results.Dispose() }
-        $searcher.Dispose()
-        $entry.Dispose()
+        # Cast to IDisposable: PowerShell's DirectoryEntry adapter binds the object when a member is looked up,
+        # which turns "no such object" into "exception while retrieving member Dispose" and hides the real error.
+        if ($results) { ([System.IDisposable]$results).Dispose() }
+        ([System.IDisposable]$searcher).Dispose()
+        ([System.IDisposable]$entry).Dispose()
     }
 }
 
@@ -87,7 +89,13 @@ function Search-Adtd {
     param([hashtable]$Params, [string]$What)
     try { return @(Invoke-AdtdLdapSearch @Params) }
     catch {
-        Write-AdtdLog "Could not read $What ($($Params.SearchBase)): $($_.Exception.Message)" -Level Warn
+        # 0x80072030 "There is no such object on the server": the item isn't deployed (Exchange, AD FS, LAPS...), not a failure.
+        $ex = $_.Exception; while ($ex.InnerException) { $ex = $ex.InnerException }
+        if ($ex.HResult -eq -2147016656 -or $ex.Message -match 'no such object on the server') {
+            Write-AdtdLog "Not found: $What ($($Params.SearchBase))."
+        } else {
+            Write-AdtdLog "Could not read $What ($($Params.SearchBase)): $($ex.Message)" -Level Warn
+        }
         return @()
     }
 }
@@ -400,6 +408,11 @@ function Get-AdtdInventory {
         $comp = $null
         if ($ref) { $comp = $computers[$ref.ToLower()] }
         if (-not $comp -and $fqdn) { $comp = $computers[$fqdn.ToLower()] }
+        # The global catalog may leave operatingSystem out; read the DC's own computer account in its domain instead.
+        if ($ref -and -not (Get-A $comp 'operatingSystem')) {
+            $direct = @(Search-Adtd @{ SearchBase = $ref; Scope = 'Base'; Filter = '(objectClass=computer)'; Properties = @('dNSHostName', 'name', 'operatingSystem', 'operatingSystemVersion') } "computer account of $name")
+            if ($direct.Count) { $comp = $direct[0] }
+        }
         $domainDN = if ($ref) { Get-DomainDNFromDN $ref } else { Get-A $n 'msDS-HasDomainNCs' }
         $domainName = if ($domainDN) { ConvertTo-DnsName $domainDN } else { $null }
         $isRodc = @(Get-AAll $n 'objectClass') -contains 'nTDSDSARO'
