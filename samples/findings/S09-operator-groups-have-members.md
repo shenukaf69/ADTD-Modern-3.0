@@ -20,4 +20,5 @@ Account, Server, Backup and Print Operators can log on to DCs or edit privileged
 
 ## References
 
+- [Locate accounts in built-in Operator Groups (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#locate-accounts-in-built-in-operator-groups)
 - [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)

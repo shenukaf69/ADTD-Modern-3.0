@@ -1,0 +1,7 @@
+"Name","Site","Location","Description"
+"10.1.0.0/16","London",,
+"10.1.64.0/18","London",,
+"10.20.0.0/16","Singapore","SG",
+"10.30.0.0/16","NewYork",,
+"10.40.0.0/16","Frankfurt",,
+"192.168.99.0/24",,,

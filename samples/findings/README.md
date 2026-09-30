@@ -1,6 +1,6 @@
 # Active Directory assessment: contoso.com
 
-Collected 2026-09-27 09:51 from dc01.contoso.com with ADTD Modern 3.0.1. Read-only: nothing in Active Directory was changed.
+Collected 2026-09-30 14:39 from dc01.contoso.com with ADTD Modern 3.0.4. Read-only: nothing in Active Directory was changed.
 
 - **High**: 12
 - **Medium**: 21

@@ -1,7 +1,7 @@
 # ADTD Modern - Active Directory Topology Diagrammer for current Windows Server releases.
 # A read-only replacement for Microsoft's ADTD 2011 (ADTD.Net_Setup.msi).
 
-$script:AdtdVersion = '3.0.3'
+$script:AdtdVersion = '3.0.4'
 $script:AllDrawings = @('Summary', 'Sites', 'Replication', 'Domains', 'Hybrid', 'AppPartitions', 'OUs', 'Dfsr', 'Exchange')
 
 . (Join-Path $PSScriptRoot 'ADTD.Versions.ps1')

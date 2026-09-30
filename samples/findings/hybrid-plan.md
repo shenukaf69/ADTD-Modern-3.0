@@ -113,12 +113,12 @@ _Shrink what depends on AD. (12+ months)_
 
 ## Check by hand (not visible over LDAP)
 
-- [ ] LDAP signing and LDAP channel binding are required on all domain controllers - Blocks NTLM relay to LDAP. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
+- [ ] LDAP signing and LDAP channel binding are required on all domain controllers - Blocks NTLM relay to LDAP. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/ldap-signing))
 - [ ] SMB signing is required and SMBv1 is removed - Blocks relay and old exploits. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
-- [ ] The Print Spooler service is disabled on domain controllers - Prevents coerced authentication of DC accounts. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
+- [ ] The Print Spooler service is disabled on domain controllers - Prevents coerced authentication of DC accounts. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure#disable-print-spooler-service-on-domain-controllers))
 - [ ] NTLMv1 and LM are blocked (LmCompatibilityLevel 5) - NTLMv1 hashes can be cracked or relayed easily. ([reference](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure))
 - [ ] Microsoft Defender for Identity sensors run on every DC, AD FS, AD CS and Entra Connect server - Detects attacks on AD and adds identity posture assessments. ([reference](https://learn.microsoft.com/defender-for-identity/deploy/deploy-defender-identity))
-- [ ] System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan - Ransomware targets AD first. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password))
+- [ ] System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan - Ransomware targets AD first. ([reference](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide))
 - [ ] Tier 0 admins use separate accounts, privileged access workstations and phishing-resistant MFA - Stops credential theft from everyday devices. ([reference](https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model))
-- [ ] Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access - Keeps you in control if MFA or federation fails. ([reference](https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model))
+- [ ] Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access - Keeps you in control if MFA or federation fails. ([reference](https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access))
 - [ ] Entra Connect / Cloud Sync agent servers are managed as Tier 0 - They can change passwords and read hashes for every synced user. ([reference](https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide))

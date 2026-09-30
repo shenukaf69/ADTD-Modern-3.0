@@ -20,6 +20,8 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 
 ## Contents
 
+- [Compatibility](#compatibility)
+- [Tested in a lab](#tested-in-a-lab)
 - [Quick start](#quick-start)
 - [The app](#the-app)
 - [What's new compared with ADTD 2011](#whats-new-compared-with-adtd-2011)
@@ -36,11 +38,33 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 
 Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**](docs/OFFLINE.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
 
+## Compatibility
+
+| | Supported |
+|---|---|
+| **Run ADTD on** | Windows Server **2016, 2019, 2022, 2025** and Windows **10 / 11** (64-bit) |
+| **PowerShell** | **Windows PowerShell 5.1** (built into Windows; the app `ADTD.exe` uses it) and **PowerShell 7.4, 7.5 and 7.6 LTS** (`pwsh`). Tested on every change in GitHub Actions: 5.1 and 7 on Windows, 7 on Linux |
+| **Older Windows** | Windows Server 2012 / 2012 R2 and 2008 R2 SP1 work only after installing [WMF 5.1](https://learn.microsoft.com/powershell/scripting/windows-powershell/wmf-overview#wmf-availability-across-windows-operating-systems) (not lab-tested). Server 2008 and 2003 can't run it. Easier: run ADTD from a supported machine and point it at the old domain |
+| **Domains it can read** | Any AD forest, DCs from **Windows 2000 Server to Windows Server 2025**, forest/domain functional levels 0–10, schema up to 91 (see [Supported versions](#supported-versions)) |
+| **Account needed** | An ordinary **domain user**. Admin rights give the same results (checked in the lab) |
+| **Other software** | None required: no RSAT or ActiveDirectory module. draw.io desktop or draw.io on the web to view drawings; Visio optional |
+| **Internet** | Not needed. See [docs/OFFLINE.md](docs/OFFLINE.md) |
+
+## Tested in a lab
+
+The code in 3.0.4 was tested end to end (as 3.0.3 plus the fixes that make up 3.0.4) on a new **Windows Server 2022** domain controller (single-DC forest, functional level 2016, AD DS, DNS, DFS-R and an Enterprise Root CA). The MSI was installed by hand from a shared folder. ADTD was run from the window twice, as an ordinary domain user and as a Domain Admin, with every drawing and every format, and opened in draw.io on the web. Both runs finished with the same results: 13 findings (3 high), 5 users, 13 CSV files. The fixes found during this testing are in the [changelog](CHANGELOG.md).
+
+| Run finished | Summary page | Target hybrid topology |
+|---|---|---|
+| ![ADTD finished successfully message](docs/images/lab/run-success.png) | ![draw.io Summary page from the lab](docs/images/lab/summary-page.png) | ![draw.io Target hybrid topology page from the lab](docs/images/lab/hybrid-topology.png) |
+
+Sample outputs from the offline test forest (Contoso, two domains) are in [`samples/`](samples): the drawing, both HTML reports, JSON, per-finding Markdown and the CSV files, including the new `user-summary.csv`.
+
 ## Quick start
 
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
-1. **Install.** Download `ADTD_Modern_Setup_3.0.3.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+1. **Install.** Download `ADTD_Modern_Setup_3.0.4.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** (or **Prerequisites** in the app). It checks the computer, then asks what to install:
 
    ![Prerequisites check](docs/images/prerequisites.png)
@@ -89,7 +113,7 @@ The header has **Prerequisites** (installs draw.io desktop and the rest) and **A
 | Runtime | .NET Framework 2.0, 32-bit | Windows PowerShell 5.1 or PowerShell 7, 64-bit. No RSAT or ActiveDirectory module needed |
 | Interface | WinForms window, command-line switches | App with its own icon, desktop shortcut and taskbar pin, a guided window with a connection test, **and** a PowerShell module (`Invoke-ADTD`) for scripts and scheduled tasks |
 | Installer | Visual Studio setup project | 64-bit MSI with upgrades and silent install; per-user install; **prerequisites installer** |
-| Tests | None | 135 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
+| Tests | None | 144 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
 
 ## What it draws
 
@@ -97,7 +121,7 @@ Each drawing is one page (tab) in the `.drawio` file.
 
 | Page | Shows |
 |---|---|
-| **Summary** | Forest facts, DC operating systems, and the top findings |
+| **Summary** | Tiles for domains, sites, DCs, high findings, enabled users and directory sync; forest facts, DC operating systems, and the top findings |
 | **Sites and site links** | Sites with their DCs and subnets. Site links with cost, interval and change notification. Multi-site links, bridges and a legend |
 | **Replication** | Connection objects: created by the KCC, created manually, or disabled. Two-headed arrows mean both directions |
 | **Domains and trusts** | Forest facts, the domain tree, functional levels, FSMO holders and SYSVOL replication. Forest, external, realm and shortcut trusts, with direction and SID filtering |
@@ -287,7 +311,7 @@ Every run writes `ADTD-<forest>-<yyyyMMdd-HHmm>.*`:
 | `.html` | Assessment report (single page) |
 | `-tabs.html` | Assessment report with tabs (`-Format HtmlTabs`) |
 | `-findings\*.md` | One Markdown report per finding, `README.md` index and `hybrid-plan.md` (`-Format Markdown`) |
-| `-csv\*.csv` | Findings, evidence, gap analysis, roadmap, security by domain, computer OS counts, DCs, domains, sites, subnets, site links, connections, trusts, Exchange, OUs |
+| `-csv\*.csv` | Findings, evidence, gap analysis, roadmap, security by domain, user account summary (counts only), computer OS counts, DCs, domains, sites, subnets, site links, connections, trusts, Exchange, OUs |
 | `.json` | The full inventory, including the security scan. Re-assess it with `-InputFile` |
 | `.vsdx` | Visio drawing (`-Format Visio`, needs Visio) |
 | `.log` | What was read, and anything that couldn't be read |
@@ -309,17 +333,17 @@ src/                     The app and PowerShell module (installed by the MSI)
   lib/mxClient.min.js    Built-in offline diagram viewer (mxGraph 4.2.2, Apache-2.0)
   ADTD.Versions.ps1      Windows, Exchange, schema and functional-level tables
 setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
-dist/                    ADTD_Modern_Setup_3.0.3.msi
+dist/                    ADTD_Modern_Setup_3.0.4.msi
 launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
-tests/Test-ADTD.ps1      Offline test suite (135 checks)
+tests/Test-ADTD.ps1      Offline test suite (144 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
-samples/                 Sample drawing, reports, JSON and per-finding Markdown
+samples/                 Sample drawing, reports, JSON, CSV and per-finding Markdown
 docs/                    Guides and screenshots
 ```
 
 ## Known limitations
 
-- **Not yet run against a production forest.** The LDAP reads, the window, Visio output, the prerequisites installer and the MSI were written for Windows. So far they have only been tested with the offline suite and Linux builds. Try it in a lab first and report issues in [Issues](../../issues).
+- **Lab-tested, not yet production-proven.** It was tested on a single-DC Windows Server 2022 lab (see [Tested in a lab](#tested-in-a-lab)), plus the offline test suite. Multi-DC replication, trusts, Exchange, Visio output and Windows Server 2012 R2 hosts have not been tried on real servers yet. Try it in a lab first and report issues in [Issues](../../issues).
 - **Not code-signed.** SmartScreen may warn. Where `AllSigned` is enforced, sign the scripts yourself ([docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#signing)).
 - **LDAP can only see so much.** ADTD doesn't read ACLs (for example AD CS enrollment rights or AdminSDHolder), GPO settings, registry, services, or anything in Microsoft Entra ID. Those items are marked "not detectable" or listed under *Check by hand*.
 - **Nested group membership** is resolved within each domain. Members from other domains that reach Enterprise Admins or Schema Admins through nesting are not expanded.

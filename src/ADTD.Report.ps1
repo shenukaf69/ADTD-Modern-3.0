@@ -8,14 +8,33 @@ function Get-AdtdDrawIoWebUrl {
     #>
     param([Parameter(Mandatory)][string]$Path)
     $xml = [System.IO.File]::ReadAllText($Path)
-    $encoded = [uri]::EscapeDataString($xml)
+    $encoded = ConvertTo-AdtdUriEscaped $xml
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($encoded)
     $ms = New-Object System.IO.MemoryStream
     $ds = New-Object System.IO.Compression.DeflateStream($ms, [System.IO.Compression.CompressionLevel]::Optimal)
     $ds.Write($bytes, 0, $bytes.Length); $ds.Close()
     $b64 = [Convert]::ToBase64String($ms.ToArray())
     $title = [uri]::EscapeDataString((Split-Path $Path -Leaf))
-    return "https://app.diagrams.net/?title=$title#R$([uri]::EscapeDataString($b64))"
+    return "https://app.diagrams.net/?title=$title#R$(ConvertTo-AdtdUriEscaped $b64)"
+}
+
+function ConvertTo-AdtdUriEscaped {
+    <#
+    [uri]::EscapeDataString in chunks. On .NET Framework (Windows PowerShell 5.1, ADTD.exe) it throws
+    "Invalid URI: The Uri string is too long" above about 65,000 characters; a real drawing is far larger.
+    Chunks never split a surrogate pair, so the result is identical to escaping the whole string at once.
+    #>
+    param([Parameter(Mandatory)][AllowEmptyString()][string]$Text)
+    $chunk = 30000
+    $sb = New-Object System.Text.StringBuilder
+    $i = 0
+    while ($i -lt $Text.Length) {
+        $len = [Math]::Min($chunk, $Text.Length - $i)
+        if (($i + $len) -lt $Text.Length -and [char]::IsHighSurrogate($Text[$i + $len - 1])) { $len-- }
+        [void]$sb.Append([uri]::EscapeDataString($Text.Substring($i, $len)))
+        $i += $len
+    }
+    return $sb.ToString()
 }
 
 function Get-AdtdSettings {
@@ -62,6 +81,35 @@ function Open-AdtdDrawing {
 
 # ---------------------------------------------------------------- CSV
 
+function Get-AdtdUserSummary {
+    <#
+    One row of user account counts per domain, plus a forest total when there are several domains. Counts only, no names.
+    Every count except Total and Disabled covers enabled accounts. Inventories saved before 3.0.4 have no uncapped counts,
+    so their rows fall back to the evidence lists (capped at 200 names).
+    #>
+    param($Inventory)
+    if (-not $Inventory.Security) { return @() }
+    $cols = [ordered]@{ Stale = 'Stale 90 days'; PwdNeverExpires = 'Password never expires'; PwdNotRequired = 'Password not required'; NoPreauth = 'No Kerberos pre-auth'
+        WithSpn = 'With SPN'; Privileged = 'Privileged'; SidHistory = 'SID history'; Rc4Only = 'RC4 only'; Reversible = 'Reversible encryption'; TrustedForDelegation = 'Unconstrained delegation' }
+    $rows = @(foreach ($d in $Inventory.Security.Domains) {
+            $u = $d.Users
+            $r = [ordered]@{ Domain = $d.Domain; Total = [int]$u.Total; Enabled = [int]$u.Enabled; Disabled = [int]$u.Total - [int]$u.Enabled }
+            foreach ($k in $cols.Keys) {
+                $r[$cols[$k]] = if ($u.Counts -and $null -ne $u.Counts.$k) { [int]$u.Counts.$k }
+                elseif ($k -eq 'WithSpn') { @($u.ServiceAccountsWithSpn).Count + @($u.Privileged | Where-Object HasSpn).Count }
+                else { @($u.$k).Count }
+            }
+            $r['No UPN'] = [int]$u.NoUpn
+            [pscustomobject]$r
+        })
+    if ($rows.Count -gt 1) {
+        $t = [ordered]@{ Domain = 'All domains' }
+        foreach ($p in $rows[0].PSObject.Properties.Name | Where-Object { $_ -ne 'Domain' }) { $t[$p] = ($rows | Measure-Object -Property $p -Sum).Sum }
+        $rows += [pscustomobject]$t
+    }
+    return $rows
+}
+
 function Export-AdtdCsv {
     param($Inventory, [string]$Folder)
     $files = @()
@@ -89,6 +137,7 @@ function Export-AdtdCsv {
                     LapsCovered = $d.Computers.WindowsLapsCovered + $d.Computers.LegacyLapsCovered; LapsEligible = $d.Computers.LapsEligible
                 }
             })
+        $sets['user-summary'] = @(Get-AdtdUserSummary $Inventory)
         $sets['computer-os'] = @(foreach ($d in $Inventory.Security.Domains) { foreach ($o in $d.Computers.OsCounts) { [pscustomobject]@{ Domain = $d.Domain; OperatingSystem = $o.Name; Count = $o.Count } } })
     }
     if ($Inventory.Exchange) { $sets['exchange-servers'] = $Inventory.Exchange.Servers | Select-Object Name, HostName, Site, Product, Version, Supported, @{ N = 'Roles'; E = { $_.Roles -join ';' } }, Dag }
@@ -349,6 +398,10 @@ function Export-AdtdHtmlReport {
                 }
             })
         $inventoryHtml += '<h3>Security overview by domain</h3>' + (ConvertTo-AdtdHtmlTable $rows @('Domain', 'Users', 'Computers', 'DomainAdmins', 'Krbtgt', 'PasswordPolicy', 'Laps', 'gMSA'))
+        $us = @(Get-AdtdUserSummary $inv)
+        if ($us.Count) {
+            $inventoryHtml += "<h3>User accounts</h3><p class='muted'>Counts only. Every column after Disabled counts enabled accounts; the accounts behind each number are listed in the matching finding.</p>" + (ConvertTo-AdtdHtmlTable $us @($us[0].PSObject.Properties.Name))
+        }
         $os = @(foreach ($d in $inv.Security.Domains) { foreach ($o in $d.Computers.OsCounts) { [pscustomobject]@{ Domain = $d.Domain; OperatingSystem = $o.Name; Count = $o.Count } } })
         $inventoryHtml += '<h3>Computer operating systems</h3>' + (ConvertTo-AdtdHtmlTable ($os | Sort-Object Domain, @{ E = 'Count'; Descending = $true }) @('Domain', 'OperatingSystem', 'Count'))
     }
