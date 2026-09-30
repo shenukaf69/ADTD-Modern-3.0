@@ -114,7 +114,7 @@ The header has **Prerequisites** (installs draw.io desktop and the rest) and **A
 | Runtime | .NET Framework 2.0, 32-bit | Windows PowerShell 5.1 or PowerShell 7, 64-bit. No RSAT or ActiveDirectory module needed |
 | Interface | WinForms window, command-line switches | App with its own icon, desktop shortcut and taskbar pin, a guided window with a connection test, **and** a PowerShell module (`Invoke-ADTD`) for scripts and scheduled tasks |
 | Installer | Visual Studio setup project | 64-bit MSI with upgrades and silent install; per-user install; **prerequisites installer** |
-| Tests | None | 144 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
+| Tests | None | 149 offline checks against an in-memory forest, run on PowerShell 5.1 and 7 in GitHub Actions |
 
 ## What it draws
 
@@ -337,7 +337,7 @@ src/                     The app and PowerShell module (installed by the MSI)
 setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
 dist/                    ADTD_Modern_Setup_3.0.5.msi
 launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
-tests/Test-ADTD.ps1      Offline test suite (144 checks)
+tests/Test-ADTD.ps1      Offline test suite (149 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
 samples/                 Sample drawing, reports, JSON, CSV and per-finding Markdown
 docs/                    Guides and screenshots

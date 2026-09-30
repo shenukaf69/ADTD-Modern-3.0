@@ -5,7 +5,7 @@
 - **Licence.** ADTD Modern now has a clear licence, the [ADTD Modern Licence](LICENSE). It is free to use, including at work and for client assessments. Modifying it, copying its code, redistributing it outside the official project page, or selling it needs the author's written permission. It includes the usual no-warranty and limitation-of-liability terms. Before, the README called the app "free" while `COPYRIGHT` said it couldn't be used commercially, and GitHub showed "No license".
 - **Accept the licence on first run.** The first time the app opens, it shows the licence with **I accept** and **Decline**. The answer is remembered per user, and asked again only if the licence changes. **About** has a new **View licence** button. The MSI, the offline package and the per-user install include `LICENSE.txt`.
 - Every source file now starts with a copyright notice. The module manifest has `Copyright`, `LicenseUri` and `ProjectUri`. The README has a **Licence** section.
-- `samples/` is regenerated with 3.0.5. New tests check the licence copies, the notice in every source file and the saved acceptance.
+- `samples/` is regenerated with 3.0.5. New tests check the licence copies, the notice in every source file and the saved acceptance. Tests: 149 checks.
 
 ## 3.0.4 (2026-09-30)
 
