@@ -428,6 +428,14 @@ $clash = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
     }
 }
 Check (-not $clash) "no variables that differ only in case $(if ($clash) { '(' + ($clash -join '; ') + ')' })"
+# Windows PowerShell 5.1 (ADTD.exe) can't take a script block for Measure-Object -Property; PowerShell 7 can, so the tests alone wouldn't notice.
+$measureSb = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
+    $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.CommandAst] -and $args[0].GetCommandName() -in 'Measure-Object', 'measure' -and
+        @($args[0].CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.ScriptBlockExpressionAst] }).Count }, $true) |
+        ForEach-Object { "$($file.Name):$($_.Extent.StartLineNumber)" }
+}
+Check (-not $measureSb) "Measure-Object is never given a script block (not in Windows PowerShell 5.1) $(if ($measureSb) { '(' + ($measureSb -join '; ') + ')' })"
 $setFile = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD\settings.json'
 $setBackup = if (Test-Path $setFile) { Get-Content -Raw $setFile } else { $null }
 try {
