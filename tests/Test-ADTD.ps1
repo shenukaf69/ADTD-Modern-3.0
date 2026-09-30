@@ -355,6 +355,14 @@ Check ($html -match 'window.adtdRender' -and $html -match 'mxGraph' -and $html -
 $ro = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, HtmlTabs -Offline -OutputFolder (Join-Path $OutputFolder 'offline')
 $offHtml = Get-Content -Raw $ro.Files.HtmlTabs
 Check (-not $ro.Files.DrawIoWebLink -and $offHtml -notmatch 'app.diagrams.net/\?' -and $offHtml -match 'window.adtdRender') 'offline mode: no web links, built-in viewer'
+$drawXml = [System.IO.File]::ReadAllText($r.Files.DrawIo)
+$webUrl = Get-AdtdDrawIoWebUrl $r.Files.DrawIo
+$ms = New-Object System.IO.MemoryStream(, [Convert]::FromBase64String([System.Net.WebUtility]::UrlDecode(($webUrl -split '#R', 2)[1])))
+$ds = New-Object System.IO.Compression.DeflateStream($ms, [System.IO.Compression.CompressionMode]::Decompress)
+$back = [System.Net.WebUtility]::UrlDecode((New-Object System.IO.StreamReader($ds, [System.Text.Encoding]::UTF8)).ReadToEnd())
+Check ($drawXml.Length -gt 65520 -and $back -eq $drawXml) 'draw.io web link round-trips a drawing longer than the .NET Framework EscapeDataString limit'
+$pair = 'a' * 29999 + [char]::ConvertFromUtf32(0x1F600) + 'b'
+Check ((& $mod { param($t) ConvertTo-AdtdUriEscaped $t } $pair) -eq [uri]::EscapeDataString($pair)) 'chunked escaping keeps surrogate pairs whole'
 $rw = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, Html -DrawIoWebViewer -OutputFolder (Join-Path $OutputFolder 'webviewer')
 Check ((Get-Content -Raw $rw.Files.Html) -match 'viewer-static.min.js') 'optional draw.io web viewer'
 Check ($html -match 'what on-premises AD is missing') 'HTML has the gap analysis'

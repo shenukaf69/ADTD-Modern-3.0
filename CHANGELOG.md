@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed: on Windows PowerShell 5.1 (and so in `ADTD.exe`), every run that saved a draw.io drawing without `-Offline` stopped with "Exception calling "EscapeDataString" with "1" argument(s): Invalid URI: The Uri string is too long". .NET Framework's `[uri]::EscapeDataString` refuses text longer than about 65,000 characters, and the draw.io web link escapes the whole drawing. The text is now escaped in chunks. New tests round-trip a full-size drawing through the web link and check that chunking keeps emoji and other surrogate pairs whole. Found in lab testing on Windows Server 2022.
+
 ## 3.0.3 (2026-09-27)
 
 - Fixed: the window showed "Cannot convert null to type System.Drawing.Color" errors when it closed, and the Activity box, status bar, **Select all / Recommended / Clear** links and **Test connection** result lost their colours. Two loops reused the name of the window's colour theme variable (PowerShell names ignore case). The theme variable is renamed, and a new test catches variable names that differ only in case.
