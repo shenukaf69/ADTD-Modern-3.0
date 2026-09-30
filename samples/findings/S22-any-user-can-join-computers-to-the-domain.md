@@ -22,3 +22,4 @@ By default each user can create 10 computer accounts, which attackers use for re
 ## References
 
 - [Default limit to number of workstations a user can join to the domain](https://learn.microsoft.com/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain)
+- [Active Directory domain join permissions](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions)

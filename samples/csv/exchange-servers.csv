@@ -1,0 +1,4 @@
+"Name","HostName","Site","Product","Version","Supported","Roles","Dag"
+"EXSE1","exse1.contoso.com","London","Exchange Server SE","15.2.2562","True","Mailbox","DAG1"
+"EX2019","","NewYork","Exchange 2019","15.2.1748","False","Mailbox",
+"EXSE2","exse2.contoso.com","Singapore","Exchange Server SE","15.2.2562","True","Mailbox","DAG1"

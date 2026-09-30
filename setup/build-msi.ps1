@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Builds dist\ADTD_Modern_Setup_3.0.3.msi from ADTD.wxs.
+Builds dist\ADTD_Modern_Setup_3.0.4.msi from ADTD.wxs.
 
 .DESCRIPTION
 Uses WiX Toolset 3.x (candle.exe / light.exe) on Windows, or wixl (msitools) on Linux / WSL.
@@ -8,7 +8,7 @@ Bump the version in three places before a release: ADTD.wxs (Product Version, Up
 registry Version), src/ADTD.psd1 (ModuleVersion) and src/ADTD.psm1 ($script:AdtdVersion).
 Sign the result if you distribute it:  signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 ADTD_Modern_Setup.msi
 #>
-param([string]$Output = (Join-Path $PSScriptRoot '..\dist\ADTD_Modern_Setup_3.0.3.msi'))
+param([string]$Output = (Join-Path $PSScriptRoot '..\dist\ADTD_Modern_Setup_3.0.4.msi'))
 $ErrorActionPreference = 'Stop'
 New-Item -ItemType Directory -Path (Split-Path $Output -Parent) -Force | Out-Null
 $Output = [System.IO.Path]::GetFullPath($Output)

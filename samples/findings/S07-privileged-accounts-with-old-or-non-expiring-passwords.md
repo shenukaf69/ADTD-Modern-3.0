@@ -22,4 +22,5 @@ Old admin passwords are more likely to have been exposed and reused.
 
 ## References
 
+- [Change password of built-in domain Administrator account (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#change-password-of-built-in-domain-administrator-account)
 - [Tier model for Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model)

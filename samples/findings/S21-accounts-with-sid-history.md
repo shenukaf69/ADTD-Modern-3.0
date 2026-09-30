@@ -20,4 +20,5 @@ SID history left after a migration can silently grant access, and is a known pri
 
 ## References
 
+- [Unsecure SID History attributes (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-sid-history-attributes)
 - [netdom trust (/quarantine and /enablesidhistory)](https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust)

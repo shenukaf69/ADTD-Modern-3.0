@@ -22,5 +22,6 @@ Windows Server updates from July 2026 change the default Kerberos encryption typ
 
 ## References
 
+- [Detect and remediate RC4 usage in Kerberos](https://learn.microsoft.com/windows-server/security/kerberos/detect-remediate-rc4-kerberos)
 - [Unsecure account attributes (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes)
 - [Seamless SSO technical deep dive (AES and RC4)](https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-sso-how-it-works)
