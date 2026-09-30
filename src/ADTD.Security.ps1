@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - security and hybrid-identity data collection (read-only LDAP).
 # Everything here is readable by an ordinary domain user with default permissions.
 

@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 .SYNOPSIS
 Installs ADTD Modern for the current user without the MSI and without admin rights.
@@ -36,7 +39,7 @@ if ($Uninstall) {
 foreach ($t in $targets) {
     New-Item -ItemType Directory -Path $t -Force | Out-Null
     Copy-Item (Join-Path $src '*.ps*1') $t -Force
-    foreach ($f in 'ADTD.exe', 'ADTD.ico', 'ADTD-64.png') { if (Test-Path (Join-Path $src $f)) { Copy-Item (Join-Path $src $f) $t -Force } }
+    foreach ($f in 'ADTD.exe', 'ADTD.ico', 'ADTD-64.png', 'LICENSE.txt') { if (Test-Path (Join-Path $src $f)) { Copy-Item (Join-Path $src $f) $t -Force } }
     if (Test-Path (Join-Path $src 'lib')) { Copy-Item (Join-Path $src 'lib') $t -Recurse -Force }
     $prereq = Join-Path $PSScriptRoot 'Install-Prerequisites.ps1'
     if (Test-Path $prereq) { Copy-Item $prereq $t -Force }

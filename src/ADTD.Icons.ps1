@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - icon set for the drawings.
 # Original flat icons (64x64 tiles, white glyph on a colour gradient), embedded in the .drawio file as
 # data URIs so they render identically in draw.io desktop, draw.io on the web, the offline report viewer

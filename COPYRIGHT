@@ -8,8 +8,10 @@ official Microsoft product and is not endorsed or supported by Microsoft. It was
 inspired by Microsoft's Active Directory Topology Diagrammer (2011) and contains
 no code from it.
 
-No part of this software may be copied, modified, distributed or used
-commercially without the written permission of the copyright holder.
+ADTD Modern is free to use, including at work and for client assessments, under
+the ADTD Modern Licence in the LICENSE file. Copying its code, modifying it,
+redistributing it outside the official project page, or selling it needs the
+written permission of the copyright holder.
 
 Third-party components keep their own licences:
 - mxGraph 4.2.2 (c) JGraph Ltd, Apache License 2.0 (src/lib/mxgraph-LICENSE.txt),

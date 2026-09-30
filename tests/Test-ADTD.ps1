@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 Offline test: replaces the LDAP layer with an in-memory Contoso forest, then runs the full
 collect -> findings -> draw.io / HTML / CSV / JSON pipeline and checks the results.
@@ -442,13 +445,26 @@ $measureSb = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
         ForEach-Object { "$($file.Name):$($_.Extent.StartLineNumber)" }
 }
 Check (-not $measureSb) "Measure-Object is never given a script block (not in Windows PowerShell 5.1) $(if ($measureSb) { '(' + ($measureSb -join '; ') + ')' })"
+# Licence and copyright: the installed licence matches LICENSE, the app finds it, and every source file names its author.
+$root = Join-Path $PSScriptRoot '..'
+$licRoot = (Get-Content -Raw (Join-Path $root 'LICENSE')) -replace '\r?\n', "`n"
+$licApp = (Get-Content -Raw (Join-Path $srcDir 'LICENSE.txt')) -replace '\r?\n', "`n"
+Check ($licRoot -eq $licApp -and $licRoot -match 'ADTD Modern Licence, version (\S+)' -and $Matches[1] -eq (& $mod { $script:AdtdLicenseVersion })) 'src\LICENSE.txt matches LICENSE and the app''s licence version'
+Check ((& $mod { Get-AdtdLicenseText }) -match 'WHAT YOU MAY DO') 'the app finds the licence text'
+Check ('LICENSE.txt' -in $wxsFiles -and (Get-Content -Raw (Join-Path $root 'setup\build-offline-package.ps1')) -match "'LICENSE'" -and (Get-Content -Raw (Join-Path $root 'setup\Install-ADTD.ps1')) -match 'LICENSE\.txt') 'MSI, offline package and per-user install include the licence'
+$noHeader = Get-ChildItem $root -Recurse -File -Include *.ps1, *.psm1, *.psd1, *.cs, *.wxs |
+    Where-Object { $_.FullName -notmatch '[\\/](tests[\\/]output|samples)[\\/]' -and (Get-Content $_.FullName -TotalCount 4) -join "`n" -notmatch 'Copyright \(c\) 2026 Shenuka Fernando' } |
+    ForEach-Object Name
+Check (-not $noHeader) "every source file starts with the copyright notice $(if ($noHeader) { '(' + ($noHeader -join ', ') + ')' })"
 $setFile = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD\settings.json'
 $setBackup = if (Test-Path $setFile) { Get-Content -Raw $setFile } else { $null }
 try {
     [void](Set-AdtdSettings -WelcomeShown '9.9.9')
     [void](Set-AdtdSettings -DrawIoViewer Web)
+    [void](Set-AdtdSettings -LicenseAccepted '1.0')
     $st = Get-AdtdSettings
     Check ($st.WelcomeShown -eq '9.9.9' -and $st.DrawIoViewer -eq 'Web') 'settings remember the welcome screen and viewer'
+    Check ($st.LicenseAccepted -eq '1.0' -and $st.WelcomeShown -eq '9.9.9') 'settings remember that the licence was accepted'
 } finally { if ($null -ne $setBackup) { Set-Content -Path $setFile -Value $setBackup -NoNewline } else { Remove-Item $setFile -ErrorAction SilentlyContinue } }
 
 Write-Host ''

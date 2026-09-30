@@ -1,7 +1,7 @@
 {
   "Tool": "ADTD Modern",
-  "ToolVersion": "3.0.4",
-  "CollectedAt": "2026-09-30 14:39",
+  "ToolVersion": "3.0.5",
+  "CollectedAt": "2026-09-30 15:03",
   "CollectedFrom": "dc01.contoso.com",
   "Forest": {
     "Name": "contoso.com",
@@ -615,7 +615,7 @@
     ]
   },
   "Security": {
-    "ScannedAt": "2026-09-30 14:39",
+    "ScannedAt": "2026-09-30 15:03",
     "Forest": {
       "UpnSuffixes": [],
       "DeviceRegistrationScp": true,

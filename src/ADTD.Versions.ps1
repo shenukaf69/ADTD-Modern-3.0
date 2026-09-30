@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - version tables for Active Directory, Windows Server and Exchange.
 # Update these tables when Microsoft ships a new release; nothing else needs to change.
 

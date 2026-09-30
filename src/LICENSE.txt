@@ -1,0 +1,75 @@
+ADTD Modern Licence, version 1.0
+
+Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+
+ADTD Modern (the "Software") means the ADTD Modern app, PowerShell module, installer,
+scripts, launcher, icons and documentation published by Shenuka Fernando (the "Author")
+at https://github.com/shenukaf69/ADTD-Modern-3.0 (the "official project page"). The
+Software is protected by copyright law. It is licensed, not sold. By installing or using
+the Software you agree to this licence. If you do not agree, do not install or use it.
+
+1. WHAT YOU MAY DO, FREE OF CHARGE
+
+   a. Download the Software from the official project page and install it on any number
+      of computers.
+   b. Use it for any lawful purpose, including at work, in your organisation, and when
+      providing services to your clients (for example, assessing a client's Active
+      Directory). You may charge for your own work while doing so.
+   c. Keep, share and publish the drawings, reports, CSV, JSON and other output files the
+      Software creates from your own or your client's directory. Those outputs are yours.
+   d. Give unmodified copies of the official installer or offline package to others in
+      your organisation, and point anyone to the official project page.
+
+2. WHAT YOU MAY NOT DO WITHOUT THE AUTHOR'S WRITTEN PERMISSION
+
+   a. Modify, adapt, translate or make derivative works of the Software, or copy any part
+      of its source code into other software.
+   b. Sell, rent, lease or sublicense the Software, charge for it, or bundle it in a
+      product or service that is sold or licensed to others.
+   c. Publish or distribute the Software, or modified copies of it, anywhere other than
+      the official project page, except as allowed in 1(d).
+   d. Remove or change any copyright notice, author credit or this licence.
+   e. Present the Software as your own work, or use the Author's name to promote other
+      products.
+
+3. VIEWING THE SOURCE CODE
+
+   The source code is published so that you can check what the Software does before you
+   run it. Reading it does not give you any right beyond this licence. Forking the
+   repository on GitHub, as GitHub's Terms of Service allow, does not give you the rights
+   listed in section 2.
+
+4. THIRD-PARTY COMPONENTS
+
+   Third-party components included with the Software keep their own licences:
+   - mxGraph 4.2.2, (c) JGraph Ltd, Apache License 2.0 (src/lib/mxgraph-LICENSE.txt),
+     used as the offline diagram viewer in the HTML reports.
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+   INCLUDING THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NON-INFRINGEMENT. The Software only reads Active Directory, but you are responsible
+   for how you use it and for any decision you make based on its findings. Check its
+   recommendations before you change a production environment.
+
+6. LIMITATION OF LIABILITY
+
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE AUTHOR IS NOT LIABLE FOR ANY CLAIM, DAMAGES
+   OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE, ARISING FROM OR IN
+   CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+7. TERMINATION
+
+   If you break this licence, your rights under it end automatically, and you must stop
+   using the Software and delete your copies. Sections 5 and 6 continue to apply.
+
+8. PERMISSION AND CONTACT
+
+   To ask for permission for anything in section 2, contact the Author through
+   https://github.com/shenukaf69.
+
+ADTD Modern is an independent project. It is not a Microsoft product and is not endorsed
+or supported by Microsoft. Microsoft, Active Directory, Microsoft Entra, Exchange, Visio,
+Windows and Windows Server are trademarks of the Microsoft group of companies. draw.io is
+a trademark of JGraph Ltd.
