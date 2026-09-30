@@ -697,6 +697,7 @@ function Show-ADTD {
                 & $script:AdtdLogSink $done
                 & $script:AdtdLogSink 'Finished successfully.'
                 $st1.Text = 'Finished successfully.'; $st1.ForeColor = $Theme.Good
+                $progress.MarqueeAnimationSpeed = 0; $progress.Visible = $false; $form.Cursor = [System.Windows.Forms.Cursors]::Default
                 $msg = "ADTD finished successfully.`r`n`r`n$($done -replace '^Done: ', '')`r`n`r`nResults are saved in:`r`n$($folder.Text)"
                 [void][System.Windows.Forms.MessageBox]::Show($form, $msg, 'ADTD Modern', 'OK', 'Information')
             } catch {
