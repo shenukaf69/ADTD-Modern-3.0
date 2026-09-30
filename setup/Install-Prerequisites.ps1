@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 .SYNOPSIS
 Checks and installs what ADTD Modern needs: draw.io (desktop or web), PowerShell 7 (optional) and Visio (optional).

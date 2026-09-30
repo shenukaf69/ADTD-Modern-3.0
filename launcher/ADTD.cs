@@ -1,3 +1,6 @@
+// ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+// Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+//
 // ADTD Modern launcher (ADTD.exe).
 // Opens the ADTD Modern window inside this process, so Windows shows the ADTD Modern
 // icon on the taskbar (not the PowerShell one) and the app can be pinned.
@@ -20,9 +23,9 @@ using System.Windows.Forms;
 [assembly: AssemblyCompany("Shenuka Fernando")]
 [assembly: AssemblyProduct("ADTD Modern")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Shenuka Fernando")]
-[assembly: AssemblyVersion("3.0.4.0")]
-[assembly: AssemblyFileVersion("3.0.4.0")]
-[assembly: AssemblyInformationalVersion("3.0.4")]
+[assembly: AssemblyVersion("3.0.5.0")]
+[assembly: AssemblyFileVersion("3.0.5.0")]
+[assembly: AssemblyInformationalVersion("3.0.5")]
 
 static class Program
 {

@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - turns an inventory into drawings (draw.io / Visio) and reports (HTML, CSV, JSON).
 # Layouts build a neutral page model (nodes, containers, edges); each back end just draws that model.
 

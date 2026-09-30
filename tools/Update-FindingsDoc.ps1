@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 Regenerates docs/FINDINGS.md from the check catalog in src/ADTD.Assessment.ps1, so the documentation always
 matches the code:  pwsh ./tools/Update-FindingsDoc.ps1
