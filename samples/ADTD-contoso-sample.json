@@ -1,7 +1,7 @@
 {
   "Tool": "ADTD Modern",
-  "ToolVersion": "3.0.1",
-  "CollectedAt": "2026-09-27 09:51",
+  "ToolVersion": "3.0.4",
+  "CollectedAt": "2026-09-30 14:39",
   "CollectedFrom": "dc01.contoso.com",
   "Forest": {
     "Name": "contoso.com",
@@ -615,7 +615,7 @@
     ]
   },
   "Security": {
-    "ScannedAt": "2026-09-27 09:51",
+    "ScannedAt": "2026-09-30 14:39",
     "Forest": {
       "UpnSuffixes": [],
       "DeviceRegistrationScp": true,
@@ -888,7 +888,21 @@
               "BuiltinAdministrator": false,
               "Domain": "contoso.com"
             }
-          ]
+          ],
+          "Counts": {
+            "Stale": 2,
+            "PwdNeverExpires": 3,
+            "PwdNotRequired": 1,
+            "Reversible": 0,
+            "DesOnly": 0,
+            "NoPreauth": 1,
+            "WithSpn": 2,
+            "SidHistory": 1,
+            "TrustedForDelegation": 0,
+            "TrustedToAuth": 0,
+            "Rc4Only": 1,
+            "Privileged": 9
+          }
         },
         "Computers": {
           "Total": 12,
@@ -1028,7 +1042,21 @@
               "BuiltinAdministrator": false,
               "Domain": "emea.contoso.com"
             }
-          ]
+          ],
+          "Counts": {
+            "Stale": 0,
+            "PwdNeverExpires": 0,
+            "PwdNotRequired": 0,
+            "Reversible": 0,
+            "DesOnly": 0,
+            "NoPreauth": 0,
+            "WithSpn": 0,
+            "SidHistory": 0,
+            "TrustedForDelegation": 0,
+            "TrustedToAuth": 0,
+            "Rc4Only": 0,
+            "Privileged": 1
+          }
         },
         "Computers": {
           "Total": 2,
@@ -1220,6 +1248,10 @@
         {
           "Title": "Certificate template assessments (ESC1)",
           "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#prevent-users-to-request-a-certificate-valid-for-arbitrary-users-based-on-the-certificate-template-esc1-preview"
+        },
+        {
+          "Title": "Certificate templates with Any Purpose or no EKU (ESC2)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#edit-overly-permissive-certificate-template-with-privileged-eku-any-purpose-eku-or-no-eku-esc2"
         }
       ],
       "Phase": 1,
@@ -1533,6 +1565,10 @@
       ],
       "References": [
         {
+          "Title": "Change password of built-in domain Administrator account (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#change-password-of-built-in-domain-administrator-account"
+        },
+        {
           "Title": "Tier model for Active Directory Domain Services",
           "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
         }
@@ -1558,8 +1594,12 @@
       ],
       "References": [
         {
+          "Title": "Dormant entities in sensitive groups (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#dormant-entities-in-sensitive-groups"
+        },
+        {
           "Title": "Remove stale Active Directory accounts",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts"
         }
       ],
       "Phase": 1,
@@ -1581,6 +1621,10 @@
         "Empty these groups and delegate the specific tasks with scoped permissions instead."
       ],
       "References": [
+        {
+          "Title": "Locate accounts in built-in Operator Groups (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#locate-accounts-in-built-in-operator-groups"
+        },
         {
           "Title": "Tier model for Active Directory Domain Services",
           "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/tier-model"
@@ -1660,6 +1704,10 @@
       ],
       "References": [
         {
+          "Title": "Detect and remediate RC4 usage in Kerberos",
+          "Url": "https://learn.microsoft.com/windows-server/security/kerberos/detect-remediate-rc4-kerberos"
+        },
+        {
           "Title": "Unsecure account attributes (Defender for Identity)",
           "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes"
         },
@@ -1689,6 +1737,10 @@
       ],
       "References": [
         {
+          "Title": "Unsecure SID History attributes (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-sid-history-attributes"
+        },
+        {
           "Title": "netdom trust (/quarantine and /enablesidhistory)",
           "Url": "https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust"
         }
@@ -1716,6 +1768,10 @@
         {
           "Title": "Default limit to number of workstations a user can join to the domain",
           "Url": "https://learn.microsoft.com/troubleshoot/windows-server/active-directory/default-workstation-numbers-join-domain"
+        },
+        {
+          "Title": "Active Directory domain join permissions",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions"
         }
       ],
       "Phase": 1,
@@ -1771,6 +1827,10 @@
         {
           "Title": "What is Windows LAPS?",
           "Url": "https://learn.microsoft.com/windows-server/identity/laps/laps-overview"
+        },
+        {
+          "Title": "Microsoft LAPS usage (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#microsoft-laps-usage"
         }
       ],
       "Phase": 2,
@@ -1864,6 +1924,10 @@
         {
           "Title": "Forest and domain functional levels",
           "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels"
+        },
+        {
+          "Title": "Raise domain and forest functional levels",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels"
         }
       ],
       "Phase": 2,
@@ -1971,7 +2035,7 @@
       "References": [
         {
           "Title": "Remove stale Active Directory accounts",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts"
         }
       ],
       "Phase": 2,
@@ -1996,7 +2060,7 @@
       "References": [
         {
           "Title": "Remove stale Active Directory accounts",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts"
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts"
         }
       ],
       "Phase": 2,
@@ -2481,8 +2545,8 @@
         "Item": "LDAP signing and LDAP channel binding are required on all domain controllers",
         "Why": "Blocks NTLM relay to LDAP.",
         "Ref": {
-          "Title": "Identity infrastructure security assessments",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+          "Title": "LDAP signing and channel binding for AD DS",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/ldap-signing"
         }
       },
       {
@@ -2497,8 +2561,8 @@
         "Item": "The Print Spooler service is disabled on domain controllers",
         "Why": "Prevents coerced authentication of DC accounts.",
         "Ref": {
-          "Title": "Identity infrastructure security assessments",
-          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure"
+          "Title": "Disable Print spooler service on domain controllers (Defender for Identity)",
+          "Url": "https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure#disable-print-spooler-service-on-domain-controllers"
         }
       },
       {
@@ -2521,8 +2585,8 @@
         "Item": "System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan",
         "Why": "Ransomware targets AD first.",
         "Ref": {
-          "Title": "Reset the krbtgt password",
-          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-reset-the-krbtgt-password"
+          "Title": "Active Directory forest recovery guide",
+          "Url": "https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide"
         }
       },
       {
@@ -2537,8 +2601,8 @@
         "Item": "Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access",
         "Why": "Keeps you in control if MFA or federation fails.",
         "Ref": {
-          "Title": "Enterprise access model",
-          "Url": "https://learn.microsoft.com/security/privileged-access-workstations/privileged-access-access-model"
+          "Title": "Manage emergency access accounts in Microsoft Entra ID",
+          "Url": "https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access"
         }
       },
       {

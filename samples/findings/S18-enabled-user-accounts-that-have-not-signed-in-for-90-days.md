@@ -22,4 +22,4 @@ Unused accounts are rarely watched and are a common foothold.
 
 ## References
 
-- [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts)
+- [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts)

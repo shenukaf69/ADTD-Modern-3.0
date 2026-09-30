@@ -6,8 +6,8 @@
 
 | Needed | Details |
 |---|---|
-| Windows | 64-bit Windows 10/11 or Windows Server 2016 or later |
-| PowerShell | Windows PowerShell 5.1 (built in) or PowerShell 7 |
+| Windows | 64-bit Windows 10/11 or Windows Server 2016, 2019, 2022 or 2025. Windows Server 2012/2012 R2 and 2008 R2 SP1 need [WMF 5.1](https://learn.microsoft.com/powershell/scripting/windows-powershell/wmf-overview#wmf-availability-across-windows-operating-systems) first (not lab-tested). The domain you read can be older: DCs from Windows 2000 Server onwards |
+| PowerShell | Windows PowerShell 5.1 (built in, used by the app) or PowerShell 7.4 or later, including 7.6 LTS |
 | Network | LDAP (TCP 389) and global catalog (TCP 3268) to a domain controller |
 | Account | Any domain user. ADTD only reads. For another forest, use `-Server` and `-Credential` |
 | Viewer | **draw.io desktop** or **draw.io on the web** (both free). Visio 2013+ is optional |
@@ -15,7 +15,7 @@
 
 ## Option 1: MSI (recommended, needs admin)
 
-1. Download [`dist/ADTD_Modern_Setup_3.0.3.msi`](../dist/ADTD_Modern_Setup_3.0.3.msi).
+1. Download [`dist/ADTD_Modern_Setup_3.0.4.msi`](../dist/ADTD_Modern_Setup_3.0.4.msi).
 2. Right-click it → **Properties** → tick **Unblock** → **OK**. The MSI isn't code-signed yet.
 3. Double-click it and approve the UAC prompt.
 
@@ -38,10 +38,10 @@ The MSI also adds these Start menu shortcuts:
 | **ADTD Modern - Read me** | The installed read-me |
 
 Other ways to install and remove it:
-- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.3.msi /qn`
+- **Silent install:** `msiexec /i ADTD_Modern_Setup_3.0.4.msi /qn`
 - **Upgrade:** install a newer MSI, which replaces the old version automatically.
 - **Find the install folder:** **About → Installed in**, or Settings → Apps → **ADTD Modern 3.0** (shows the icon, publisher Shenuka Fernando and the project links).
-- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.3.msi /qn`.
+- **Remove:** Settings → Apps → **ADTD Modern 3.0**, or `msiexec /x ADTD_Modern_Setup_3.0.4.msi /qn`.
 
 ## Option 2: current user, no admin rights
 

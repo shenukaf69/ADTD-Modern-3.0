@@ -20,9 +20,9 @@ using System.Windows.Forms;
 [assembly: AssemblyCompany("Shenuka Fernando")]
 [assembly: AssemblyProduct("ADTD Modern")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Shenuka Fernando")]
-[assembly: AssemblyVersion("3.0.3.0")]
-[assembly: AssemblyFileVersion("3.0.3.0")]
-[assembly: AssemblyInformationalVersion("3.0.3")]
+[assembly: AssemblyVersion("3.0.4.0")]
+[assembly: AssemblyFileVersion("3.0.4.0")]
+[assembly: AssemblyInformationalVersion("3.0.4")]
 
 static class Program
 {

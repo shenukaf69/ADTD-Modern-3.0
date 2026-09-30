@@ -14,29 +14,21 @@ jobs:
         include:
           - name: Linux, PowerShell 7
             os: ubuntu-latest
-            shell: pwsh
+            exe: pwsh
           - name: Windows, PowerShell 7
             os: windows-latest
-            shell: pwsh
+            exe: pwsh
           - name: Windows PowerShell 5.1
             os: windows-latest
-            shell: powershell
+            exe: powershell
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Parse every script
-        shell: ${{ matrix.shell }}
-        run: |
-          $bad = 0
-          Get-ChildItem -Recurse -Include *.ps1, *.psm1, *.psd1 | ForEach-Object {
-            $e = $null
-            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$e)
-            if ($e) { $bad++; $e | ForEach-Object { Write-Host "$($_.Extent.File):$($_.Extent.StartLineNumber) $($_.Message)" } }
-          }
-          if ($bad) { exit 1 }
-      - name: Offline test suite
-        shell: ${{ matrix.shell }}
-        run: ./tests/Test-ADTD.ps1
+      # A step's shell can't come from the matrix, so start the right PowerShell directly.
+      - name: Engine version
+        run: ${{ matrix.exe }} -NoProfile -Command '$PSVersionTable.PSVersion.ToString(); $PSVersionTable.PSEdition'
+      - name: Offline test suite (also parses every script)
+        run: ${{ matrix.exe }} -NoProfile -ExecutionPolicy Bypass -File ./tests/Test-ADTD.ps1
 
   msi:
     name: Build MSI

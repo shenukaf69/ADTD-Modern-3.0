@@ -1,0 +1,5 @@
+"Source","Target","Kind","Direction","Flags","Created"
+"contoso.com","emea.contoso.com","Within forest","Two-way","",
+"contoso.com","fabrikam.com","Forest","Two-way","",
+"emea.contoso.com","contoso.com","Within forest","Two-way","",
+"emea.contoso.com","tailspin.local","External","Outbound","",

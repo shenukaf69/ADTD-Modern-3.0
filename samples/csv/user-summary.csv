@@ -1,0 +1,4 @@
+"Domain","Total","Enabled","Disabled","Stale 90 days","Password never expires","Password not required","No Kerberos pre-auth","With SPN","Privileged","SID history","RC4 only","Reversible encryption","Unconstrained delegation","No UPN"
+"contoso.com","21","19","2","2","3","1","1","2","9","1","1","0","0","1"
+"emea.contoso.com","3","2","1","0","0","0","0","0","1","0","0","0","0","0"
+"All domains","24","21","3","2","3","1","1","2","10","1","1","0","0","1"

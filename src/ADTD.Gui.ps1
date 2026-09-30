@@ -677,6 +677,7 @@ function Show-ADTD {
     }
     $run.Add_Click({
             $run.Enabled = $false; $log.Text = 'Starting...'
+            $st1.ForeColor = $Theme.Text
             $progress.Visible = $true; $progress.MarqueeAnimationSpeed = 30
             $form.Cursor = [System.Windows.Forms.Cursors]::WaitCursor
             try {
@@ -694,9 +695,14 @@ function Show-ADTD {
                 $r = Invoke-ADTD @p
                 $done = "Done: $($r.DomainControllers) domain controllers in $($r.Sites) sites, $($r.Findings) findings ($($r.High) high)."
                 & $script:AdtdLogSink $done
+                & $script:AdtdLogSink 'Finished successfully.'
+                $st1.Text = 'Finished successfully.'; $st1.ForeColor = $Theme.Good
+                $progress.MarqueeAnimationSpeed = 0; $progress.Visible = $false; $form.Cursor = [System.Windows.Forms.Cursors]::Default
+                $msg = "ADTD finished successfully.`r`n`r`n$($done -replace '^Done: ', '')`r`n`r`nResults are saved in:`r`n$($folder.Text)"
+                [void][System.Windows.Forms.MessageBox]::Show($form, $msg, 'ADTD Modern', 'OK', 'Information')
             } catch {
                 & $script:AdtdLogSink "ERROR: $($_.Exception.Message)"
-                $st1.Text = 'Stopped with an error. See Activity.'
+                $st1.Text = 'Stopped with an error. See Activity.'; $st1.ForeColor = $Theme.Bad
                 [void][System.Windows.Forms.MessageBox]::Show($form, $_.Exception.Message, 'ADTD Modern', 'OK', 'Error')
             } finally {
                 $progress.MarqueeAnimationSpeed = 0; $progress.Visible = $false

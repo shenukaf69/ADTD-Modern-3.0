@@ -22,3 +22,4 @@ If low-privileged users can enroll, anyone can get a certificate that signs in a
 ## References
 
 - [Certificate template assessments (ESC1)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#prevent-users-to-request-a-certificate-valid-for-arbitrary-users-based-on-the-certificate-template-esc1-preview)
+- [Certificate templates with Any Purpose or no EKU (ESC2)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#edit-overly-permissive-certificate-template-with-privileged-eku-any-purpose-eku-or-no-eku-esc2)

@@ -15,7 +15,7 @@ $script:Refs = @{
     Delegation       = New-AdtdRef 'Unsecure Kerberos delegation (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-kerberos-delegation'
     NotDelegated     = New-AdtdRef 'Ensure privileged accounts are not delegated' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#ensure-privileged-accounts-are-not-delegated'
     AccountAttrs     = New-AdtdRef 'Unsecure account attributes (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-account-attributes'
-    Stale            = New-AdtdRef 'Remove stale Active Directory accounts' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts'
+    Stale            = New-AdtdRef 'Remove stale Active Directory accounts' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts'
     PrivServiceAcct  = New-AdtdRef 'Identify service accounts in privileged groups' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#identify-service-accounts-in-privileged-groups'
     ServiceAccounts  = New-AdtdRef 'Investigate and protect service accounts' 'https://learn.microsoft.com/defender-for-identity/service-account-discovery'
     ProtectedUsers   = New-AdtdRef 'Protected Users security group' 'https://learn.microsoft.com/windows-server/security/credentials-protection-and-management/protected-users-security-group'
@@ -43,6 +43,19 @@ $script:Refs = @{
     Trusts           = New-AdtdRef 'netdom trust (/quarantine and /enablesidhistory)' 'https://learn.microsoft.com/windows-server/administration/windows-commands/netdom-trust'
     Lifecycle        = New-AdtdRef 'Microsoft product lifecycle search' 'https://learn.microsoft.com/lifecycle/products/'
     PwdPolicy        = New-AdtdRef 'Password policy recommendations' 'https://learn.microsoft.com/microsoft-365/admin/misc/password-policy-recommendations'
+    RaiseLevels      = New-AdtdRef 'Raise domain and forest functional levels' 'https://learn.microsoft.com/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels'
+    BuiltinAdminPwd  = New-AdtdRef 'Change password of built-in domain Administrator account (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#change-password-of-built-in-domain-administrator-account'
+    DormantSensitive = New-AdtdRef 'Dormant entities in sensitive groups (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#dormant-entities-in-sensitive-groups'
+    OperatorGroups   = New-AdtdRef 'Locate accounts in built-in Operator Groups (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#locate-accounts-in-built-in-operator-groups'
+    SidHistory       = New-AdtdRef 'Unsecure SID History attributes (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#unsecure-sid-history-attributes'
+    Rc4Kerberos      = New-AdtdRef 'Detect and remediate RC4 usage in Kerberos' 'https://learn.microsoft.com/windows-server/security/kerberos/detect-remediate-rc4-kerberos'
+    DomainJoinPerms  = New-AdtdRef 'Active Directory domain join permissions' 'https://learn.microsoft.com/windows-server/identity/ad-ds/manage/active-directory-domain-join-permissions'
+    MdiLaps          = New-AdtdRef 'Microsoft LAPS usage (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#microsoft-laps-usage'
+    AdcsEsc2         = New-AdtdRef 'Certificate templates with Any Purpose or no EKU (ESC2)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/certificates#edit-overly-permissive-certificate-template-with-privileged-eku-any-purpose-eku-or-no-eku-esc2'
+    LdapSigning      = New-AdtdRef 'LDAP signing and channel binding for AD DS' 'https://learn.microsoft.com/windows-server/identity/ad-ds/ldap-signing'
+    PrintSpooler     = New-AdtdRef 'Disable Print spooler service on domain controllers (Defender for Identity)' 'https://learn.microsoft.com/defender-for-identity/security-posture-assessments/identity-infrastructure#disable-print-spooler-service-on-domain-controllers'
+    ForestRecovery   = New-AdtdRef 'Active Directory forest recovery guide' 'https://learn.microsoft.com/windows-server/identity/ad-ds/manage/forest-recovery-guide/ad-forest-recovery-guide'
+    EmergencyAccess  = New-AdtdRef 'Manage emergency access accounts in Microsoft Entra ID' 'https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access'
 }
 
 # ---------------------------------------------------------------- Catalog
@@ -66,10 +79,10 @@ Register-AdtdCheck 'H03' Low Health 'Domain controllers' "Some domain controller
     @('Run ADTD against a global catalog in the same site, or with an account that can read computer objects.') @() 1
 Register-AdtdCheck 'H04' Medium Health 'Forest' 'Forest or domain functional level is below Windows Server 2016' `
     'Lower levels block newer security features, such as privileged access management with time-bound group membership and automatic NTLM secret rolling for smart-card users.' `
-    @('Make sure every DC in the domain runs Windows Server 2016 or later.', 'Raise each domain level (Set-ADDomainMode), then the forest level (Set-ADForestMode).') @('FunctionalLevels') 2
+    @('Make sure every DC in the domain runs Windows Server 2016 or later.', 'Raise each domain level (Set-ADDomainMode), then the forest level (Set-ADForestMode).') @('FunctionalLevels', 'RaiseLevels') 2
 Register-AdtdCheck 'H05' Low Health 'Forest' 'All DCs run Windows Server 2025 but the forest is not at the 2025 level' `
     'Level 10 enables Windows Server 2025 features such as the 32k database page size optional feature.' `
-    @('Raise the domain functional levels to Windows Server 2025, then the forest level.', 'Consider enabling the 32k database page size optional feature after testing (it can''t be turned off).') @('FunctionalLevels', 'WhatsNew2025') 4
+    @('Raise the domain functional levels to Windows Server 2025, then the forest level.', 'Consider enabling the 32k database page size optional feature after testing (it can''t be turned off).') @('FunctionalLevels', 'RaiseLevels', 'WhatsNew2025') 4
 Register-AdtdCheck 'H06' High Health 'Domains' 'SYSVOL still replicates with FRS' `
     'FRS is removed from Windows Server 2019 and later. You cannot add a newer domain controller to this domain until SYSVOL uses DFS Replication.' `
     @('Check that all DCs replicate cleanly (repadmin /replsummary).', 'Run dfsrmig /setglobalstate 1, 2 and 3 in turn, waiting for every DC to reach each state (dfsrmig /getmigrationstate).', 'Confirm SYSVOL is shared from the SYSVOL_DFSR folder on every DC.') @('SysvolDfsr') 1
@@ -131,13 +144,13 @@ Register-AdtdCheck 'S06' Medium Security 'Privileged access' 'Privileged account
     @('Add human admin accounts to the Protected Users group (test first: it blocks NTLM, DES/RC4 and delegation for them).', 'For other privileged accounts, set "Account is sensitive and cannot be delegated".') @('NotDelegated', 'ProtectedUsers') 1
 Register-AdtdCheck 'S07' Medium Security 'Privileged access' 'Privileged accounts with old or non-expiring passwords' `
     'Old admin passwords are more likely to have been exposed and reused.' `
-    @('Rotate the passwords of these accounts.', 'Remove "password never expires" from admin accounts, or better, use long passphrases with MFA-backed access (smart card, Windows Hello for Business).') @('TierModel') 2
+    @('Rotate the passwords of these accounts.', 'Remove "password never expires" from admin accounts, or better, use long passphrases with MFA-backed access (smart card, Windows Hello for Business).') @('BuiltinAdminPwd', 'TierModel') 2
 Register-AdtdCheck 'S08' Medium Security 'Privileged access' 'Privileged accounts are not being used' `
     'Enabled admin accounts that no one signs in with are an easy target nobody watches.' `
-    @('Disable these accounts, wait a few weeks for anything that breaks, then delete them.') @('Stale') 1
+    @('Disable these accounts, wait a few weeks for anything that breaks, then delete them.') @('DormantSensitive', 'Stale') 1
 Register-AdtdCheck 'S09' Medium Security 'Privileged access' 'Operator groups have members' `
     'Account, Server, Backup and Print Operators can log on to DCs or edit privileged objects, so they are effectively Tier 0.' `
-    @('Empty these groups and delegate the specific tasks with scoped permissions instead.') @('TierModel') 1
+    @('Empty these groups and delegate the specific tasks with scoped permissions instead.') @('OperatorGroups', 'TierModel') 1
 Register-AdtdCheck 'S10' High Security 'Kerberos' 'Accounts do not require Kerberos pre-authentication (AS-REP roasting)' `
     'Anyone can request encrypted data for these accounts without knowing the password, and crack it offline.' `
     @('Remove "Do not require Kerberos preauthentication" from each account (Set-ADAccountControl -DoesNotRequirePreAuth $false).') @('AccountAttrs') 1
@@ -161,7 +174,7 @@ Register-AdtdCheck 'S16' High Security 'Kerberos' 'Accounts limited to DES encry
     @('Remove "Use Kerberos DES encryption types for this account" and reset the password.') @('AccountAttrs') 1
 Register-AdtdCheck 'S17' Medium Security 'Kerberos' 'Accounts limited to RC4 Kerberos encryption' `
     'Windows Server updates from July 2026 change the default Kerberos encryption type from RC4 to AES-256. Accounts limited to RC4 are easier to crack and may fail to authenticate.' `
-    @('Enable AES 128/256 on each account (msDS-SupportedEncryptionTypes = 0x18 or 0x1C during migration) and reset the password so AES keys exist.', 'For the AZUREADSSOACC account, roll over its key first, then switch it to AES.') @('AccountAttrs', 'SsoHowItWorks') 2
+    @('Enable AES 128/256 on each account (msDS-SupportedEncryptionTypes = 0x18 or 0x1C during migration) and reset the password so AES keys exist.', 'For the AZUREADSSOACC account, roll over its key first, then switch it to AES.') @('Rc4Kerberos', 'AccountAttrs', 'SsoHowItWorks') 2
 Register-AdtdCheck 'S18' Low Security 'Accounts' 'Enabled user accounts that have not signed in for 90 days' `
     'Unused accounts are rarely watched and are a common foothold.' `
     @('Disable the accounts, move them to a quarantine OU, and delete them after your retention period.', 'Automate this with a lifecycle process or Microsoft Entra ID Governance.') @('Stale') 2
@@ -173,22 +186,22 @@ Register-AdtdCheck 'S20' Low Security 'Accounts' 'User accounts with passwords t
     @('Review the list: convert service accounts to gMSA, and for people rely on MFA and banned-password checks instead of the flag.') @('PwdPolicy') 3
 Register-AdtdCheck 'S21' Medium Security 'Accounts' 'Accounts with SID history' `
     'SID history left after a migration can silently grant access, and is a known privilege-escalation technique.' `
-    @('After confirming resource ACLs have been re-permissioned, clear sIDHistory from migrated accounts.') @('Trusts') 2
+    @('After confirming resource ACLs have been re-permissioned, clear sIDHistory from migrated accounts.') @('SidHistory', 'Trusts') 2
 Register-AdtdCheck 'S22' Medium Security 'Domain settings' 'Any user can join computers to the domain (MachineAccountQuota)' `
     'By default each user can create 10 computer accounts, which attackers use for relay and delegation attacks.' `
-    @('Set ms-DS-MachineAccountQuota to 0 on the domain.', 'Delegate "Create computer objects" on specific OUs to the people or tools that join devices.') @('MaqDefault') 1
+    @('Set ms-DS-MachineAccountQuota to 0 on the domain.', 'Delegate "Create computer objects" on specific OUs to the people or tools that join devices.') @('MaqDefault', 'DomainJoinPerms') 1
 Register-AdtdCheck 'S23' Medium Security 'Domain settings' 'Default domain password policy is weak' `
     'Short passwords and no lockout make password spraying easy.' `
     @('Set a minimum length of at least 14 characters (fine-grained policies for admins can require more).', 'Set an account lockout threshold (for example 10 attempts) to slow down guessing.', 'Add Microsoft Entra Password Protection to block common and breached passwords on-premises.') @('PwdPolicy', 'PwdProtection') 2
 Register-AdtdCheck 'S24' High Security 'Local admin passwords' 'No LAPS is deployed' `
     'Without LAPS, local administrator passwords are usually identical on many computers, so one stolen hash lets an attacker move to all of them.' `
-    @('Deploy Windows LAPS (built into Windows 10/11 and Server 2019+ with current updates): run Update-LapsADSchema, grant computers permission with Set-LapsADComputerSelfPermission, and enable it with Group Policy or Intune.', 'Back up passwords to Microsoft Entra ID for Entra-joined devices.') @('Laps') 1
+    @('Deploy Windows LAPS (built into Windows 10/11 and Server 2019+ with current updates): run Update-LapsADSchema, grant computers permission with Set-LapsADComputerSelfPermission, and enable it with Group Policy or Intune.', 'Back up passwords to Microsoft Entra ID for Entra-joined devices.') @('Laps', 'MdiLaps') 1
 Register-AdtdCheck 'S25' Medium Security 'Local admin passwords' 'Only legacy Microsoft LAPS is deployed' `
     'Legacy LAPS stores passwords in clear text attributes and is no longer developed.' `
     @('Extend the schema for Windows LAPS and move policies to Windows LAPS; you can run it in legacy-emulation mode during the move.', 'Enable password encryption and DSRM password backup.') @('Laps') 2
 Register-AdtdCheck 'S26' Medium Security 'Local admin passwords' 'Some computers have no LAPS password' `
     'Computers without a managed password still share local admin credentials.' `
-    @('Check that the LAPS policy reaches these computers (event log Microsoft-Windows-LAPS/Operational).', 'Retire or fix computers that no longer apply policy.') @('Laps') 2
+    @('Check that the LAPS policy reaches these computers (event log Microsoft-Windows-LAPS/Operational).', 'Retire or fix computers that no longer apply policy.') @('Laps', 'MdiLaps') 2
 Register-AdtdCheck 'S27' High Security 'Devices' 'Computers run an unsupported Windows version' `
     'Unsupported systems get no security fixes and are the easiest way in.' `
     @('Upgrade or retire these computers; isolate any that must stay on a restricted network segment.') @('Lifecycle') 1
@@ -200,7 +213,7 @@ Register-AdtdCheck 'S29' Medium Security 'Domain settings' 'Pre-Windows 2000 Com
     @('Remove Anonymous Logon and Everyone from the group; leave Authenticated Users only if old applications need it.') @('MdiInfra') 1
 Register-AdtdCheck 'S30' High Security 'Certificate services' 'Certificate templates let requesters choose the subject (possible ESC1)' `
     'If low-privileged users can enroll, anyone can get a certificate that signs in as a domain admin.' `
-    @('Check enrollment permissions on each template listed. ADTD does not read ACLs.', 'Turn off "Supply in the request", or require CA manager approval, or remove authentication EKUs, or stop publishing the template.') @('Adcs') 1
+    @('Check enrollment permissions on each template listed. ADTD does not read ACLs.', 'Turn off "Supply in the request", or require CA manager approval, or remove authentication EKUs, or stop publishing the template.') @('Adcs', 'AdcsEsc2') 1
 Register-AdtdCheck 'S31' Medium Security 'Hybrid identity' 'Seamless SSO key has not been rolled over for more than 30 days' `
     'The AZUREADSSOACC key lets anyone who steals it create Kerberos tickets that sign in as any synced user to Microsoft Entra ID.' `
     @('Roll over the key with Update-AzureADSSOForest on the Entra Connect server (once per forest).', 'Schedule the rollover every 30 days.', 'Switch the account to AES after rolling the key.') @('SsoFaq', 'SsoHowItWorks') 1
@@ -235,14 +248,14 @@ Register-AdtdCheck 'X08' Low Hybrid 'Authentication' 'Microsoft Entra Password P
     @('Install the Password Protection proxy on member servers and the DC agent on every DC; start in audit mode, then enforce.') @('PwdProtection') 2
 
 $script:AdtdVerifyManually = @(
-    [pscustomobject]@{ Item = 'LDAP signing and LDAP channel binding are required on all domain controllers'; Why = 'Blocks NTLM relay to LDAP.'; Ref = $script:Refs.MdiInfra }
+    [pscustomobject]@{ Item = 'LDAP signing and LDAP channel binding are required on all domain controllers'; Why = 'Blocks NTLM relay to LDAP.'; Ref = $script:Refs.LdapSigning }
     [pscustomobject]@{ Item = 'SMB signing is required and SMBv1 is removed'; Why = 'Blocks relay and old exploits.'; Ref = $script:Refs.MdiInfra }
-    [pscustomobject]@{ Item = 'The Print Spooler service is disabled on domain controllers'; Why = 'Prevents coerced authentication of DC accounts.'; Ref = $script:Refs.MdiInfra }
+    [pscustomobject]@{ Item = 'The Print Spooler service is disabled on domain controllers'; Why = 'Prevents coerced authentication of DC accounts.'; Ref = $script:Refs.PrintSpooler }
     [pscustomobject]@{ Item = 'NTLMv1 and LM are blocked (LmCompatibilityLevel 5)'; Why = 'NTLMv1 hashes can be cracked or relayed easily.'; Ref = $script:Refs.MdiInfra }
     [pscustomobject]@{ Item = 'Microsoft Defender for Identity sensors run on every DC, AD FS, AD CS and Entra Connect server'; Why = 'Detects attacks on AD and adds identity posture assessments.'; Ref = $script:Refs.Mdi }
-    [pscustomobject]@{ Item = 'System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan'; Why = 'Ransomware targets AD first.'; Ref = $script:Refs.KrbtgtReset }
+    [pscustomobject]@{ Item = 'System-state backups of at least two DCs per domain, kept offline, and a tested forest recovery plan'; Why = 'Ransomware targets AD first.'; Ref = $script:Refs.ForestRecovery }
     [pscustomobject]@{ Item = 'Tier 0 admins use separate accounts, privileged access workstations and phishing-resistant MFA'; Why = 'Stops credential theft from everyday devices.'; Ref = $script:Refs.AccessModel }
-    [pscustomobject]@{ Item = 'Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access'; Why = 'Keeps you in control if MFA or federation fails.'; Ref = $script:Refs.AccessModel }
+    [pscustomobject]@{ Item = 'Emergency access (break-glass) accounts exist in Microsoft Entra ID and are excluded from Conditional Access'; Why = 'Keeps you in control if MFA or federation fails.'; Ref = $script:Refs.EmergencyAccess }
     [pscustomobject]@{ Item = 'Entra Connect / Cloud Sync agent servers are managed as Tier 0'; Why = 'They can change passwords and read hashes for every synced user.'; Ref = $script:Refs.SyncDecision }
 )
 
@@ -379,7 +392,7 @@ function Get-AdtdFindings {
 
         $fs = $sec.Forest
         if ($fs) {
-            $eligible = ($doms | Measure-Object -Property { $_.Computers.LapsEligible } -Sum).Sum
+            $eligible = ($doms | ForEach-Object { $_.Computers.LapsEligible } | Measure-Object -Sum).Sum
             $winCov = ($doms | ForEach-Object { $_.Computers.WindowsLapsCovered } | Measure-Object -Sum).Sum
             $legCov = ($doms | ForEach-Object { $_.Computers.LegacyLapsCovered } | Measure-Object -Sum).Sum
             if (-not $fs.WindowsLapsSchema -and -not $fs.LegacyLapsSchema) { & $add 'S24' 'Neither Windows LAPS nor legacy Microsoft LAPS is in the schema.' @() }

@@ -240,7 +240,12 @@ $mod = Import-Module (Join-Path $PSScriptRoot '..\src\ADTD.psm1') -Force -PassTh
                     $nc = { param($x) (([regex]::Split($x, '(?<!\\),') | Where-Object { $_ -match '^dc=' }) -join ',') }
                     if ((& $nc $dn) -ne (& $nc $base)) { $inScope = $false }
                 }
-                if ($inScope -and (Test-Filter $o $Filter)) { $o.Clone() }
+                if ($inScope -and (Test-Filter $o $Filter)) {
+                    $c = $o.Clone()
+                    # A real global catalog left operatingSystem out in lab testing on Windows Server 2022.
+                    if ($GlobalCatalog) { $c.Remove('operatingsystem'); $c.Remove('operatingsystemversion') }
+                    $c
+                }
             }
         })
     $script:LdapCalls = 0
@@ -355,9 +360,25 @@ Check ($html -match 'window.adtdRender' -and $html -match 'mxGraph' -and $html -
 $ro = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, HtmlTabs -Offline -OutputFolder (Join-Path $OutputFolder 'offline')
 $offHtml = Get-Content -Raw $ro.Files.HtmlTabs
 Check (-not $ro.Files.DrawIoWebLink -and $offHtml -notmatch 'app.diagrams.net/\?' -and $offHtml -match 'window.adtdRender') 'offline mode: no web links, built-in viewer'
+$drawXml = [System.IO.File]::ReadAllText($r.Files.DrawIo)
+$webUrl = Get-AdtdDrawIoWebUrl $r.Files.DrawIo
+$ms = New-Object System.IO.MemoryStream(, [Convert]::FromBase64String([System.Net.WebUtility]::UrlDecode(($webUrl -split '#R', 2)[1])))
+$ds = New-Object System.IO.Compression.DeflateStream($ms, [System.IO.Compression.CompressionMode]::Decompress)
+$back = [System.Net.WebUtility]::UrlDecode((New-Object System.IO.StreamReader($ds, [System.Text.Encoding]::UTF8)).ReadToEnd())
+Check ($drawXml.Length -gt 65520 -and $back -eq $drawXml) 'draw.io web link round-trips a drawing longer than the .NET Framework EscapeDataString limit'
+$pair = 'a' * 29999 + [char]::ConvertFromUtf32(0x1F600) + 'b'
+Check ((& $mod { param($t) ConvertTo-AdtdUriEscaped $t } $pair) -eq [uri]::EscapeDataString($pair)) 'chunked escaping keeps surrogate pairs whole'
 $rw = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, Html -DrawIoWebViewer -OutputFolder (Join-Path $OutputFolder 'webviewer')
 Check ((Get-Content -Raw $rw.Files.Html) -match 'viewer-static.min.js') 'optional draw.io web viewer'
 Check ($html -match 'what on-premises AD is missing') 'HTML has the gap analysis'
+$usCsv = @(Import-Csv (Join-Path (Split-Path $r.Files.Json) ([System.IO.Path]::GetFileNameWithoutExtension($r.Files.Json) + '-csv/user-summary.csv')))
+$root = $usCsv | Where-Object Domain -eq 'contoso.com'
+$all = $usCsv | Where-Object Domain -eq 'All domains'
+Check ($usCsv.Count -eq 3 -and [int]$root.Enabled -eq 19 -and [int]$root.Disabled -eq ([int]$root.Total - 19) -and [int]$all.Enabled -eq 21) 'user-summary.csv has a row per domain and an all-domains total'
+Check ([int]$root.'Stale 90 days' -eq 2 -and [int]$root.Privileged -ge 8 -and $root.PSObject.Properties.Name -contains 'No Kerberos pre-auth') 'user summary counts stale and privileged accounts'
+Check ($html -match '<h3>User accounts</h3>' -and $html -match 'No Kerberos pre-auth') 'HTML inventory has the user accounts table'
+$sumXml = [System.IO.File]::ReadAllText($r.Files.DrawIo)
+Check ($sumXml -match 'kpi_user' -and $sumXml -match 'Enabled users') 'Summary drawing has an Enabled users tile'
 $tabs = Get-Content -Raw $r.Files.HtmlTabs
 Check ($tabs -match "data-tab='findings'" -and $tabs -match "data-tab='diagrams'" -and $tabs -match "data-tab='plan'" -and $tabs -match "data-tab='inventory'") 'tabbed HTML has all tabs'
 Check (([regex]::Matches($tabs, "class='sub' data-page=")).Count -eq 11) 'tabbed HTML has a diagram tab per draw.io page'
@@ -397,6 +418,12 @@ Check ($showCmd.Parameters.ContainsKey('Welcome') -and $showCmd.Parameters.Conta
 $info = & $mod { Get-AdtdInstallInfo }
 Check ($info.Folder -and $info.Exe -like '*ADTD.exe' -and $info.Kind -like 'Not installed*') 'install location is detected'
 Check ((& $mod { $script:AdtdAuthor }) -eq 'Shenuka Fernando' -and (Get-Content -Raw (Join-Path $srcDir 'ADTD.Gui.ps1')) -match 'Designed and developed by') 'About shows the author'
+# Every script must parse in the PowerShell running the tests (5.1 rejects PowerShell 7 syntax such as ?? and ?.).
+$parseErr = foreach ($file in Get-ChildItem (Join-Path $PSScriptRoot '..') -Recurse -File -Include *.ps1, *.psm1, *.psd1) {
+    $e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$e)
+    $e | ForEach-Object { "$($file.Name):$($_.Extent.StartLineNumber) $($_.Message)" }
+}
+Check (-not $parseErr) "every script parses in PowerShell $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor) $(if ($parseErr) { '(' + ($parseErr -join '; ') + ')' })"
 # PowerShell variable names ignore case, so $T and $t are the same variable. Catch that in every function.
 $clash = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
     $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
@@ -407,6 +434,14 @@ $clash = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
     }
 }
 Check (-not $clash) "no variables that differ only in case $(if ($clash) { '(' + ($clash -join '; ') + ')' })"
+# Windows PowerShell 5.1 (ADTD.exe) can't take a script block for Measure-Object -Property; PowerShell 7 can, so the tests alone wouldn't notice.
+$measureSb = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
+    $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.CommandAst] -and $args[0].GetCommandName() -in 'Measure-Object', 'measure' -and
+        @($args[0].CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.ScriptBlockExpressionAst] }).Count }, $true) |
+        ForEach-Object { "$($file.Name):$($_.Extent.StartLineNumber)" }
+}
+Check (-not $measureSb) "Measure-Object is never given a script block (not in Windows PowerShell 5.1) $(if ($measureSb) { '(' + ($measureSb -join '; ') + ')' })"
 $setFile = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD\settings.json'
 $setBackup = if (Test-Path $setFile) { Get-Content -Raw $setFile } else { $null }
 try {
