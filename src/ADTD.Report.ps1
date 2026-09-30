@@ -8,14 +8,33 @@ function Get-AdtdDrawIoWebUrl {
     #>
     param([Parameter(Mandatory)][string]$Path)
     $xml = [System.IO.File]::ReadAllText($Path)
-    $encoded = [uri]::EscapeDataString($xml)
+    $encoded = ConvertTo-AdtdUriEscaped $xml
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($encoded)
     $ms = New-Object System.IO.MemoryStream
     $ds = New-Object System.IO.Compression.DeflateStream($ms, [System.IO.Compression.CompressionLevel]::Optimal)
     $ds.Write($bytes, 0, $bytes.Length); $ds.Close()
     $b64 = [Convert]::ToBase64String($ms.ToArray())
     $title = [uri]::EscapeDataString((Split-Path $Path -Leaf))
-    return "https://app.diagrams.net/?title=$title#R$([uri]::EscapeDataString($b64))"
+    return "https://app.diagrams.net/?title=$title#R$(ConvertTo-AdtdUriEscaped $b64)"
+}
+
+function ConvertTo-AdtdUriEscaped {
+    <#
+    [uri]::EscapeDataString in chunks. On .NET Framework (Windows PowerShell 5.1, ADTD.exe) it throws
+    "Invalid URI: The Uri string is too long" above about 65,000 characters; a real drawing is far larger.
+    Chunks never split a surrogate pair, so the result is identical to escaping the whole string at once.
+    #>
+    param([Parameter(Mandatory)][AllowEmptyString()][string]$Text)
+    $chunk = 30000
+    $sb = New-Object System.Text.StringBuilder
+    $i = 0
+    while ($i -lt $Text.Length) {
+        $len = [Math]::Min($chunk, $Text.Length - $i)
+        if (($i + $len) -lt $Text.Length -and [char]::IsHighSurrogate($Text[$i + $len - 1])) { $len-- }
+        [void]$sb.Append([uri]::EscapeDataString($Text.Substring($i, $len)))
+        $i += $len
+    }
+    return $sb.ToString()
 }
 
 function Get-AdtdSettings {
