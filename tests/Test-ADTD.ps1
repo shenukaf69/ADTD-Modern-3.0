@@ -240,7 +240,12 @@ $mod = Import-Module (Join-Path $PSScriptRoot '..\src\ADTD.psm1') -Force -PassTh
                     $nc = { param($x) (([regex]::Split($x, '(?<!\\),') | Where-Object { $_ -match '^dc=' }) -join ',') }
                     if ((& $nc $dn) -ne (& $nc $base)) { $inScope = $false }
                 }
-                if ($inScope -and (Test-Filter $o $Filter)) { $o.Clone() }
+                if ($inScope -and (Test-Filter $o $Filter)) {
+                    $c = $o.Clone()
+                    # A real global catalog left operatingSystem out in lab testing on Windows Server 2022.
+                    if ($GlobalCatalog) { $c.Remove('operatingsystem'); $c.Remove('operatingsystemversion') }
+                    $c
+                }
             }
         })
     $script:LdapCalls = 0
