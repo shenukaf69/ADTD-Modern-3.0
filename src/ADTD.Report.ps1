@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - reports: HTML assessment report, per-finding Markdown, CSV, and draw.io web links.
 
 function Get-AdtdDrawIoWebUrl {
@@ -45,12 +47,13 @@ function Get-AdtdSettings {
 }
 
 function Set-AdtdSettings {
-    param([ValidateSet('Auto', 'Desktop', 'Web')][string]$DrawIoViewer, [string]$WelcomeShown)
+    param([ValidateSet('Auto', 'Desktop', 'Web')][string]$DrawIoViewer, [string]$WelcomeShown, [string]$LicenseAccepted)
     $dir = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ADTD'
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
     $s = Get-AdtdSettings
     if ($DrawIoViewer) { $s.DrawIoViewer = $DrawIoViewer }
     if ($WelcomeShown) { $s | Add-Member -NotePropertyName WelcomeShown -NotePropertyValue $WelcomeShown -Force }
+    if ($LicenseAccepted) { $s | Add-Member -NotePropertyName LicenseAccepted -NotePropertyValue $LicenseAccepted -Force }
     $s | ConvertTo-Json | Set-Content -Path (Join-Path $dir 'settings.json') -Encoding UTF8
     return $s
 }

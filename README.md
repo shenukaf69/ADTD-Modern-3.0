@@ -4,7 +4,7 @@
 
 *Designed and developed by **Shenuka Fernando***
 
-**A free Active Directory diagram tool and security assessment: the modern replacement for Microsoft's Active Directory Topology Diagrammer (ADTD), rebuilt for Windows Server 2016–2025, with a Microsoft Entra ID (Azure AD) hybrid upgrade plan.**
+**A free-to-use Active Directory diagram tool and security assessment: the modern replacement for Microsoft's Active Directory Topology Diagrammer (ADTD), rebuilt for Windows Server 2016–2025, with a Microsoft Entra ID (Azure AD) hybrid upgrade plan.**
 
 Use it to document your AD forest (sites, replication, domains, trusts, OUs, GPOs, DFS-R and Exchange) as draw.io or Visio diagrams, run an Active Directory security health check, and plan a move to hybrid identity with Entra Connect. It is a read-only PowerShell tool with a Windows app and an MSI installer.
 
@@ -35,6 +35,7 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 - [Output files](#output-files)
 - [Repository layout](#repository-layout)
 - [Known limitations](#known-limitations)
+- [Licence](#licence)
 
 Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**](docs/OFFLINE.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
 
@@ -64,7 +65,7 @@ Sample outputs from the offline test forest (Contoso, two domains) are in [`samp
 
 > **Domain-joined computers without internet access?** Follow [docs/OFFLINE.md](docs/OFFLINE.md): everything works offline, including the report's diagram viewer.
 
-1. **Install.** Download `ADTD_Modern_Setup_3.0.4.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
+1. **Install.** Download `ADTD_Modern_Setup_3.0.5.msi` (or the offline zip) from the **[latest release](https://github.com/shenukaf69/ADTD-Modern-3.0/releases/latest)** and run it (right-click → Properties → Unblock first). No admin rights? See [option 2](docs/INSTALL.md#option-2-current-user-no-admin-rights).
 2. **Prerequisites.** Open **Start → ADTD Modern - Prerequisites** (or **Prerequisites** in the app). It checks the computer, then asks what to install:
 
    ![Prerequisites check](docs/images/prerequisites.png)
@@ -320,6 +321,7 @@ Every run writes `ADTD-<forest>-<yyyyMMdd-HHmm>.*`:
 
 ```
 src/                     The app and PowerShell module (installed by the MSI)
+  LICENSE.txt            The licence, installed with the app (same text as LICENSE)
   ADTD.exe               The app: opens the window with the ADTD Modern icon (source in launcher/)
   ADTD.ico, ADTD-64.png  App icon
   ADTD.ps1               Entry script: window, or Invoke-ADTD with parameters
@@ -333,7 +335,7 @@ src/                     The app and PowerShell module (installed by the MSI)
   lib/mxClient.min.js    Built-in offline diagram viewer (mxGraph 4.2.2, Apache-2.0)
   ADTD.Versions.ps1      Windows, Exchange, schema and functional-level tables
 setup/                   ADTD.wxs (MSI), build-msi.ps1, Install-ADTD.ps1, Install-Prerequisites.ps1, START-HERE.txt
-dist/                    ADTD_Modern_Setup_3.0.4.msi
+dist/                    ADTD_Modern_Setup_3.0.5.msi
 launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
 tests/Test-ADTD.ps1      Offline test suite (144 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
@@ -349,8 +351,21 @@ docs/                    Guides and screenshots
 - **Nested group membership** is resolved within each domain. Members from other domains that reach Enterprise Admins or Schema Admins through nesting are not expanded.
 - **Layout is automatic.** In large forests some lines cross boxes. Drag them in draw.io, or use Visio output, which routes connectors around shapes.
 
+## Licence
+
+ADTD Modern is **free to use** under the [ADTD Modern Licence](LICENSE). The app asks you to accept it the first time it opens, and you can read it again under **About → View licence**.
+
+| You may, free of charge | You need the author's written permission to |
+|---|---|
+| Install it on any number of computers | Modify it or copy its code into other software |
+| Use it at work and for client assessments, and charge for your own work | Sell, rent or sublicense it, or bundle it in a product or service you sell |
+| Keep, share and publish the reports and drawings it creates | Publish or distribute it anywhere other than this project page |
+| Give unmodified official installers to others in your organisation | Remove the copyright notices or present it as your own work |
+
+The source code is public so you can check what the tool does before you run it; that doesn't grant rights beyond the licence. Third-party components keep their own licences (mxGraph: Apache 2.0). To ask for permission, contact [Shenuka Fernando](https://github.com/shenukaf69).
+
 ---
 
-**ADTD Modern** is designed and developed by **Shenuka Fernando** ([GitHub](https://github.com/shenukaf69)). See [COPYRIGHT](COPYRIGHT).
+**ADTD Modern** is designed and developed by **Shenuka Fernando** ([GitHub](https://github.com/shenukaf69)). See [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT).
 
 © 2026 Shenuka Fernando. Active Directory, Microsoft Entra, Exchange, Visio and Windows Server are trademarks of Microsoft Corporation. draw.io is a trademark of JGraph Ltd. This project is not affiliated with or endorsed by Microsoft or JGraph.

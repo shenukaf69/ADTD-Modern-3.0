@@ -1,3 +1,5 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - assessment: findings catalog, health/security/hybrid checks, gap analysis and the
 # suggested target topology and roadmap. Pure functions over the inventory, so a saved JSON
 # inventory can be re-assessed offline.

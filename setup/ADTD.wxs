@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+     Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission. -->
 <!--
   ADTD Modern installer (WiX 3 syntax).
-  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.4.msi ADTD.wxs      (msitools)
+  Build on Linux:   wixl -a x64 -o ../dist/ADTD_Modern_Setup_3.0.5.msi ADTD.wxs      (msitools)
   Build on Windows: see build-msi.ps1 (WiX Toolset 3.x candle/light, or wixl under WSL)
   Installs the PowerShell module for all users, so "Invoke-ADTD" works in any PowerShell window,
   adds ADTD.exe (the app, with its own icon) and Start menu shortcuts. Upgrades replace older
@@ -10,7 +12,7 @@
   (silent installs, /qn, skip it).
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.4"
+  <Product Id="*" Name="ADTD Modern 3.0" Language="1033" Version="3.0.5"
            Manufacturer="Shenuka Fernando" UpgradeCode="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64"
              Description="ADTD Modern - Active Directory topology, security and hybrid Entra ID assessment"
@@ -18,8 +20,8 @@
     <Media Id="1" Cabinet="adtd.cab" EmbedCab="yes" />
 
     <Upgrade Id="43a9828c-bbfb-4d64-80df-7f388ca9fca0">
-      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.4" IncludeMinimum="yes" IncludeMaximum="yes" Property="PREVIOUSFOUND" />
-      <UpgradeVersion Minimum="3.0.4" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
+      <UpgradeVersion Minimum="0.0.0" Maximum="3.0.5" IncludeMinimum="yes" IncludeMaximum="yes" Property="PREVIOUSFOUND" />
+      <UpgradeVersion Minimum="3.0.5" OnlyDetect="yes" IncludeMinimum="no" Property="NEWERFOUND" />
     </Upgrade>
     <Condition Message="A newer version of ADTD Modern is already installed.">NOT NEWERFOUND</Condition>
     <Condition Message="ADTD Modern needs 64-bit Windows. Use Windows 10/11 or Windows Server 2016 or later; on Windows Server 2012 R2, 2012 or 2008 R2 SP1 install Windows Management Framework 5.1 first.">VersionNT64</Condition>
@@ -67,6 +69,7 @@
                 <File Id="ADTD.Gui.ps1" Name="ADTD.Gui.ps1" Source="../src/ADTD.Gui.ps1" />
                 <File Id="Install_Prerequisites.ps1" Name="Install-Prerequisites.ps1" Source="Install-Prerequisites.ps1" />
                 <File Id="README.html" Name="README.html" Source="../src/README.html" />
+                <File Id="LICENSE.txt" Name="LICENSE.txt" Source="../src/LICENSE.txt" />
               </Component>
               <Directory Id="LIBDIR" Name="lib">
                 <Component Id="LibFiles" Guid="3f0c1b6e-2a7d-4d1e-9b3a-6f2d8e4c1a03" Win64="yes">
@@ -94,7 +97,7 @@
             <Shortcut Id="ShortcutReadme" Name="ADTD Modern - Read me" Target="[INSTALLDIR]README.html" />
             <RemoveFolder Id="RemoveMenuDir" On="uninstall" />
             <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
-            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.4" />
+            <RegistryValue Root="HKLM" Key="Software\ADTD Modern" Name="Version" Type="string" Value="3.0.5" />
           </Component>
         </Directory>
       </Directory>

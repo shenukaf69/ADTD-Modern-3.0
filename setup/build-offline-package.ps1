@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 .SYNOPSIS
 Builds dist\ADTD-Modern-<version>-offline.zip: the MSI plus everything needed on a computer without internet.
@@ -16,7 +19,7 @@ $name = "ADTD-Modern-$version-offline"
 $stage = Join-Path ([IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
 $pkg = Join-Path $stage $name
 New-Item -ItemType Directory -Path (Join-Path $pkg 'setup'), (Join-Path $pkg 'drawio') -Force | Out-Null
-Copy-Item $msi, (Join-Path $root 'setup\START-HERE.txt'), (Join-Path $root 'README.md'), (Join-Path $root 'CHANGELOG.md'), (Join-Path $root 'COPYRIGHT') $pkg
+Copy-Item $msi, (Join-Path $root 'setup\START-HERE.txt'), (Join-Path $root 'README.md'), (Join-Path $root 'CHANGELOG.md'), (Join-Path $root 'COPYRIGHT'), (Join-Path $root 'LICENSE') $pkg
 Copy-Item (Join-Path $root 'setup\Install-ADTD.ps1'), (Join-Path $root 'setup\Install-Prerequisites.ps1') (Join-Path $pkg 'setup')
 foreach ($d in 'src', 'docs', 'samples') { Copy-Item (Join-Path $root $d) $pkg -Recurse }
 @'
