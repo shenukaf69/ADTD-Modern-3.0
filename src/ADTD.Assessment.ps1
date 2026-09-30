@@ -392,7 +392,7 @@ function Get-AdtdFindings {
 
         $fs = $sec.Forest
         if ($fs) {
-            $eligible = ($doms | Measure-Object -Property { $_.Computers.LapsEligible } -Sum).Sum
+            $eligible = ($doms | ForEach-Object { $_.Computers.LapsEligible } | Measure-Object -Sum).Sum
             $winCov = ($doms | ForEach-Object { $_.Computers.WindowsLapsCovered } | Measure-Object -Sum).Sum
             $legCov = ($doms | ForEach-Object { $_.Computers.LegacyLapsCovered } | Measure-Object -Sum).Sum
             if (-not $fs.WindowsLapsSchema -and -not $fs.LegacyLapsSchema) { & $add 'S24' 'Neither Windows LAPS nor legacy Microsoft LAPS is in the schema.' @() }
