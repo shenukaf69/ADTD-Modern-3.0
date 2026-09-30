@@ -1,0 +1,4 @@
+"Name","Transport","Sites","Cost","ReplIntervalMin","ChangeNotification"
+"London-Singapore","IP","London;Singapore","200","60","False"
+"London-NewYork","IP","London;NewYork","100","15","True"
+"Europe-Core","IP","London;Frankfurt;NewYork","50","180","False"

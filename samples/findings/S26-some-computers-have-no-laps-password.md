@@ -22,3 +22,4 @@ Computers without a managed password still share local admin credentials.
 ## References
 
 - [What is Windows LAPS?](https://learn.microsoft.com/windows-server/identity/laps/laps-overview)
+- [Microsoft LAPS usage (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#microsoft-laps-usage)

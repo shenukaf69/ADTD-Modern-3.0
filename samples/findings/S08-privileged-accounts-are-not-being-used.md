@@ -20,4 +20,5 @@ Enabled admin accounts that no one signs in with are an easy target nobody watch
 
 ## References
 
-- [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts)
+- [Dormant entities in sensitive groups (Defender for Identity)](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#dormant-entities-in-sensitive-groups)
+- [Remove stale Active Directory accounts](https://learn.microsoft.com/defender-for-identity/security-posture-assessments/accounts#remove-stale-active-directory-accounts)

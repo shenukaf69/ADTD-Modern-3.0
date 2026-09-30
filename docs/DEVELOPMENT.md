@@ -111,7 +111,7 @@ Also update the version attributes at the top of `ADTD.cs` for a release.
 $cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
 Get-ChildItem .\src, .\setup -Include *.ps1, *.psm1, *.psd1, *.exe -Recurse | Set-AuthenticodeSignature -Certificate $cert -TimestampServer http://timestamp.digicert.com
 pwsh ./setup/build-msi.ps1
-signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.3.msi
+signtool sign /fd SHA256 /a /tr http://timestamp.digicert.com /td SHA256 dist\ADTD_Modern_Setup_3.0.4.msi
 ```
 
 ## Previewing drawings without draw.io

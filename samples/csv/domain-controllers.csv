@@ -1,0 +1,7 @@
+"Name","HostName","Domain","Site","OperatingSystem","OSBuild","OSSupportState","OSEndOfSupport","IsGlobalCatalog","IsReadOnly","FsmoRoles"
+"EMEADC1","emeadc1.emea.contoso.com","emea.contoso.com","Frankfurt","Windows Server 2012 R2","9600","Unsupported","2023-10-10","True","False","PDC;RID;Infrastructure"
+"DC01","dc01.contoso.com","contoso.com","London","Windows Server 2025","26100","Supported","2034-10-10","True","False","PDC;RID;Schema;Domain naming"
+"DC02","dc02.contoso.com","contoso.com","London","Windows Server 2022","20348","Supported","2031-10-14","True","False","Infrastructure"
+"NYDC1","nydc1.contoso.com","contoso.com","NewYork","Windows Server 2016","14393","EndingSoon","2027-01-12","False","False",""
+"DC03","dc03.contoso.com","contoso.com","Singapore","Windows Server 2019","17763","Supported","2029-01-09","True","False",""
+"SGRODC1","sgrodc1.contoso.com","contoso.com","Singapore","Windows Server 2025","26100","Supported","2034-10-10","True","True",""

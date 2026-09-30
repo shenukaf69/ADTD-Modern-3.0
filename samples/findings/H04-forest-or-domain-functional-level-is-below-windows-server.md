@@ -22,3 +22,4 @@ Lower levels block newer security features, such as privileged access management
 ## References
 
 - [Forest and domain functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels)
+- [Raise domain and forest functional levels](https://learn.microsoft.com/windows-server/identity/ad-ds/plan/raise-domain-forest-functional-levels)
