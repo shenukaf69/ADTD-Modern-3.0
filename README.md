@@ -97,7 +97,7 @@ Each drawing is one page (tab) in the `.drawio` file.
 
 | Page | Shows |
 |---|---|
-| **Summary** | Forest facts, DC operating systems, and the top findings |
+| **Summary** | Tiles for domains, sites, DCs, high findings, enabled users and directory sync; forest facts, DC operating systems, and the top findings |
 | **Sites and site links** | Sites with their DCs and subnets. Site links with cost, interval and change notification. Multi-site links, bridges and a legend |
 | **Replication** | Connection objects: created by the KCC, created manually, or disabled. Two-headed arrows mean both directions |
 | **Domains and trusts** | Forest facts, the domain tree, functional levels, FSMO holders and SYSVOL replication. Forest, external, realm and shortcut trusts, with direction and SID filtering |
@@ -287,7 +287,7 @@ Every run writes `ADTD-<forest>-<yyyyMMdd-HHmm>.*`:
 | `.html` | Assessment report (single page) |
 | `-tabs.html` | Assessment report with tabs (`-Format HtmlTabs`) |
 | `-findings\*.md` | One Markdown report per finding, `README.md` index and `hybrid-plan.md` (`-Format Markdown`) |
-| `-csv\*.csv` | Findings, evidence, gap analysis, roadmap, security by domain, computer OS counts, DCs, domains, sites, subnets, site links, connections, trusts, Exchange, OUs |
+| `-csv\*.csv` | Findings, evidence, gap analysis, roadmap, security by domain, user account summary (counts only), computer OS counts, DCs, domains, sites, subnets, site links, connections, trusts, Exchange, OUs |
 | `.json` | The full inventory, including the security scan. Re-assess it with `-InputFile` |
 | `.vsdx` | Visio drawing (`-Format Visio`, needs Visio) |
 | `.log` | What was read, and anything that couldn't be read |

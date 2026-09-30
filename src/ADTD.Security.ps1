@@ -105,6 +105,8 @@ function Get-AdtdDomainSecurity {
         Rc4Only = New-Object System.Collections.ArrayList; NoUpn = 0; UpnSuffixes = @{}
         Privileged = New-Object System.Collections.ArrayList
     }
+    # Uncapped counts for the user summary (the name lists above stop at MaxEvidence).
+    $uc = [ordered]@{ Stale = 0; PwdNeverExpires = 0; PwdNotRequired = 0; Reversible = 0; DesOnly = 0; NoPreauth = 0; WithSpn = 0; SidHistory = 0; TrustedForDelegation = 0; TrustedToAuth = 0; Rc4Only = 0; Privileged = 0 }
     $krbtgtAge = $null; $guestEnabled = $false; $builtinAdmin = $null
     $connect = @()
     foreach ($x in $users) {
@@ -126,16 +128,17 @@ function Get-AdtdDomainSecurity {
         $spns = @(Get-AAll $x 'servicePrincipalName')
         $enc = Get-A $x 'msDS-SupportedEncryptionTypes'
         $isPriv = $privilegedDNs.ContainsKey(("$(Get-A $x 'distinguishedName')").ToLower())
-        if ($stale) { Add-Capped $u.Stale $name }
-        if ($uac -band $script:UAC.DontExpire) { Add-Capped $u.PwdNeverExpires $name }
-        if ($uac -band $script:UAC.PwdNotRequired) { Add-Capped $u.PwdNotRequired $name }
-        if ($uac -band $script:UAC.Reversible) { Add-Capped $u.Reversible $name }
-        if ($uac -band $script:UAC.DesOnly) { Add-Capped $u.DesOnly $name }
-        if ($uac -band $script:UAC.NoPreauth) { Add-Capped $u.NoPreauth $name }
-        if ($uac -band $script:UAC.TrustedForDelegation) { Add-Capped $u.TrustedForDelegation $name }
-        if ($uac -band $script:UAC.TrustedToAuth) { Add-Capped $u.TrustedToAuth $name }
-        if ($null -ne $enc -and "$enc" -ne '' -and ([int]$enc -band 0x18) -eq 0 -and ([int]$enc -band 0x7)) { Add-Capped $u.Rc4Only $name }
-        if (@(Get-AAll $x 'sIDHistory').Count) { Add-Capped $u.SidHistory $name }
+        if ($stale) { $uc.Stale++; Add-Capped $u.Stale $name }
+        if ($uac -band $script:UAC.DontExpire) { $uc.PwdNeverExpires++; Add-Capped $u.PwdNeverExpires $name }
+        if ($uac -band $script:UAC.PwdNotRequired) { $uc.PwdNotRequired++; Add-Capped $u.PwdNotRequired $name }
+        if ($uac -band $script:UAC.Reversible) { $uc.Reversible++; Add-Capped $u.Reversible $name }
+        if ($uac -band $script:UAC.DesOnly) { $uc.DesOnly++; Add-Capped $u.DesOnly $name }
+        if ($uac -band $script:UAC.NoPreauth) { $uc.NoPreauth++; Add-Capped $u.NoPreauth $name }
+        if ($uac -band $script:UAC.TrustedForDelegation) { $uc.TrustedForDelegation++; Add-Capped $u.TrustedForDelegation $name }
+        if ($uac -band $script:UAC.TrustedToAuth) { $uc.TrustedToAuth++; Add-Capped $u.TrustedToAuth $name }
+        if ($null -ne $enc -and "$enc" -ne '' -and ([int]$enc -band 0x18) -eq 0 -and ([int]$enc -band 0x7)) { $uc.Rc4Only++; Add-Capped $u.Rc4Only $name }
+        if (@(Get-AAll $x 'sIDHistory').Count) { $uc.SidHistory++; Add-Capped $u.SidHistory $name }
+        if ($spns.Count) { $uc.WithSpn++ }
         if ($spns.Count -and -not $isPriv) { Add-Capped $u.ServiceAccountsWithSpn $name }
         $upn = Get-A $x 'userPrincipalName'
         if (-not $upn) { $u.NoUpn++ } else {
@@ -143,6 +146,7 @@ function Get-AdtdDomainSecurity {
             if ($u.UpnSuffixes.ContainsKey($suffix)) { $u.UpnSuffixes[$suffix]++ } else { $u.UpnSuffixes[$suffix] = 1 }
         }
         if ($isPriv) {
+            $uc.Privileged++
             [void]$u.Privileged.Add([pscustomobject]@{
                     Name = $name
                     HasSpn = [bool]$spns.Count
@@ -232,6 +236,7 @@ function Get-AdtdDomainSecurity {
             TrustedForDelegation = @($u.TrustedForDelegation); TrustedToAuth = @($u.TrustedToAuth); Rc4Only = @($u.Rc4Only)
             NoUpn = $u.NoUpn; UpnSuffixes = & $toArr $u.UpnSuffixes
             Privileged = @($u.Privileged)
+            Counts = [pscustomobject]$uc
         }
         Computers = [pscustomobject]@{
             Total = $c.Total; Enabled = $c.Enabled; Workstations = $c.Workstations; Servers = $c.Servers

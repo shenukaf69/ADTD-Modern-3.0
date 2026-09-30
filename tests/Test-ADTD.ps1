@@ -371,6 +371,14 @@ Check ((& $mod { param($t) ConvertTo-AdtdUriEscaped $t } $pair) -eq [uri]::Escap
 $rw = Invoke-ADTD -InputFile $r.Files.Json -Format DrawIo, Html -DrawIoWebViewer -OutputFolder (Join-Path $OutputFolder 'webviewer')
 Check ((Get-Content -Raw $rw.Files.Html) -match 'viewer-static.min.js') 'optional draw.io web viewer'
 Check ($html -match 'what on-premises AD is missing') 'HTML has the gap analysis'
+$usCsv = @(Import-Csv (Join-Path (Split-Path $r.Files.Json) ([System.IO.Path]::GetFileNameWithoutExtension($r.Files.Json) + '-csv/user-summary.csv')))
+$root = $usCsv | Where-Object Domain -eq 'contoso.com'
+$all = $usCsv | Where-Object Domain -eq 'All domains'
+Check ($usCsv.Count -eq 3 -and [int]$root.Enabled -eq 19 -and [int]$root.Disabled -eq ([int]$root.Total - 19) -and [int]$all.Enabled -eq 21) 'user-summary.csv has a row per domain and an all-domains total'
+Check ([int]$root.'Stale 90 days' -eq 2 -and [int]$root.Privileged -ge 8 -and $root.PSObject.Properties.Name -contains 'No Kerberos pre-auth') 'user summary counts stale and privileged accounts'
+Check ($html -match '<h3>User accounts</h3>' -and $html -match 'No Kerberos pre-auth') 'HTML inventory has the user accounts table'
+$sumXml = [System.IO.File]::ReadAllText($r.Files.DrawIo)
+Check ($sumXml -match 'kpi_user' -and $sumXml -match 'Enabled users') 'Summary drawing has an Enabled users tile'
 $tabs = Get-Content -Raw $r.Files.HtmlTabs
 Check ($tabs -match "data-tab='findings'" -and $tabs -match "data-tab='diagrams'" -and $tabs -match "data-tab='plan'" -and $tabs -match "data-tab='inventory'") 'tabbed HTML has all tabs'
 Check (([regex]::Matches($tabs, "class='sub' data-page=")).Count -eq 11) 'tabbed HTML has a diagram tab per draw.io page'

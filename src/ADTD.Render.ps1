@@ -475,12 +475,21 @@ function New-AdtdSummaryPage {
         , @('Sites', @($Inventory.Sites).Count, "$(@($Inventory.Subnets).Count) subnets", 'site')
         , @('Domain controllers', $dcs.Count, "$(@($dcs | Where-Object { $_.OSSupportState -ne 'Supported' }).Count) need attention", 'server')
         , @('High findings', @($fAll | Where-Object Severity -eq 'High').Count, "$($fAll.Count) findings in total", 'warning')
+    )
+    if ($Inventory.Security) {
+        $us = @(Get-AdtdUserSummary $Inventory)
+        $ut = if ($us.Count -gt 1) { $us[-1] } else { $us[0] }
+        if ($ut) { $tiles += , @('Enabled users', $ut.Enabled, "of $($ut.Total) &#183; $($ut.'Stale 90 days') stale &#183; $($ut.Privileged) privileged", 'user') }
+    }
+    $tiles += @(
         , @('Directory sync', $(if (-not $h) { 'n/a' } elseif ($h.CloudSync) { 'Cloud Sync' } elseif ($h.ConnectSync) { 'Connect Sync' } else { 'None' }), $(if ($h -and $h.TenantName) { HE $h.TenantName } else { 'Microsoft Entra ID' }), 'cloud')
     )
+    # Tiles share the width of the title bar (x 40 to 1290) with 20 px gaps.
+    $tw = [math]::Floor((1250 - 20 * ($tiles.Count - 1)) / $tiles.Count)
     $tx = 40
     foreach ($t in $tiles) {
-        [void](Add-AdtdNode $p "kpi_$($t[3])" "<span style='font-size:11px;color:#64748B'>$($t[0])</span><br><b style='font-size:20px'>$($t[1])</b><br><span style='font-size:10px;color:#64748B'>$($t[2])</span>" $tx 76 234 70 'panel' $null $null $t[3])
-        $tx += 254
+        [void](Add-AdtdNode $p "kpi_$($t[3])" "<span style='font-size:11px;color:#64748B'>$($t[0])</span><br><b style='font-size:20px'>$($t[1])</b><br><span style='font-size:10px;color:#64748B'>$($t[2])</span>" $tx 76 $tw 70 'panel' $null $null $t[3])
+        $tx += $tw + 20
     }
     [void](Add-AdtdNode $p 'facts' $facts 40 166 460 260 'panel' $null $null)
 
