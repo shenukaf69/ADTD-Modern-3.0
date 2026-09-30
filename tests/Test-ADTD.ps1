@@ -418,6 +418,12 @@ Check ($showCmd.Parameters.ContainsKey('Welcome') -and $showCmd.Parameters.Conta
 $info = & $mod { Get-AdtdInstallInfo }
 Check ($info.Folder -and $info.Exe -like '*ADTD.exe' -and $info.Kind -like 'Not installed*') 'install location is detected'
 Check ((& $mod { $script:AdtdAuthor }) -eq 'Shenuka Fernando' -and (Get-Content -Raw (Join-Path $srcDir 'ADTD.Gui.ps1')) -match 'Designed and developed by') 'About shows the author'
+# Every script must parse in the PowerShell running the tests (5.1 rejects PowerShell 7 syntax such as ?? and ?.).
+$parseErr = foreach ($file in Get-ChildItem (Join-Path $PSScriptRoot '..') -Recurse -File -Include *.ps1, *.psm1, *.psd1) {
+    $e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$e)
+    $e | ForEach-Object { "$($file.Name):$($_.Extent.StartLineNumber) $($_.Message)" }
+}
+Check (-not $parseErr) "every script parses in PowerShell $($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor) $(if ($parseErr) { '(' + ($parseErr -join '; ') + ')' })"
 # PowerShell variable names ignore case, so $T and $t are the same variable. Catch that in every function.
 $clash = foreach ($file in Get-ChildItem $srcDir -Filter *.ps*1) {
     $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
