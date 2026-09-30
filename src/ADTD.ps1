@@ -1,3 +1,6 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
+
 <#
 .SYNOPSIS
 ADTD Modern - draws and assesses your Active Directory (topology, security, hybrid Entra ID readiness).

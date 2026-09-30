@@ -1,7 +1,10 @@
+# ADTD Modern - Copyright (c) 2026 Shenuka Fernando. All rights reserved.
+# Free to use under the ADTD Modern Licence (LICENSE). Copying, modifying or reselling needs written permission.
 # ADTD Modern - the window (Windows Forms): main window, About, and the first-run welcome
 # with desktop shortcut and taskbar pinning. Loaded by ADTD.psm1; nothing here runs at import.
 
 $script:AdtdAuthor = 'Shenuka Fernando'
+$script:AdtdLicenseVersion = '1.0'   # raise when LICENSE changes, so everyone is asked to accept it again
 $script:AdtdRepoUrl = 'https://github.com/shenukaf69/ADTD-Modern-3.0'
 $script:AdtdAuthorUrl = 'https://github.com/shenukaf69'
 
@@ -299,6 +302,8 @@ function Show-AdtdAbout {
     $legal.Size = New-Object System.Drawing.Size((Get-AdtdPx 530), (Get-AdtdPx 110))
     $legal.Text = (@(
             "Copyright (c) 2026 $script:AdtdAuthor. All rights reserved.",
+            "Free to use, including at work and for client assessments, under the ADTD Modern Licence $script:AdtdLicenseVersion (View licence below, or LICENSE.txt in the install folder). Copying its code, modifying it, redistributing it outside the official project page, or selling it needs the author's written permission.",
+            '',
             "ADTD Modern is an independent personal project by $script:AdtdAuthor. It is not a Microsoft product and is not endorsed or supported by Microsoft. It was inspired by Microsoft's Active Directory Topology Diagrammer (2011).",
             '',
             'Third-party software:',
@@ -310,15 +315,72 @@ function Show-AdtdAbout {
     $legal.TabStop = $false   # otherwise it gets focus, selects everything and opens scrolled to the end
     $body.Controls.Add($legal)
 
+    $btns = New-Object System.Windows.Forms.FlowLayoutPanel
+    $btns.AutoSize = $true; $btns.FlowDirection = 'RightToLeft'; $btns.Anchor = 'Right'; $btns.Margin = New-Object System.Windows.Forms.Padding(0)
     $ok = New-AdtdButton 'Close' -Primary -Width 100
-    $ok.DialogResult = 'OK'; $ok.Anchor = 'Right'
-    $body.Controls.Add($ok)
+    $ok.DialogResult = 'OK'
+    $viewLicense = New-AdtdButton 'View licence' -Width 120
+    $viewLicense.Add_Click({ [void](Show-AdtdLicense -Owner $this.FindForm()) })
+    $btns.Controls.Add($ok); $btns.Controls.Add($viewLicense)
+    $body.Controls.Add($btns)
     $f.AcceptButton = $ok; $f.CancelButton = $ok
     $f.ActiveControl = $ok
     $f.Add_Shown({ $legal.SelectionStart = 0; $legal.SelectionLength = 0; $legal.ScrollToCaret() })
     if (-not $Owner) { $f.StartPosition = 'CenterScreen' }
     [void]$f.ShowDialog($Owner)
     $f.Dispose()
+}
+
+function Get-AdtdLicenseText {
+    <# The licence text: LICENSE.txt next to the module (installed), else LICENSE in the repository. #>
+    foreach ($p in (Join-Path $PSScriptRoot 'LICENSE.txt'), (Join-Path $PSScriptRoot '..\LICENSE')) {
+        if (Test-Path $p) { return (Get-Content -Raw $p) -replace '\r?\n', "`r`n" }
+    }
+    return "ADTD Modern Licence $script:AdtdLicenseVersion`r`nCopyright (c) 2026 $script:AdtdAuthor. All rights reserved.`r`n`r`nThe licence file was not found. Read it at $script:AdtdRepoUrl/blob/main/LICENSE"
+}
+
+function Show-AdtdLicense {
+    <#
+    Shows the licence. With -Accept (first run), asks the user to accept it and returns $true only if they do;
+    the answer is remembered per user, and asked again when $script:AdtdLicenseVersion changes.
+    #>
+    param($Owner, [switch]$Accept)
+    Initialize-AdtdGui
+    $f, $body = New-AdtdDialog 'ADTD Modern licence' 660
+    $body.Controls.Add((New-AdtdTitleBlock "Version $script:AdtdVersion  |  by $script:AdtdAuthor"))
+    $intro = if ($Accept) { 'ADTD Modern is free to use, including at work and for client assessments. Please read the licence and accept it to continue.' }
+    else { 'ADTD Modern is free to use, including at work and for client assessments, under this licence.' }
+    $body.Controls.Add((New-AdtdLabel $intro 9.75 -Wrap -WrapWidth 600))
+    $text = New-Object System.Windows.Forms.TextBox
+    $text.Multiline = $true; $text.ReadOnly = $true; $text.ScrollBars = 'Vertical'; $text.BorderStyle = 'FixedSingle'
+    $text.BackColor = $script:AdtdTheme.Back; $text.Font = New-Object System.Drawing.Font('Consolas', 9)
+    $text.Size = New-Object System.Drawing.Size((Get-AdtdPx 610), (Get-AdtdPx 320))
+    $text.Text = Get-AdtdLicenseText
+    $text.Margin = New-Object System.Windows.Forms.Padding(0, (Get-AdtdPx 8), 0, (Get-AdtdPx 12))
+    $text.TabStop = $false
+    $body.Controls.Add($text)
+
+    $row = New-Object System.Windows.Forms.FlowLayoutPanel
+    $row.AutoSize = $true; $row.FlowDirection = 'RightToLeft'; $row.Anchor = 'Right'; $row.Margin = New-Object System.Windows.Forms.Padding(0)
+    if ($Accept) {
+        $yes = New-AdtdButton 'I accept' -Primary -Width 110; $yes.DialogResult = 'OK'
+        $no = New-AdtdButton 'Decline' -Width 100; $no.DialogResult = 'Cancel'
+        $row.Controls.Add($yes); $row.Controls.Add($no)
+        $f.AcceptButton = $yes; $f.CancelButton = $no; $f.ActiveControl = $yes
+    } else {
+        $ok = New-AdtdButton 'Close' -Primary -Width 100; $ok.DialogResult = 'OK'
+        $row.Controls.Add($ok)
+        $f.AcceptButton = $ok; $f.CancelButton = $ok; $f.ActiveControl = $ok
+    }
+    $body.Controls.Add($row)
+    if (-not $Owner) { $f.StartPosition = 'CenterScreen' }
+    $f.Add_Shown({ $text.SelectionStart = 0; $text.SelectionLength = 0; $text.ScrollToCaret(); $this.TopMost = $true; $this.Activate(); $this.TopMost = $false })
+    $result = $f.ShowDialog($Owner)
+    $f.Dispose()
+    if (-not $Accept) { return $true }
+    if ($result -ne 'OK') { return $false }
+    [void](Set-AdtdSettings -LicenseAccepted $script:AdtdLicenseVersion)
+    return $true
 }
 
 function Show-AdtdWelcome {
@@ -384,6 +446,10 @@ function Show-ADTD {
     # so they can use its variables directly ($form, $log, $boxes, ...).
     $Theme = $script:AdtdTheme
 
+    if ([string](Get-AdtdSettings).LicenseAccepted -ne $script:AdtdLicenseVersion -and -not (Show-AdtdLicense -Accept)) {
+        [void][System.Windows.Forms.MessageBox]::Show('ADTD Modern needs the licence to be accepted before it can be used. You will be asked again the next time you open it.', 'ADTD Modern')
+        return
+    }
     $installed = (Get-AdtdInstallInfo -HostPath $HostPath).Kind -notlike 'Not installed*'
     if ($Welcome -or ($installed -and [string](Get-AdtdSettings).WelcomeShown -ne $script:AdtdVersion)) {
         $answer = Show-AdtdWelcome -HostPath $HostPath

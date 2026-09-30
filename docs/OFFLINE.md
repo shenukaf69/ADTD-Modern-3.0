@@ -40,7 +40,7 @@ On **any domain-joined Windows computer** in the forest:
 
 1. Right-click the zip → **Properties** → **Unblock** → **OK**, then extract it. You can also unblock after extracting: `Get-ChildItem -Recurse | Unblock-File`.
 2. Install ADTD, either:
-   - **with admin rights:** double-click `ADTD_Modern_Setup_3.0.4.msi`, or
+   - **with admin rights:** double-click `ADTD_Modern_Setup_3.0.5.msi`, or
    - **without admin rights:** run `powershell -ExecutionPolicy Bypass -File .\setup\Install-ADTD.ps1`.
 3. Check the prerequisites and install draw.io:
 
