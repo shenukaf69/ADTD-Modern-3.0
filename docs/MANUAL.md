@@ -1,6 +1,6 @@
 # ADTD Modern 3.0.5 – User Manual
 
-*By Shenuka Fernando · 6 October 2026 · [Online version](https://claude.ai/code/artifact/9eca1f17-3e7f-417a-97aa-9e3c26bc72a8)*
+*By Shenuka Fernando · 6 October 2026*
 
 ## 1. Introduction
 
