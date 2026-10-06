@@ -37,7 +37,7 @@ It replaces Microsoft's **Active Directory Topology Diagrammer** (`ADTD.Net_Setu
 - [Known limitations](#known-limitations)
 - [Licence](#licence)
 
-Guides: [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**](docs/OFFLINE.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
+Guides: [**User manual**](docs/MANUAL.md) · [Installation](docs/INSTALL.md) · [**Offline / domain-joined machines**](docs/OFFLINE.md) · [Usage](docs/USAGE.md) · [Findings catalog (58 checks)](docs/FINDINGS.md) · [Hybrid identity plan](docs/HYBRID.md) · [Development](docs/DEVELOPMENT.md) · [Changelog](CHANGELOG.md)
 
 ## Compatibility
 
@@ -340,7 +340,7 @@ launcher/ADTD.cs         Source of ADTD.exe (hosts Windows PowerShell 5.1)
 tests/Test-ADTD.ps1      Offline test suite (149 checks)
 tools/                   Update-FindingsDoc.ps1 (regenerates docs/FINDINGS.md)
 samples/                 Sample drawing, reports, JSON, CSV and per-finding Markdown
-docs/                    Guides and screenshots
+docs/                    User manual (MANUAL.md), guides and screenshots
 ```
 
 ## Known limitations
